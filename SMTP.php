@@ -695,7 +695,7 @@ class Net_SMTP
     /**
      * Quote the data so that it meets SMTP standards.
      *
-     * It is provided as a separate public function to facilitate easier
+     * This is provided as a separate public function to facilitate easier
      * overloading for the cases where it is desirable to customize the
      * quoting behavior.
      *
