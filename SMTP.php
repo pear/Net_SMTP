@@ -339,6 +339,12 @@ class Net_SMTP
         }
 
         if (PEAR::isError($this->_parseResponse(250))) {
+            /* If we receive a 503 response, we're already authenticated. */
+            if ($this->_code === 503) {
+                return true;
+            }
+
+            /* If the EHLO failed, try the simpler HELO command. */
             if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
                 return $error;
             }

@@ -27,6 +27,8 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
     <date>2003-05-??</date>
     <notes>
 Both 235 (Authentication successful) and 503 (Error: already authenticated) are now accepted as valid AUTH responses.
+
+503 (Error: already authenticated) is now considered a valid EHLO response.
     </notes>
     <state>stable</state>
     <filelist>
