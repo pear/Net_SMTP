@@ -165,7 +165,7 @@ class Net_SMTP extends PEAR {
     /**
      * Send a command to the server with an optional string of arguments.
      * A carriage return / linefeed (CRLF) sequence will be appended to each
-     * command string before it is send to the SMTP server.
+     * command string before it is sent to the SMTP server.
      *
      * @param   string  $command    The SMTP command to send to the server.
      * @param   string  $args       A string of optional arguments to append
