@@ -420,7 +420,7 @@ class Net_SMTP extends PEAR {
         for ($i = 0; $i < count($extensions); $i++) {
             $verb = strtok($extensions[$i], ' ');
             $arguments = substr($extensions[$i], strlen($verb) + 1,
-                                strlen($extensions[$i]) - strlen($verb) - 2);
+                                strlen($extensions[$i]) - strlen($verb) - 1);
             $this->esmtp[$verb] = $arguments;
         }
 
