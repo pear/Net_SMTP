@@ -49,6 +49,12 @@ class Net_SMTP extends PEAR {
     var $localhost = 'localhost';
 
     /**
+     * Should debugging output be enabled?
+     * @var boolean
+     */
+    var $_debug = false;
+
+    /**
      * The socket resource being used to connect to the SMTP server.
      * @var resource
      */
@@ -95,6 +101,18 @@ class Net_SMTP extends PEAR {
         if (isset($localhost)) $this->localhost = $localhost;
 
         $this->_socket = new Net_Socket();
+    }
+
+    /**
+     * Set the value of the debugging flag.
+     *
+     * @param   boolean $debug      New value for the debugging flag.
+     *
+     * @access  public
+     */
+    function setDebug($debug)
+    {
+        $this->_debug = $debug;
     }
 
     /**
@@ -153,6 +171,10 @@ class Net_SMTP extends PEAR {
      */
     function _send($data)
     {
+        if ($this->_debug) {
+            echo "DEBUG: Send: $data\n";
+        }
+
         if (PEAR::isError($error = $this->_socket->write($data))) {
             echo 'Failed to write to socket: ' .  $error->getMessage() . "\n";
             return new PEAR_Error('Failed to write to socket: ' .
@@ -204,6 +226,10 @@ class Net_SMTP extends PEAR {
         $this->_arguments = array();
 
         while ($line = $this->_socket->readLine()) {
+            if ($this->_debug) {
+                echo "DEBUG: Recv: $line\n";
+            }
+
             /* If we receive an empty line, the connection has been closed. */
             if (empty($line)) {
                 $this->disconnect();
