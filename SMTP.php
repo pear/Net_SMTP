@@ -116,51 +116,6 @@ class Net_SMTP extends PEAR {
     }
 
     /**
-     * Attempt to connect to the SMTP server.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     * @access public
-     */
-    function connect()
-    {
-        if (PEAR::isError($this->_socket->connect($this->host, $this->port))) {
-            return new PEAR_Error('unable to open socket');
-        }
-
-        if (PEAR::isError($error = $this->_parseResponse(220))) {
-            return $error;
-        }
-        if (!$this->identifySender()) {
-            return new PEAR_Error('unable to identify smtp server');
-        }
-
-        return true;
-    }
-
-    /**
-     * Attempt to disconnect from the SMTP server.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     * @access public
-     */
-    function disconnect()
-    {
-        if (PEAR::isError($error = $this->_put('QUIT'))) {
-            return $error;
-        }
-        if (PEAR::isError($error = $this->_parseResponse(221))) {
-            return $error;
-        }
-        if (PEAR::isError($this->_socket->disconnect())) {
-            return new PEAR_Error('socket disconnect failed');
-        }
-
-        return true;
-    }
-
-    /**
      * Send the given string of data to the server.
      *
      * @param   string  $data       The string of data to send.
@@ -284,6 +239,51 @@ class Net_SMTP extends PEAR {
     function getResponse()
     {
         return array($this->_code, join("\n", $this->_arguments));
+    }
+
+    /**
+     * Attempt to connect to the SMTP server.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access public
+     */
+    function connect()
+    {
+        if (PEAR::isError($this->_socket->connect($this->host, $this->port))) {
+            return new PEAR_Error('unable to open socket');
+        }
+
+        if (PEAR::isError($error = $this->_parseResponse(220))) {
+            return $error;
+        }
+        if (!$this->identifySender()) {
+            return new PEAR_Error('unable to identify smtp server');
+        }
+
+        return true;
+    }
+
+    /**
+     * Attempt to disconnect from the SMTP server.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access public
+     */
+    function disconnect()
+    {
+        if (PEAR::isError($error = $this->_put('QUIT'))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(221))) {
+            return $error;
+        }
+        if (PEAR::isError($this->_socket->disconnect())) {
+            return new PEAR_Error('socket disconnect failed');
+        }
+
+        return true;
     }
 
     /**
