@@ -82,7 +82,7 @@ class Net_SMTP extends PEAR {
      * The list of supported authentication methods, ordered by preference.
      * @var string
      */
-    var $_auth_methods = array('LOGIN', 'PLAIN');
+    var $_auth_methods = array('CRAM-MD5', 'LOGIN', 'PLAIN');
 
     /**
      * Constructor
@@ -346,6 +346,9 @@ class Net_SMTP extends PEAR {
         }
 
         switch ($method) {
+            case 'CRAM-MD5':
+                $result = $this->_authCRAM_MD5($uid, $pwd);
+                break;
             case 'LOGIN':
                 $result = $this->_authLogin($uid, $pwd);
                 break;
@@ -363,6 +366,70 @@ class Net_SMTP extends PEAR {
         }
 
         return true;
+    }
+
+    /**
+     * Generate an HMAC MD5 digest string for the given key and data.
+     *
+     * This code was stolen from the Auth_SASL class.
+     *
+     * @author  Richard Heyes <richard@php.net>
+     *
+     * @param  string $key  The secret key
+     * @param  string $data The data to protect
+     * @return string       The HMAC MD5 digest
+     */
+    function _HMAC_MD5($key, $data)
+    {                                                                          
+        if (strlen($key) > 64) {
+            $key = pack('H32', md5($pass));
+        }
+        if (strlen($key) < 64) {
+            $key = str_pad($key, 64, chr(0));
+        }
+
+        $k_ipad = '';
+        $k_opad = '';
+
+        for ($i = 0; $i < 64; $i++) {
+            $byte    = ord($key{$i});
+            $k_ipad .= chr($byte ^ 0x36);
+            $k_opad .= chr($byte ^ 0x5C);
+        }
+
+        $inner  = pack('H32', md5($k_ipad . $data));
+        $digest = md5($k_opad . $inner);
+
+        return $digest;
+    }
+
+    /* Authenticates the user using the CRAM-MD5 method.
+     *
+     * @param string The userid to authenticate as.
+     * @param string The password to authenticate with.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access private
+     */
+    function _authCRAM_MD5($uid, $pwd)
+    {
+        if (PEAR::isError($error = $this->_put('AUTH', 'CRAM-MD5'))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
+        }
+
+        $challenge = base64_decode($this->_arguments[0]);
+        $auth_str = base64_encode($uid . ' '  .
+                                  $this->_HMAC_MD5($pwd, $challenge));
+        if (PEAR::isError($error = $this->_put($auth_str))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(235))) {
+            return $error;
+        }
     }
 
     /**
