@@ -453,9 +453,14 @@ class Net_SMTP extends PEAR {
      *               kind of failure, or true on success.
      * @access public
      */
-    function rset() {
-        if (PEAR::isError($this->socket->write("RSET\r\n"))) { return new PEAR_Error('write to socket failed'); }
-        if (!($this->validateResponse('250'))) { return new PEAR_Error('250 OK not received'); }
+    function rset()
+    {
+        if (PEAR::isError($this->socket->write("RSET\r\n"))) {
+            return new PEAR_Error('write to socket failed');
+        }
+        if (!($this->validateResponse('250'))) {
+            return new PEAR_Error('250 OK not received');
+        }
 
         return true;
     }
