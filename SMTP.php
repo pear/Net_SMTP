@@ -81,14 +81,15 @@ class Net_SMTP {
     var $esmtp = array();
 
     /**
-     * Constructor
-     *
      * Instantiates a new Net_SMTP object, overriding any defaults
      * with parameters that are passed in.
      *
      * @param string The server to connect to.
      * @param int The port to connect to.
      * @param string The value to give when sending EHLO or HELO.
+     *
+     * @access  public
+     * @since   1.0
      */
     function Net_SMTP($host = null, $port = null, $localhost = null)
     {
@@ -105,6 +106,7 @@ class Net_SMTP {
      * @param   boolean $debug      New value for the debugging flag.
      *
      * @access  public
+     * @since   1.1.0
      */
     function setDebug($debug)
     {
@@ -119,6 +121,7 @@ class Net_SMTP {
      * @return  mixed   True on success or a PEAR_Error object on failure.
      *
      * @access  private
+     * @since   1.1.0
      */
     function _send($data)
     {
@@ -146,6 +149,7 @@ class Net_SMTP {
      * @return  mixed   The result of the _send() call.
      *
      * @access  private
+     * @since   1.1.0
      */
     function _put($command, $args = '')
     {
@@ -168,6 +172,7 @@ class Net_SMTP {
      *                  a PEAR_Error object is an error condition is reached.
      *
      * @access  private
+     * @since   1.1.0
      *
      * @see     getResponse
      */
@@ -230,6 +235,7 @@ class Net_SMTP {
      *                  contains the response's arguments as a string.
      *
      * @access  public
+     * @since   1.1.0
      */
     function getResponse()
     {
@@ -245,6 +251,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function connect($timeout = null)
     {
@@ -271,6 +278,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function disconnect()
     {
@@ -294,7 +302,9 @@ class Net_SMTP {
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
+     *
      * @access private
+     * @since  1.1.0
      */
     function _negotiate()
     {
@@ -331,6 +341,7 @@ class Net_SMTP {
      *                  supported authentication method or a PEAR_Error object
      *                  if a failure condition is encountered.
      * @access private
+     * @since  1.1.0
      */
     function _getBestAuthMethod()
     {
@@ -358,6 +369,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function auth($uid, $pwd , $method = '')
     {
@@ -417,6 +429,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private
+     * @since  1.1.0
      */
     function _authDigest_MD5($uid, $pwd)
     {
@@ -461,6 +474,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private
+     * @since  1.1.0
      */
     function _authCRAM_MD5($uid, $pwd)
     {
@@ -494,6 +508,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private 
+     * @since  1.1.0
      */
     function _authLogin($uid, $pwd)
     {
@@ -530,6 +545,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private 
+     * @since  1.1.0
      */
     function _authPlain($uid, $pwd)
     {
@@ -560,6 +576,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function helo($domain)
     {
@@ -581,6 +598,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function mailFrom($sender)
     {
@@ -602,6 +620,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function rcptTo($recipient)
     {
@@ -623,6 +642,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function data($data)
     {
@@ -671,6 +691,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function send_from($path)
     {
@@ -692,6 +713,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function soml_from($path)
     {
@@ -713,6 +735,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function saml_from($path)
     {
@@ -732,6 +755,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function rset()
     {
@@ -753,6 +777,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function vrfy($string)
     {
@@ -773,6 +798,7 @@ class Net_SMTP {
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
+     * @since  1.0
      */
     function noop()
     {
@@ -791,7 +817,9 @@ class Net_SMTP {
      * now handled internally.
      *
      * @return  boolean     This method always return true.
-     * @access public
+     *
+     * @access  public
+     * @since   1.0
      */
     function identifySender()
     {
