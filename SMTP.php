@@ -55,22 +55,22 @@ class Net_SMTP extends PEAR {
     var $_socket = null;
 
     /**
-     * The most recent reply code
+     * The most recent server response code.
      * @var int
      */
-    var $code;
+    var $_code = -1;
+
+    /**
+     * The most recent server response arguments.
+     * @var array
+     */
+    var $_arguments = array();
 
     /**
      * Stores detected features of the SMTP server.
      * @var array
      */
     var $esmtp = array();
-
-    /**
-     * The last line read from the server.
-     * @var string
-     */
-    var $lastline;
 
     /**
      * The list of supported authentication methods, ordered by preference.
@@ -110,7 +110,7 @@ class Net_SMTP extends PEAR {
             return new PEAR_Error('unable to open socket');
         }
 
-        if (PEAR::isError($this->validateResponse('220'))) {
+        if (PEAR::isError($this->_parseResponse(220))) {
             return new PEAR_Error('smtp server not 220 ready');
         }
         if (!$this->identifySender()) {
@@ -132,7 +132,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('QUIT'))) {
             return $error;
         }
-        if (!$this->validateResponse('221')) {
+        if (!$this->_parseResponse(221)) {
             return new PEAR_Error('221 Bye not received');
         }
         if (PEAR::isError($this->_socket->disconnect())) {
@@ -182,6 +182,78 @@ class Net_SMTP extends PEAR {
         }
 
         return $this->_send($command . "\r\n");
+    }
+
+    /**
+     * Read a reply from the SMTP server.  The reply consists of a response
+     * code and a response message.
+     *
+     * @param   mixed   $valid      The set of valid response codes.  These
+     *                              may be specified as an array of integer
+     *                              values or as a single integer value.
+     *
+     * @return  boolean True if the server returned a valid response code.  
+     *
+     * @access  private
+     *
+     * @see     getResponse
+     */
+    function _parseResponse($valid)
+    {
+        $this->_code = -1;
+        $this->_arguments = array();
+
+        while ($line = $this->_socket->readLine()) {
+            /* If we receive an empty line, the connection has been closed. */
+            if (empty($line)) {
+                $this->disconnect();
+                return false;
+            }
+
+            /* Read the code and store the rest in the arguments array. */
+            $code = substr($line, 0, 3);
+            $this->_arguments[] = trim(substr($line, 4));
+
+            /* Check the syntax of the response code. */
+            if (is_numeric($code)) {
+                $this->_code = (int)$code;
+            } else {
+                $this->_code = -1;
+                break;
+            }
+
+            /* If this is not a multiline response, we're done. */
+            if (substr($line, 3, 1) != '-') {
+                break;
+            }
+        }
+
+        /* If we were given an array of valid response codes, check each one. */
+        if (is_array($valid)) {
+            foreach ($valid as $valid_code) {
+                if ($code == $valid_code) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /* Otherwise, compare the response code with the valid code. */
+        return ($code == $valid);
+    }
+
+    /**
+     * Return a 2-tuple containing the last response from the SMTP server.
+     *
+     * @return  array   A two-element array: the first element contains the
+     *                  response code as an integer and the second element
+     *                  contains the response's arguments as a string.
+     *
+     * @access  public
+     */
+    function getResponse()
+    {
+        return array($this->_code, join("\n", $this->_arguments));
     }
 
     /**
@@ -272,21 +344,21 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('AUTH', 'LOGIN'))) { 
             return $error;
         }
-        if (!$this->validateResponse('334')) {
+        if (!$this->_parseResponse(334)) {
             return new PEAR_Error('AUTH LOGIN not recognized');
         }
 
         if (PEAR::isError($error = $this->_put(base64_encode($uid)))) {
             return $error;
         }
-        if (!$this->validateResponse('334')) {
+        if (!$this->_parseResponse(334)) {
             return new PEAR_Error('354 not received');
         }
 
         if (PEAR::isError($error = $this->_put(base64_encode($pwd)))) {
             return $error;
         }
-        if (!$this->validateResponse('235')) {
+        if (!$this->_parseResponse(235)) {
             return new PEAR_Error('235 not received');
         }
 
@@ -308,7 +380,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('AUTH', 'PLAIN'))) {
             return $error;
         }
-        if (!$this->validateResponse('334')) { 
+        if (!$this->_parseResponse(334)) { 
             return new PEAR_Error('AUTH LOGIN not recognized'); 
         }
 
@@ -316,7 +388,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
-        if (!$this->validateResponse('235')) { 
+        if (!$this->_parseResponse(235)) { 
             return new PEAR_Error('235 not received');
         }
 
@@ -337,7 +409,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('HELO', $domain))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -358,7 +430,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('MAIL', "FROM:<$sender>"))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -376,12 +448,10 @@ class Net_SMTP extends PEAR {
      */
     function rcptTo($recipient)
     {
-        /* Note: 251 is also a valid response code */
-
         if (PEAR::isError($error = $this->_put('RCPT', "TO:<$recipient>"))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(array(250, 251)))) {
             return new PEAR_Error($this->lastline);
         }
 
@@ -422,14 +492,14 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('DATA'))) {
             return $error;
         }
-        if (!($this->validateResponse('354'))) {
+        if (!($this->_parseResponse(354))) {
             return new PEAR_Error('354 not received');
         }
 
         if (PEAR::isError($this->_send($data . "\r\n.\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -450,7 +520,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SEND', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -471,7 +541,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SOML', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -492,7 +562,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SAML', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -511,7 +581,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('RSET'))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -533,7 +603,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('VRFY', $string))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -552,7 +622,7 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('NOOP'))) {
             return $error;
         }
-        if (!($this->validateResponse('250'))) {
+        if (!($this->_parseResponse(250))) {
             return new PEAR_Error('250 OK not received');
         }
 
@@ -573,91 +643,25 @@ class Net_SMTP extends PEAR {
             return $error;
         }
 
-        $extensions = array();
-        if (!($this->validateAndParseResponse('250', $extensions))) {
+        if (!($this->_parseResponse(250))) {
             if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
                 return $error;
             }
-            if (!($this->validateResponse('250'))) {
+            if (!($this->_parseResponse(250))) {
                 return new PEAR_Error('HELO not accepted', $this->code);
             }
 
             return true;
         }
 
-        for ($i = 0; $i < count($extensions); $i++) {
-            $verb = strtok($extensions[$i], ' ');
-            $arguments = substr($extensions[$i], strlen($verb) + 1,
-                                strlen($extensions[$i]) - strlen($verb) - 1);
+        foreach ($this->_arguments as $argument) {
+            $verb = strtok($argument, ' ');
+            $arguments = substr($argument, strlen($verb) + 1,
+                                strlen($argument) - strlen($verb) - 1);
             $this->esmtp[$verb] = $arguments;
         }
 
         return true;
-    }
-
-    /**
-     * Read a response from the server and see if the response code
-     * matches what we are expecting.
-     *
-     * @param int The response code we are expecting.
-     *
-     * @return boolean True if we get what we expect, false otherwise.
-     * @access private
-     */
-    function validateResponse($code)
-    {
-        while ($this->lastline = $this->_socket->readLine()) {
-            $reply_code = strtok($this->lastline, ' ');
-            if (!(strcmp($code, $reply_code))) {
-                $this->code = $reply_code;
-                return true;
-            } else {
-                $reply_code = strtok($this->lastline, '-');
-                if (strcmp($code, $reply_code)) {
-                    $this->code = $reply_code;
-                    return false;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Read a response from the server and see if the response code
-     * matches what we are expecting. Also save the rest of the
-     * response in the array passed by reference as the second
-     * argument.
-     *
-     * @param int The response code we are expecting.
-     * @param array An array to dump the rest of the response into.
-     *
-     * @return boolean True if we get what we expect, false otherwise.
-     * @access private
-     */
-    function validateAndParseResponse($code, &$arguments)
-    {
-        $arguments = array();
-
-        while ($this->lastline = $this->_socket->readLine()) {
-            $reply_code = strtok($this->lastline, ' ');
-            if (!(strcmp($code, $reply_code))) {
-                $arguments[] = substr($this->lastline, strlen($code) + 1,
-                                      strlen($this->lastline) - strlen($code) - 1);
-                $this->code = $reply_code;
-                return true;
-            } else {
-                $reply_code = strtok($this->lastline, '-');
-                if (strcmp($code, $reply_code)) {
-                    $this->code = $reply_code;
-                    return false;
-                }
-            }
-            $arguments[] = substr($this->lastline, strlen($code) + 1,
-                                  strlen($this->lastline) - strlen($code) - 1);
-        }
-
-        return false;
     }
 }
 
