@@ -780,9 +780,9 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
-     * @since  1.0
+     * @since  1.2.6
      */
-    function send_from($path)
+    function sendFrom($path)
     {
         if (PEAR::isError($error = $this->_put('SEND', "FROM:<$path>"))) {
             return $error;
@@ -795,6 +795,23 @@ class Net_SMTP
     }
 
     /**
+     * Backwards-compatibility wrapper for sendFrom().
+     *
+     * @param string The reverse path to send.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     *
+     * @access      public
+     * @since       1.0
+     * @deprecated  1.2.6
+     */
+    function send_from($path)
+    {
+        return sendFrom($path);
+    }
+
+    /**
      * Send the SOML FROM: command.
      *
      * @param string The reverse path to send.
@@ -802,9 +819,9 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
-     * @since  1.0
+     * @since  1.2.6
      */
-    function soml_from($path)
+    function somlFrom($path)
     {
         if (PEAR::isError($error = $this->_put('SOML', "FROM:<$path>"))) {
             return $error;
@@ -817,6 +834,23 @@ class Net_SMTP
     }
 
     /**
+     * Backwards-compatibility wrapper for somlFrom().
+     *
+     * @param string The reverse path to send.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     *
+     * @access      public
+     * @since       1.0
+     * @deprecated  1.2.6
+     */
+    function soml_from($path)
+    {
+        return somlFrom($path);
+    }
+
+    /**
      * Send the SAML FROM: command.
      *
      * @param string The reverse path to send.
@@ -824,9 +858,9 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
-     * @since  1.0
+     * @since  1.2.6
      */
-    function saml_from($path)
+    function samlFrom($path)
     {
         if (PEAR::isError($error = $this->_put('SAML', "FROM:<$path>"))) {
             return $error;
@@ -836,6 +870,23 @@ class Net_SMTP
         }
 
         return true;
+    }
+
+    /**
+     * Backwards-compatibility wrapper for samlFrom().
+     *
+     * @param string The reverse path to send.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     *
+     * @access      public
+     * @since       1.0
+     * @deprecated  1.2.6
+     */
+    function saml_from($path)
+    {
+        return samlFrom($path);
     }
 
     /**

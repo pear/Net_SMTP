@@ -3,15 +3,13 @@
 require_once 'PEAR/PackageFileManager.php';
 require_once 'Console/Getopt.php';
 
-$version = '1.2.5';
+$version = '1.2.6';
 $notes = <<<EOT
-It's now possible to request a persistent socket connection when calling the connect() method.
+Renaming some methods to be compatible with the PEAR coding standards.  Backwards-compatible wrappers have been provided.
 EOT;
 
 $changelog = <<<EOT
-The connect() method has grown an optional 'persistent' parameter that will be passed to the Net_Socket::connect() method.  Previously, persistent connections will always disabled. 'persistent' defaults to false.
-
-Release 1.2.4 was incorrectly packaged.  Release 1.2.5 corrects that error.  The code itself remains the same.
+The following methods have been renamed for compliance with the PEAR coding standards: send_from() -> sendFrom(), soml_from() -> somlFrom(), saml_from() -> samlFrom().  Backwards-compatible wrappers have been provided.
 EOT;
 
 $package = new PEAR_PackageFileManager();
