@@ -24,7 +24,7 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
   </maintainers>
   <release>
     <version>1.2.3</version>
-    <date>2003-05-??</date>
+    <date>2003-05-11</date>
     <notes>
 Both 235 (Authentication successful) and 503 (Error: already authenticated) are now accepted as valid AUTH responses.
 
