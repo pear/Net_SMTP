@@ -486,7 +486,9 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_put(' '))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->_parseResponse(235))) {
+
+        /* 235: Authentication successful; 503: Error: already authenticated */
+        if (PEAR::isError($error = $this->_parseResponse(array(235, 503)))) {
             return $error;
         }
     }
@@ -517,7 +519,9 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->_parseResponse(235))) {
+
+        /* 235: Authentication successful; 503: Error: already authenticated */
+        if (PEAR::isError($error = $this->_parseResponse(array(235, 503)))) {
             return $error;
         }
     }
@@ -552,7 +556,9 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_put(base64_encode($pwd)))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->_parseResponse(235))) {
+
+        /* 235: Authentication successful; 503: Error: already authenticated */
+        if (PEAR::isError($error = $this->_parseResponse(array(235, 503)))) {
             return $error;
         }
 
@@ -584,7 +590,9 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->_parseResponse(235))) {
+
+        /* 235: Authentication successful; 503: Error: already authenticated */
+        if (PEAR::isError($error = $this->_parseResponse(array(235, 503)))) {
             return $error;
         }
 
