@@ -53,32 +53,37 @@ class Net_SMTP {
     /**
      * Should debugging output be enabled?
      * @var boolean
+     * @access private
      */
     var $_debug = false;
 
     /**
      * The socket resource being used to connect to the SMTP server.
      * @var resource
+     * @access private
      */
     var $_socket = null;
 
     /**
      * The most recent server response code.
      * @var int
+     * @access private
      */
     var $_code = -1;
 
     /**
      * The most recent server response arguments.
      * @var array
+     * @access private
      */
     var $_arguments = array();
 
     /**
      * Stores detected features of the SMTP server.
      * @var array
+     * @access private
      */
-    var $esmtp = array();
+    var $_esmtp = array();
 
     /**
      * Instantiates a new Net_SMTP object, overriding any defaults
@@ -327,7 +332,7 @@ class Net_SMTP {
             $verb = strtok($argument, ' ');
             $arguments = substr($argument, strlen($verb) + 1,
                                 strlen($argument) - strlen($verb) - 1);
-            $this->esmtp[$verb] = $arguments;
+            $this->_esmtp[$verb] = $arguments;
         }
 
         return true;
@@ -347,7 +352,7 @@ class Net_SMTP {
     {
         static $methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
 
-        $available_methods = explode(' ', $this->esmtp['AUTH']);
+        $available_methods = explode(' ', $this->_esmtp['AUTH']);
 
         foreach ($methods as $method) {
             if (in_array($method, $available_methods)) {
@@ -373,7 +378,7 @@ class Net_SMTP {
      */
     function auth($uid, $pwd , $method = '')
     {
-        if (!array_key_exists('AUTH', $this->esmtp)) {
+        if (!array_key_exists('AUTH', $this->_esmtp)) {
             return new PEAR_Error('SMTP server does no support authentication');
         }
 
@@ -646,8 +651,8 @@ class Net_SMTP {
      */
     function data($data)
     {
-        if (isset($this->esmtp['SIZE'])) {
-            if (strlen($data) >= $this->esmtp['SIZE']) {
+        if (isset($this->_esmtp['SIZE'])) {
+            if (strlen($data) >= $this->_esmtp['SIZE']) {
                 $this->disconnect();
                 return new PEAR_Error('Message size excedes the server limit');
             }
