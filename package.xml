@@ -36,6 +36,7 @@ Both 235 (Authentication successful) and 503 (Error: already authenticated) are 
     </filelist>
     <deps>
       <dep type="pkg" rel="has">Net_Socket</dep>
+      <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
     </deps>
   </release>
   <changelog>
@@ -48,6 +49,7 @@ Fix a call-time pass-by-reference problem that was raising a warning if call-tim
       <state>stable</state>
       <deps>
         <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
       </deps>
     </release>
     <release>
@@ -59,6 +61,7 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       <state>stable</state>
       <deps>
         <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
       </deps>
     </release>
     <release>
