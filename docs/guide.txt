@@ -187,7 +187,7 @@ using the Net_SMTP package::
     $smtp->disconnect();
 
 .. _PEAR_Error: http://pear.php.net/manual/en/core.pear.pear-error.php
-.. _Net_Socket: http://pear.php.net/package-info.php?pacid=64
-.. _Auth_SASL: http://pear.php.net/package-info.php?pacid=123
+.. _Net_Socket: http://pear.php.net/package/Net_Socket
+.. _Auth_SASL: http://pear.php.net/package/Auth_SASL
 
 .. vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab textwidth=76:
