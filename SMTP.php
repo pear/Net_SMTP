@@ -406,8 +406,17 @@ class Net_SMTP extends PEAR {
             }
         }
 
+        /*
+         * Change Unix (\n) and Mac (\r) linefeeds into Internet-standard CRLF
+         * (\r\n) linefeeds.
+         */
         $data = preg_replace("/([^\r]{1})\n/", "\\1\r\n", $data);
         $data = preg_replace("/\n\n/", "\n\r\n", $data);
+
+        /*
+         * Because a single leading period (.) signifies an end to the data,
+         * legitimate leading periods need to be "doubled" (e.g. '..').
+         */
         $data = preg_replace("/\n\./", "\n..", $data);
 
         if (PEAR::isError($error = $this->_put('DATA'))) {
