@@ -378,7 +378,7 @@ class Net_SMTP {
      */
     function auth($uid, $pwd , $method = '')
     {
-        if (!array_key_exists('AUTH', $this->_esmtp)) {
+        if (empty($this->_esmtp['AUTH'])) {
             return new PEAR_Error('SMTP server does no support authentication');
         }
 
