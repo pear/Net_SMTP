@@ -9,7 +9,7 @@ It's now possible to request a persistent socket connection when calling the con
 EOT;
 
 $changelog = <<<EOT
-The connect() method has grown an optional $persistent parameter that will be passed to the Net_Socket::connect() method.  Previously, persistent connections will always disabled.  $persistent defaults to false.
+The connect() method has grown an optional 'persistent' parameter that will be passed to the Net_Socket::connect() method.  Previously, persistent connections will always disabled. 'persistent' defaults to false.
 EOT;
 
 $package = new PEAR_PackageFileManager();
@@ -25,8 +25,8 @@ $result = $package->setOptions(array(
     'notes'             => $notes,
     'changelognotes'    => $changelog,
     'changelogoldtonew' => false,
-	'simpleoutput'		=> true,
-    'baseinstalldir'    => '/',
+    'simpleoutput'      => true,
+    'baseinstalldir'    => '/Net',
     'packagedirectory'  => ''));
 
 if (PEAR::isError($result)) {
@@ -39,7 +39,7 @@ $package->addMaintainer('jon', 'lead', 'Jon Parise', 'jon@php.net');
 $package->addDependency('Net_Socket', false, 'has', 'pkg');
 $package->addDependency('Auth_SASL', false, 'has', 'pkg', true);
 
-if ($_SERVER['argv'][1] == 'commit') {
+if (isset($_GET['make']) || (isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'make')) {
     $result = $package->writePackageFile();
 } else {
     $result = $package->debugPackageFile();
