@@ -28,7 +28,7 @@ require_once 'Net/Socket.php';
  * @author  Chuck Hagenbuch <chuck@horde.org>
  * @author  Jon Parise <jon@php.net>
  */
-class Net_SMTP extends PEAR {
+class Net_SMTP {
 
     /**
      * The server to connect to.
