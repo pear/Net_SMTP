@@ -13,8 +13,9 @@
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
-// | Author: Chuck Hagenbuch <chuck@horde.org>                            |
-// |         Jon Parise <jon@php.net>                                     |
+// | Authors: Chuck Hagenbuch <chuck@horde.org>                           |
+// |          Jon Parise <jon@php.net>                                    |
+// |          Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>      |
 // +----------------------------------------------------------------------+
 
 require_once 'PEAR.php';
@@ -27,6 +28,7 @@ require_once 'Net/Socket.php';
  * @package Net_SMTP
  * @author  Chuck Hagenbuch <chuck@horde.org>
  * @author  Jon Parise <jon@php.net>
+ * @author  Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
  */
 class Net_SMTP {
 
