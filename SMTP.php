@@ -676,11 +676,11 @@ class Net_SMTP
         if (isset($args['verp'])) {
             /* XVERP */
             if ($args['verp'] === true) {
-                $argstr .=' XVERP';
+                $argstr .= ' XVERP';
 
             /* XVERP=something */
             } elseif (trim($args['verp'])) {
-                $argstr .=' XVERP=' . $args['verp'];
+                $argstr .= ' XVERP=' . $args['verp'];
             }
         }
 
