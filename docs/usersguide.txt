@@ -1,0 +1,193 @@
+======================
+ The Net_SMTP Package
+======================
+
+--------------------
+ User Documentation
+--------------------
+
+:Author:    Jon Parise
+:Contact:   jon@php.net
+:Date:      $Date$
+:Revision:  $Revision$
+
+.. contents:: Table of Contents
+.. section-numbering::
+
+Dependencies
+============
+
+The `PEAR_Error` Class
+----------------------
+
+The Net_SMTP package uses the `PEAR_Error`_ class for all of its `error
+handling`_.
+
+The `Net_Socket` Package
+------------------------
+
+The Net_Socket_ package is used as the basis for all network communications.
+
+The `Auth_SASL` Package
+-----------------------
+
+The `Auth_SASL`_ package is an optional dependency.  If it is available, the
+Net_SMTP package will be able to support the DIGEST-MD5_ and CRAM-MD5_ SMTP
+authentication methods.  Otherwise, only the LOGIN_ and PLAIN_ methods will
+be available.
+
+Error Handling
+==============
+
+All of the Net_SMTP class's public methods return a PEAR_Error_ object if an
+error occurs.  The standard way to check for a PEAR_Error object is by using
+`PEAR::isError()`_::
+
+    if (PEAR::isError($error = $smtp->connect())) {
+        die($error->getMessage());
+    }
+
+.. _PEAR::isError(): http://pear.php.net/manual/en/core.pear.pear.iserror.php
+
+SMTP Authentication
+===================
+
+The Net_SMTP package supports the SMTP authentication standard (as defined
+by RFC-2554_).  The Net_SMTP package supports the following authentication
+methods, in order of preference:
+
+.. _RFC-2554: http://www.ietf.org/rfc/rfc2554.txt
+
+DIGEST-MD5
+----------
+
+The DIGEST-MD5 authentication method uses `RSA Data Security Inc.`_'s MD5
+Message Digest algorithm.  It is considered the most secure method of SMTP
+authentication.
+
+**Note:** The DIGEST-MD5 authentication method is only supported if the
+AUTH_SASL_ package is available.
+
+.. _RSA Data Security Inc.: http://www.rsasecurity.com/
+
+CRAM-MD5
+--------
+
+The CRAM-MD5 authentication method has been superseded by the DIGEST-MD5_
+method in terms of security.  It is provided here for compatibility with
+older SMTP servers that may not support the newer DIGEST-MD5 algorithm.
+
+**Note:** The CRAM-MD5 authentication method is only supported if the
+AUTH_SASL_ package is available.
+
+LOGIN
+-----
+
+The LOGIN authentication method encrypts the user's password using the
+Base64_ encoding scheme.  Because decrypting a Base64-encoded string is
+trivial, LOGIN is not considered a secure authentication method and should
+be avoided.
+
+.. _Base64: http://www.freesoft.org/CIE/RFC/1521/7.htm
+
+PLAIN
+-----
+
+The PLAIN authentication method sends the user's password in plain text.
+This method of authentication is not secure and should be avoided.
+
+Data Quoting
+============
+
+By default, all outbound string data is quoted with accordance to SMTP
+standards.  That means that all native Unix (`\\n`) and Mac (`\\r`) line
+endings are converted to Internet-standard CRLF (`\\r\\n`) line endings.
+Also, because the SMTP protocol uses a single leading period (`.`) to
+signal an end to the data, single leading periods in the original data
+string are "doubled" (e.g. "`..`").
+
+These string transformation can be expensive when large blocks of data are
+involved.  For example, the Net_SMTP package is not aware of MIME parts (it
+just sees the MIME message as one big string of characters), so it is not
+able to skip non-text attachments when searching for characters that may
+need to be converted based on the above rules.
+
+Because of this, it is possible to extend the Net_SMTP class in order to
+implement your own custom quoting routine.  Just create a new class based on
+the Net_SMTP class and reimplement the `quotedata()` method::
+
+    require 'Net_SMTP.php';
+
+    class Net_SMTP_custom extends Net_SMTP
+    {
+        function quotedata($data)
+        {
+            /* Perform custom data quoting */
+        }
+    }
+
+Note that the `$data` parameter will be passed to the `quotedata()` function
+`by reference`_.  That means that you can operate directly on `$data`.  This
+avoids the overhead of copying a large `$data` string to and from the
+`quotedata()` method.
+
+.. _by reference: http://www.php.net/manual/en/language.references.pass.php
+
+Debugging
+=========
+
+The Net_SMTP package contains built-in debugging output routines.  Because
+they are disabled by default, they must be explicitly enabled via the
+setDebug() method::
+
+    $smtp->setDebug(true);
+
+The debugging messages will be sent to the standard output stream.
+
+Examples
+========
+
+Basic Use
+---------
+
+The following script demonstrates how a simple email message can be sent
+using the Net_SMTP package::
+
+    require 'SMTP.php';
+
+    $host = 'mail.example.com';
+    $from = 'user@example.com';
+    $rcpt = array('recipient1@example.com', 'recipient2@example.com');
+    $subj = "Subject: Test Message\n";
+    $body = "Body Line 1\nBody Line 2";
+
+    if (! ($smtp = new Net_SMTP($host))) {
+        die("Unable to instantiate Net_SMTP object\n");
+    }
+
+    if (PEAR::isError($e = $smtp->connect())) {
+        die($e->getMessage() . "\n");
+    }
+
+    if (PEAR::isError($smtp->mailFrom($from))) {
+        die("Unable to set sender to <$from>\n");
+    }
+
+    foreach($rcpt as $recipient) {
+        if (PEAR::isError($res = $smtp->rcptTo($recipient))) {
+            die("Unable to add recipient <$recipient>: " . $res->getMessage() . "\n"
+    );
+        }
+    }
+
+    if (PEAR::isError($smtp->data($subj . "\r\n" . $body))) {
+        die("Unable to send data\n");
+    }
+
+    $smtp->disconnect();
+
+.. _PEAR_Error: http://pear.php.net/manual/en/core.pear.pear-error.php
+.. _Net_Socket: http://pear.php.net/package-info.php?pacid=64
+.. _Auth_SASL: http://pear.php.net/package-info.php?pacid=123
+
+.. vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab textwidth=76:
