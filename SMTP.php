@@ -368,41 +368,6 @@ class Net_SMTP extends PEAR {
         return true;
     }
 
-    /**
-     * Generate an HMAC MD5 digest string for the given key and data.
-     *
-     * This code was stolen from the Auth_SASL class.
-     *
-     * @author  Richard Heyes <richard@php.net>
-     *
-     * @param  string $key  The secret key
-     * @param  string $data The data to protect
-     * @return string       The HMAC MD5 digest
-     */
-    function _HMAC_MD5($key, $data)
-    {                                                                          
-        if (strlen($key) > 64) {
-            $key = pack('H32', md5($pass));
-        }
-        if (strlen($key) < 64) {
-            $key = str_pad($key, 64, chr(0));
-        }
-
-        $k_ipad = '';
-        $k_opad = '';
-
-        for ($i = 0; $i < 64; $i++) {
-            $byte    = ord($key{$i});
-            $k_ipad .= chr($byte ^ 0x36);
-            $k_opad .= chr($byte ^ 0x5C);
-        }
-
-        $inner  = pack('H32', md5($k_ipad . $data));
-        $digest = md5($k_opad . $inner);
-
-        return $digest;
-    }
-
     /* Authenticates the user using the CRAM-MD5 method.
      *
      * @param string The userid to authenticate as.
@@ -414,6 +379,8 @@ class Net_SMTP extends PEAR {
      */
     function _authCRAM_MD5($uid, $pwd)
     {
+        include_once 'Auth/SASL.php';
+
         if (PEAR::isError($error = $this->_put('AUTH', 'CRAM-MD5'))) {
             return $error;
         }
@@ -422,8 +389,9 @@ class Net_SMTP extends PEAR {
         }
 
         $challenge = base64_decode($this->_arguments[0]);
-        $auth_str = base64_encode($uid . ' '  .
-                                  $this->_HMAC_MD5($pwd, $challenge));
+        $cram = &Auth_SASL::factory('crammd5');
+        $auth_str = base64_encode($cram->getResponse($uid, $pwd, $challenge));
+
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
@@ -488,6 +456,7 @@ class Net_SMTP extends PEAR {
         }
 
         $auth_str = base64_encode(chr(0) . $uid . chr(0) . $pwd);
+
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
