@@ -456,7 +456,8 @@ class Net_SMTP
         return true;
     }
 
-    /* Authenticates the user using the DIGEST-MD5 method.
+    /**
+     * Authenticates the user using the DIGEST-MD5 method.
      *
      * @param string The userid to authenticate as.
      * @param string The password to authenticate with.
@@ -506,7 +507,8 @@ class Net_SMTP
         }
     }
 
-    /* Authenticates the user using the CRAM-MD5 method.
+    /**
+     * Authenticates the user using the CRAM-MD5 method.
      *
      * @param string The userid to authenticate as.
      * @param string The password to authenticate with.
