@@ -719,12 +719,12 @@ class Net_SMTP
     /**
      * Quote the data so that it meets SMTP standards.
      *
-     * This is provided as a separate public function to facilitate easier
-     * overloading for the cases where it is desirable to customize the
-     * quoting behavior.
+     * This is provided as a separate public function to facilitate
+     * easier overloading for the cases where it is desirable to
+     * customize the quoting behavior.
      *
-     * @param string The message text to quote.  The string must be passed
-     *               by reference, and the text will be modified in place.
+     * @param string $data  The message text to quote. The string must be passed
+     *                      by reference, and the text will be modified in place.
      *
      * @access public
      * @since  1.2
@@ -733,8 +733,7 @@ class Net_SMTP
     {
         /* Change Unix (\n) and Mac (\r) linefeeds into
          * Internet-standard CRLF (\r\n) linefeeds. */
-        $data = preg_replace("/([^\r]{1})\n/", "\\1\r\n", $data);
-        $data = preg_replace("/\n\n/", "\n\r\n", $data);
+        $data = preg_replace(array('/(?<!\r)\n/','/\r(?!\n)/'), "\r\n", $data);
 
         /* Because a single leading period (.) signifies an end to the
          * data, legitimate leading periods need to be "doubled"
@@ -745,7 +744,7 @@ class Net_SMTP
     /**
      * Send the DATA command.
      *
-     * @param string The message body to send.
+     * @param string $data  The message body to send.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.

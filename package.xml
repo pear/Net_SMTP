@@ -40,6 +40,7 @@
         <file role="test" name="auth.phpt"/>
         <file role="test" name="basic.phpt"/>
         <file role="test" name="config.php.dist"/>
+        <file role="test" name="quotedata.phpt"/>
        </dir> <!-- tests -->
        <file role="php" name="SMTP.php"/>
       </dir> <!-- / -->
