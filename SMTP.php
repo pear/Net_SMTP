@@ -128,8 +128,8 @@ class Net_SMTP extends PEAR {
             return new PEAR_Error('unable to open socket');
         }
 
-        if (PEAR::isError($this->_parseResponse(220))) {
-            return new PEAR_Error('smtp server not 220 ready');
+        if (PEAR::isError($error = $this->_parseResponse(220))) {
+            return $error;
         }
         if (!$this->identifySender()) {
             return new PEAR_Error('unable to identify smtp server');
@@ -150,8 +150,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('QUIT'))) {
             return $error;
         }
-        if (!$this->_parseResponse(221)) {
-            return new PEAR_Error('221 Bye not received');
+        if (PEAR::isError($error = $this->_parseResponse(221))) {
+            return $error;
         }
         if (PEAR::isError($this->_socket->disconnect())) {
             return new PEAR_Error('socket disconnect failed');
@@ -214,7 +214,8 @@ class Net_SMTP extends PEAR {
      *                              may be specified as an array of integer
      *                              values or as a single integer value.
      *
-     * @return  boolean True if the server returned a valid response code.  
+     * @return  mixed   True if the server returned a valid response code or
+     *                  a PEAR_Error object is an error condition is reached.
      *
      * @access  private
      *
@@ -233,7 +234,7 @@ class Net_SMTP extends PEAR {
             /* If we receive an empty line, the connection has been closed. */
             if (empty($line)) {
                 $this->disconnect();
-                return false;
+                return new PEAR_Error("Connection was unexpectedly closed");
             }
 
             /* Read the code and store the rest in the arguments array. */
@@ -254,18 +255,21 @@ class Net_SMTP extends PEAR {
             }
         }
 
+        /* Compare the server's response code with the valid code. */
+        if (is_int($valid) && ($this->_code === $valid)) {
+            return true;
+        }
+
         /* If we were given an array of valid response codes, check each one. */
         if (is_array($valid)) {
             foreach ($valid as $valid_code) {
-                if ($code == $valid_code) {
+                if ($this->_code === $valid_code) {
                     return true;
                 }
             }
-            return false;
         }
 
-        /* Otherwise, compare the response code with the valid code. */
-        return ($code == $valid);
+        return new PEAR_Error("Invalid response code received from server");
     }
 
     /**
@@ -370,22 +374,22 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('AUTH', 'LOGIN'))) { 
             return $error;
         }
-        if (!$this->_parseResponse(334)) {
-            return new PEAR_Error('AUTH LOGIN not recognized');
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
         }
 
         if (PEAR::isError($error = $this->_put(base64_encode($uid)))) {
             return $error;
         }
-        if (!$this->_parseResponse(334)) {
-            return new PEAR_Error('354 not received');
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
         }
 
         if (PEAR::isError($error = $this->_put(base64_encode($pwd)))) {
             return $error;
         }
-        if (!$this->_parseResponse(235)) {
-            return new PEAR_Error('235 not received');
+        if (PEAR::isError($error = $this->_parseResponse(235))) {
+            return $error;
         }
 
         return true;
@@ -406,16 +410,16 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('AUTH', 'PLAIN'))) {
             return $error;
         }
-        if (!$this->_parseResponse(334)) { 
-            return new PEAR_Error('AUTH LOGIN not recognized'); 
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
         }
 
         $auth_str = base64_encode(chr(0) . $uid . chr(0) . $pwd);
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
         }
-        if (!$this->_parseResponse(235)) { 
-            return new PEAR_Error('235 not received');
+        if (PEAR::isError($error = $this->_parseResponse(235))) {
+            return $error;
         }
 
         return true;
@@ -435,8 +439,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('HELO', $domain))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -456,8 +460,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('MAIL', "FROM:<$sender>"))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -477,8 +481,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('RCPT', "TO:<$recipient>"))) {
             return $error;
         }
-        if (!($this->_parseResponse(array(250, 251)))) {
-            return new PEAR_Error($this->lastline);
+        if (PEAR::isError($error = $this->_parseResponse(array(250, 251)))) {
+            return $error;
         }
 
         return true;
@@ -518,15 +522,15 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('DATA'))) {
             return $error;
         }
-        if (!($this->_parseResponse(354))) {
-            return new PEAR_Error('354 not received');
+        if (PEAR::isError($error = $this->_parseResponse(354))) {
+            return $error;
         }
 
         if (PEAR::isError($this->_send($data . "\r\n.\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -546,8 +550,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SEND', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -567,8 +571,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SOML', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -588,8 +592,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('SAML', "FROM:<$path>"))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -607,8 +611,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('RSET'))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -629,8 +633,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('VRFY', $string))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -648,8 +652,8 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_put('NOOP'))) {
             return $error;
         }
-        if (!($this->_parseResponse(250))) {
-            return new PEAR_Error('250 OK not received');
+        if (PEAR::isError($error = $this->_parseResponse(250))) {
+            return $error;
         }
 
         return true;
@@ -669,12 +673,12 @@ class Net_SMTP extends PEAR {
             return $error;
         }
 
-        if (!($this->_parseResponse(250))) {
+        if (PEAR::isError($this->_parseResponse(250))) {
             if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
                 return $error;
             }
-            if (!($this->_parseResponse(250))) {
-                return new PEAR_Error('HELO not accepted', $this->code);
+            if (PEAR::isError($this->_parseResponse(250))) {
+                return new PEAR_Error('HELO was not accepted: ', $this->_code);
             }
 
             return true;
