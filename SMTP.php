@@ -14,6 +14,7 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Author: Chuck Hagenbuch <chuck@horde.org>                            |
+// |         Jon Parise <jon@php.net>                                     |
 // +----------------------------------------------------------------------+
 
 require_once 'PEAR.php';
@@ -65,6 +66,12 @@ class Net_SMTP extends PEAR {
      * @var string
      */
     var $lastline;
+
+    /**
+     * The list of supported authentication methods, ordered by preference.
+     * @var string
+     */
+    var $_auth_methods = array('LOGIN', 'PLAIN');
 
     /**
      * Constructor
@@ -134,25 +141,91 @@ class Net_SMTP extends PEAR {
     }
 
     /**
+     * Returns the name of the best authentication method that the server
+     * has advertised.
+     *
+     * @return mixed    Returns a string containing the name of the best
+     *                  supported authentication method or a PEAR_Error object
+     *                  if a failure condition is encountered.
+     * @access private
+     */
+    function _getBestAuthMethod()
+    {
+        $available_methods = explode(' ', $this->esmtp['AUTH']);
+
+        foreach ($this->_auth_methods as $method) {
+            if (in_array($method, $available_methods)) {
+                return $method;
+            }
+        }
+
+        return new PEAR_Error('No supported authentication methods');
+    }
+
+    /**
      * Attempt to do SMTP authentication.
+     *
+     * @param string The userid to authenticate as.
+     * @param string The password to authenticate with.
+     * @param string The requested authentication method.  If none is
+     *               specified, the best supported method will be used.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access public
+     */
+    function auth($uid, $pwd , $method = '')
+    {
+        if (!array_key_exists('AUTH', $this->esmtp)) {
+            return new PEAR_Error('SMTP server does no support authentication');
+        }
+
+        /*
+         * If no method has been specified, get the name of the best supported
+         * method advertised by the SMTP server.
+         */
+        if (empty($method)) {
+            if (PEAR::isError($method = $this->_getBestAuthMethod())) {
+                /* Return the PEAR_Error object from _getBestAuthMethod() */
+                return $method;
+            } 
+        } else {
+            $method = strtoupper($method);
+        }
+
+        switch ($method) {
+            case 'LOGIN':
+                $result = $this->_authLogin($uid, $pwd);
+                break;
+            case 'PLAIN':
+                $result = $this->_authPlain($uid, $pwd);
+                break;
+            default : 
+                $result = new PEAR_Error("$method is not a supported authentication method");
+                break;
+        }
+
+        /* If an error was encountered, return the PEAR_Error object. */
+        if (PEAR::isError($result)) {
+            return $result;
+        }
+
+        return true;
+    }
+
+    /**
+     * Authenticates the user using the LOGIN method.
      *
      * @param string The userid to authenticate as.
      * @param string The password to authenticate with.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @access public
+     * @access private 
      */
-    function auth($uid, $pwd)
+    function _authLogin($uid, $pwd)
     {
-        /* Note: not currently checking if AUTH LOGIN is allowed */
-        /* Note: only allows one authentication mechanism */
-
-        if (!isset($this->esmtp['AUTH'])) {
-            return new PEAR_Error('auth not supported');
-        }
-
-        if (PEAR::isError($this->socket->write("AUTH LOGIN\r\n"))) {
+        if (PEAR::isError($this->socket->write("AUTH LOGIN\r\n"))) { 
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('334')) {
@@ -170,6 +243,36 @@ class Net_SMTP extends PEAR {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('235')) {
+            return new PEAR_Error('235 not received');
+        }
+
+        return true;
+    }
+
+    /**
+     * Authenticates the user using the PLAIN method.
+     *
+     * @param string The userid to authenticate as.
+     * @param string The password to authenticate with.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access private 
+     */
+    function _authPlain($uid, $pwd)
+    {
+        if (PEAR::isError($this->socket->write("AUTH PLAIN\r\n"))) {
+            return new PEAR_Error('write to socket failed');
+        }
+        if (!$this->validateResponse('334')) { 
+            return new PEAR_Error('AUTH LOGIN not recognized'); 
+        }
+
+        $auth_str = base64_encode(chr(0) . $uid . chr(0) . $pwd);
+        if (PEAR::isError($this->socket->write($auth_str . "\r\n"))) {
+            return new PEAR_Error('write to socket failed');
+        }
+        if (!$this->validateResponse('235')) { 
             return new PEAR_Error('235 not received');
         }
 

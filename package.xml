@@ -27,6 +27,7 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
     <date>2003-XX-XX</date>
     <notes>
 - The SMTP server's SIZE capability is now honored.
+- Improved support for SMTP authentication (LOGIN, PLAIN).
     </notes>
     <state>stable</state>
     <filelist>
