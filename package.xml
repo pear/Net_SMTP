@@ -35,7 +35,7 @@ Both 235 (Authentication successful) and 503 (Error: already authenticated) are 
       <file role="php" baseinstalldir="Net">SMTP.php</file>
     </filelist>
     <deps>
-      <dep type="pkg" rel="has">Net_Socket</dep>    
+      <dep type="pkg" rel="has">Net_Socket</dep>
     </deps>
   </release>
   <changelog>
@@ -47,7 +47,7 @@ Fix a call-time pass-by-reference problem that was raising a warning if call-tim
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
       </deps>
     </release>
     <release>
@@ -58,7 +58,7 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
       </deps>
     </release>
     <release>
@@ -69,8 +69,8 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
-        <dep type="pkg" rel="has">Auth_SASL</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has">Auth_SASL</dep>
       </deps>
     </release>
     <release>
@@ -81,8 +81,8 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
-        <dep type="pkg" rel="has">Auth_SASL</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has">Auth_SASL</dep>
       </deps>
     </release>
     <release>
@@ -93,8 +93,8 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
-        <dep type="pkg" rel="has">Auth_SASL</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has">Auth_SASL</dep>
       </deps>
     </release>
     <release>
@@ -109,8 +109,8 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
-        <dep type="pkg" rel="has">Auth_SASL</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
+        <dep type="pkg" rel="has">Auth_SASL</dep>
       </deps>
     </release>
     <release>
@@ -121,7 +121,7 @@ Corrected an off-by-one bug that corrupted the list of ESMTP capabilities.
       </notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
       </deps>
     </release>
     <release>
@@ -130,7 +130,7 @@ Corrected an off-by-one bug that corrupted the list of ESMTP capabilities.
       <notes>Initial release as PEAR package</notes>
       <state>stable</state>
       <deps>
-        <dep type="pkg" rel="has">Net_Socket</dep>    
+        <dep type="pkg" rel="has">Net_Socket</dep>
       </deps>
     </release>
   </changelog>
