@@ -712,7 +712,7 @@ class Net_SMTP
         }
 
         /* Quote the data based on the SMTP standards. */
-        $this->quotedata(&$data);
+        $this->quotedata($data);
 
         if (PEAR::isError($error = $this->_put('DATA'))) {
             return $error;

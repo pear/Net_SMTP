@@ -23,10 +23,10 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
     </maintainer>
   </maintainers>
   <release>
-    <version>1.2.1</version>
-    <date>2003-04-26</date>
+    <version>1.2.2</version>
+    <date>2003-05-02</date>
     <notes>
-The Auth_SASL package is no longer absolutely required, but it will be used if it is available.  Otherwise, the authentication methods that depend upon it will be disabled.
+Fix a call-time pass-by-reference problem that was raising a warning if call-time pass-by-reference was disabled.
     </notes>
     <state>stable</state>
     <filelist>
@@ -37,6 +37,17 @@ The Auth_SASL package is no longer absolutely required, but it will be used if i
     </deps>
   </release>
   <changelog>
+    <release>
+      <version>1.2.1</version>
+      <date>2003-04-26</date>
+      <notes>
+The Auth_SASL package is no longer absolutely required, but it will be used if it is available.  Otherwise, the authentication methods that depend upon it will be disabled.
+      </notes>
+      <state>stable</state>
+      <deps>
+        <dep type="pkg" rel="has">Net_Socket</dep>    
+      </deps>
+    </release>
     <release>
       <version>1.2.0</version>
       <date>2003-04-06</date>
