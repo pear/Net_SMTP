@@ -169,9 +169,12 @@ class Net_SMTP
     }
 
     /**
-     * Send a command to the server with an optional string of arguments.
-     * A carriage return / linefeed (CRLF) sequence will be appended to each
-     * command string before it is sent to the SMTP server.
+     * Send a command to the server with an optional string of
+     * arguments.  A carriage return / linefeed (CRLF) sequence will
+     * be appended to each command string before it is sent to the
+     * SMTP server - an error will be thrown if the command string
+     * already contains any newline characters. Use _send() for
+     * commands that must contain newlines.
      *
      * @param   string  $command    The SMTP command to send to the server.
      * @param   string  $args       A string of optional arguments to append
@@ -185,7 +188,11 @@ class Net_SMTP
     function _put($command, $args = '')
     {
         if (!empty($args)) {
-            return $this->_send($command . ' ' . $args . "\r\n");
+            $command .= ' ' . $args;
+        }
+
+        if (strcspn($command, "\r\n") !== strlen($command)) {
+            return PEAR::raiseError('Commands cannot contain newlines');
         }
 
         return $this->_send($command . "\r\n");
@@ -220,7 +227,7 @@ class Net_SMTP
             /* If we receive an empty line, the connection has been closed. */
             if (empty($line)) {
                 $this->disconnect();
-                return PEAR::raiseError("Connection was unexpectedly closed");
+                return PEAR::raiseError('Connection was unexpectedly closed');
             }
 
             /* Read the code and store the rest in the arguments array. */
@@ -255,7 +262,7 @@ class Net_SMTP
             }
         }
 
-        return PEAR::raiseError("Invalid response code received from server");
+        return PEAR::raiseError('Invalid response code received from server');
     }
 
     /**
@@ -775,8 +782,8 @@ class Net_SMTP
             return $error;
         }
 
-        if (PEAR::isError($this->_send($data . "\r\n.\r\n"))) {
-            return PEAR::raiseError('write to socket failed');
+        if (PEAR::isError($result = $this->_send($data . "\r\n.\r\n"))) {
+            return $result;
         }
         if (PEAR::isError($error = $this->_parseResponse(250))) {
             return $error;
