@@ -30,6 +30,7 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
 - Improved support for SMTP authentication (LOGIN, PLAIN).
 - Overhauled the server response parsing system.
 - Added optional debugging output (enabled via setDebug()).
+- A timeout value can now be specified for the socket connection.
     </notes>
     <state>stable</state>
     <filelist>

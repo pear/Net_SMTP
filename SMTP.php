@@ -243,14 +243,20 @@ class Net_SMTP extends PEAR {
     /**
      * Attempt to connect to the SMTP server.
      *
+     * @param   int     $timeout    The timeout value (in seconds) for the
+     *                              socket connection.
+     *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      */
-    function connect()
+    function connect($timeout = null)
     {
-        if (PEAR::isError($this->_socket->connect($this->host, $this->port))) {
-            return new PEAR_Error('unable to open socket');
+        $result = $this->_socket->connect($this->host, $this->port,
+                                          false, $timeout);
+        if (PEAR::isError($result)) {
+            return new PEAR_Error('Failed to connect socket: ' .
+                                  $result->getMessage());
         }
 
         if (PEAR::isError($error = $this->_parseResponse(220))) {
@@ -278,8 +284,9 @@ class Net_SMTP extends PEAR {
         if (PEAR::isError($error = $this->_parseResponse(221))) {
             return $error;
         }
-        if (PEAR::isError($this->_socket->disconnect())) {
-            return new PEAR_Error('socket disconnect failed');
+        if (PEAR::isError($error = $this->_socket->disconnect())) {
+            return new PEAR_Error('Failed to disconnect socket: ' .
+                                  $error->getMessage());
         }
 
         return true;
