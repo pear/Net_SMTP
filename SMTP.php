@@ -22,6 +22,10 @@ require_once 'PEAR.php';
 /**
  * Provides an implementation of the SMTP protocol using PEAR's
  * Net_Socket:: class.
+ *
+ * @package Net_SMTP
+ * @author  Chuck Hagenbuch <chuck@horde.org>
+ * @author  Jon Parise <jon@php.net>
  */
 class Net_SMTP extends PEAR {
 
@@ -127,7 +131,7 @@ class Net_SMTP extends PEAR {
      */
     function disconnect()
     {
-        if (PEAR::isError($this->socket->write("QUIT\r\n"))) {
+        if (PEAR::isError($this->_send("QUIT\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('221')) {
@@ -135,6 +139,26 @@ class Net_SMTP extends PEAR {
         }
         if (PEAR::isError($this->socket->disconnect())) {
             return new PEAR_Error('socket disconnect failed');
+        }
+
+        return true;
+    }
+
+    /**
+     * Send the given string to the server.
+     *
+     * @param   string  $string     The string of data to send.
+     *
+     * @return  mixed   True on success or a PEAR_Error object on failure.
+     *
+     * @access  private
+     */
+    function _send($string)
+    {
+        $result = $this->socket->write($string);
+
+        if (PEAR::isError($result)) {
+            return new PEAR_Error('Failed to write to socket');
         }
 
         return true;
@@ -225,21 +249,21 @@ class Net_SMTP extends PEAR {
      */
     function _authLogin($uid, $pwd)
     {
-        if (PEAR::isError($this->socket->write("AUTH LOGIN\r\n"))) { 
+        if (PEAR::isError($this->_send("AUTH LOGIN\r\n"))) { 
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('334')) {
             return new PEAR_Error('AUTH LOGIN not recognized');
         }
 
-        if (PEAR::isError($this->socket->write(base64_encode($uid) . "\r\n"))) {
+        if (PEAR::isError($this->_send(base64_encode($uid) . "\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('334')) {
             return new PEAR_Error('354 not received');
         }
 
-        if (PEAR::isError($this->socket->write(base64_encode($pwd) . "\r\n"))) {
+        if (PEAR::isError($this->_send(base64_encode($pwd) . "\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('235')) {
@@ -261,7 +285,7 @@ class Net_SMTP extends PEAR {
      */
     function _authPlain($uid, $pwd)
     {
-        if (PEAR::isError($this->socket->write("AUTH PLAIN\r\n"))) {
+        if (PEAR::isError($this->_send("AUTH PLAIN\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('334')) { 
@@ -269,7 +293,7 @@ class Net_SMTP extends PEAR {
         }
 
         $auth_str = base64_encode(chr(0) . $uid . chr(0) . $pwd);
-        if (PEAR::isError($this->socket->write($auth_str . "\r\n"))) {
+        if (PEAR::isError($this->_send($auth_str . "\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!$this->validateResponse('235')) { 
@@ -290,7 +314,7 @@ class Net_SMTP extends PEAR {
      */
     function helo($domain)
     {
-        if (PEAR::isError($this->socket->write("HELO $domain\r\n"))) {
+        if (PEAR::isError($this->_send("HELO $domain\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -311,7 +335,7 @@ class Net_SMTP extends PEAR {
      */
     function mailFrom($reverse_path)
     {
-        if (PEAR::isError($this->socket->write("MAIL FROM:<$reverse_path>\r\n"))) {
+        if (PEAR::isError($this->_send("MAIL FROM:<$reverse_path>\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -334,7 +358,7 @@ class Net_SMTP extends PEAR {
     {
         /* Note: 251 is also a valid response code */
 
-        if (PEAR::isError($this->socket->write("RCPT TO: <$forward_path>\r\n"))) {
+        if (PEAR::isError($this->_send("RCPT TO: <$forward_path>\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -366,14 +390,14 @@ class Net_SMTP extends PEAR {
         $data = preg_replace("/\n\n/", "\n\r\n", $data);
         $data = preg_replace("/\n\./", "\n..", $data);
 
-        if (PEAR::isError($this->socket->write("DATA\r\n"))) {
+        if (PEAR::isError($this->_send("DATA\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('354'))) {
             return new PEAR_Error('354 not received');
         }
 
-        if (PEAR::isError($this->socket->write($data . "\r\n.\r\n"))) {
+        if (PEAR::isError($this->_send($data . "\r\n.\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -394,7 +418,7 @@ class Net_SMTP extends PEAR {
      */
     function send_from($reverse_path)
     {
-        if (PEAR::isError($this->socket->write("SEND FROM:<$reverse_path>\r\n"))) {
+        if (PEAR::isError($this->_send("SEND FROM:<$reverse_path>\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -415,7 +439,7 @@ class Net_SMTP extends PEAR {
      */
     function soml_from($reverse_path)
     {
-        if (PEAR::isError($this->socket->write("SOML FROM:<$reverse_path>\r\n"))) {
+        if (PEAR::isError($this->_send("SOML FROM:<$reverse_path>\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -436,7 +460,7 @@ class Net_SMTP extends PEAR {
      */
     function saml_from($reverse_path)
     {
-        if (PEAR::isError($this->socket->write("SAML FROM:<$reverse_path>\r\n"))) {
+        if (PEAR::isError($this->_send("SAML FROM:<$reverse_path>\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -455,7 +479,7 @@ class Net_SMTP extends PEAR {
      */
     function rset()
     {
-        if (PEAR::isError($this->socket->write("RSET\r\n"))) {
+        if (PEAR::isError($this->_send("RSET\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -477,7 +501,7 @@ class Net_SMTP extends PEAR {
     function vrfy($string)
     {
         /* Note: 251 is also a valid response code */
-        if (PEAR::isError($this->socket->write("VRFY $string\r\n"))) {
+        if (PEAR::isError($this->_send("VRFY $string\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -496,7 +520,7 @@ class Net_SMTP extends PEAR {
      */
     function noop()
     {
-        if (PEAR::isError($this->socket->write("NOOP\r\n"))) {
+        if (PEAR::isError($this->_send("NOOP\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
         if (!($this->validateResponse('250'))) {
@@ -516,13 +540,13 @@ class Net_SMTP extends PEAR {
      */
     function identifySender()
     {
-        if (PEAR::isError($this->socket->write("EHLO $this->localhost\r\n"))) {
+        if (PEAR::isError($this->_send("EHLO $this->localhost\r\n"))) {
             return new PEAR_Error('write to socket failed');
         }
 
         $extensions = array();
         if (!($this->validateAndParseResponse('250', $extensions))) {
-            if (PEAR::isError($this->socket->write("HELO $this->localhost\r\n"))) {
+            if (PEAR::isError($this->_send("HELO $this->localhost\r\n"))) {
                 return new PEAR_Error('write to socket failed');
             }
             if (!($this->validateResponse('250'))) {
