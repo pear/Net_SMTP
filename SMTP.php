@@ -561,7 +561,7 @@ class Net_SMTP
      */
     function _authLogin($uid, $pwd)
     {
-        if (PEAR::isError($error = $this->_put('AUTH', 'LOGIN'))) { 
+        if (PEAR::isError($error = $this->_put('AUTH', 'LOGIN'))) {
             return $error;
         }
         /* 334: Continue authentication request */
@@ -659,14 +659,32 @@ class Net_SMTP
      *
      * @param string The sender (reverse path) to set.
      *
+     * @param array optional arguments. Currently supported:
+     *        verp   boolean or string. If true or string
+     *               verp is enabled. If string the characters
+     *               are considered verp separators.
+     *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      * @since  1.0
      */
-    function mailFrom($sender)
+    function mailFrom($sender, $args = array())
     {
-        if (PEAR::isError($error = $this->_put('MAIL', "FROM:<$sender>"))) {
+        $argstr = '';
+
+        if (isset($args['verp'])) {
+            /* XVERP */
+            if ($args['verp'] === true) {
+                $argstr .=' XVERP';
+
+            /* XVERP=something */
+            } elseif (trim($args['verp'])) {
+                $argstr .=' XVERP=' . $args['verp'];
+            }
+        }
+
+        if (PEAR::isError($error = $this->_put('MAIL', "FROM:<$sender>$argstr"))) {
             return $error;
         }
         if (PEAR::isError($error = $this->_parseResponse(250))) {
