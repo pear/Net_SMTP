@@ -81,12 +81,6 @@ class Net_SMTP {
     var $esmtp = array();
 
     /**
-     * The list of supported authentication methods, ordered by preference.
-     * @var array
-     */
-    var $_auth_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
-
-    /**
      * Constructor
      *
      * Instantiates a new Net_SMTP object, overriding any defaults
@@ -340,9 +334,11 @@ class Net_SMTP {
      */
     function _getBestAuthMethod()
     {
+        static $methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
+
         $available_methods = explode(' ', $this->esmtp['AUTH']);
 
-        foreach ($this->_auth_methods as $method) {
+        foreach ($methods as $method) {
             if (in_array($method, $available_methods)) {
                 return $method;
             }
@@ -375,7 +371,7 @@ class Net_SMTP {
          */
         if (empty($method)) {
             if (PEAR::isError($method = $this->_getBestAuthMethod())) {
-                /* Return the PEAR_Error object from _getBestAuthMethod() */
+                /* Return the PEAR_Error object from _getBestAuthMethod(). */
                 return $method;
             } 
         } else {
