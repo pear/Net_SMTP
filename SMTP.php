@@ -18,6 +18,7 @@
 // +----------------------------------------------------------------------+
 
 require_once 'PEAR.php';
+require_once 'Net/Socket.php';
 
 /**
  * Provides an implementation of the SMTP protocol using PEAR's
@@ -63,7 +64,7 @@ class Net_SMTP extends PEAR {
      * Stores detected features of the SMTP server.
      * @var array
      */
-    var $esmtp;
+    var $esmtp = array();
 
     /**
      * The last line read from the server.
@@ -92,6 +93,8 @@ class Net_SMTP extends PEAR {
         if (isset($host)) $this->host = $host;
         if (isset($port)) $this->port = $port;
         if (isset($localhost)) $this->localhost = $localhost;
+
+        $this->_socket = new Net_Socket();
     }
 
     /**
@@ -103,11 +106,6 @@ class Net_SMTP extends PEAR {
      */
     function connect()
     {
-        include_once 'Net/Socket.php';
-
-        if (PEAR::isError($this->_socket = new Net_Socket())) {
-            return new PEAR_Error('unable to create a socket object');
-        }
         if (PEAR::isError($this->_socket->connect($this->host, $this->port))) {
             return new PEAR_Error('unable to open socket');
         }
@@ -145,20 +143,20 @@ class Net_SMTP extends PEAR {
     }
 
     /**
-     * Send the given string to the server.
+     * Send the given string of data to the server.
      *
-     * @param   string  $string     The string of data to send.
+     * @param   string  $data       The string of data to send.
      *
      * @return  mixed   True on success or a PEAR_Error object on failure.
      *
      * @access  private
      */
-    function _send($string)
+    function _send($data)
     {
-        $result = $this->_socket->write($string);
-
-        if (PEAR::isError($result)) {
-            return new PEAR_Error('Failed to write to socket');
+        if (PEAR::isError($error = $this->_socket->write($data))) {
+            echo 'Failed to write to socket: ' .  $error->getMessage() . "\n";
+            return new PEAR_Error('Failed to write to socket: ' .
+                                  $error->getMessage());
         }
 
         return true;
