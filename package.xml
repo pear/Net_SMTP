@@ -15,6 +15,12 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
       <name>Chuck Hagenbuch</name>
       <email>chuck@horde.org</email>
     </maintainer>
+    <maintainer>
+      <user>jon</user>
+      <role>developer</role>
+      <name>Jon Parise</name>
+      <email>jon@php.net</email>
+    </maintainer>
   </maintainers>
   <release>
     <version>1.0</version>
