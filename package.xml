@@ -27,7 +27,7 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
     <date>2003-XX-XX</date>
     <notes>
 - The SMTP server's SIZE capability is now honored.
-- Improved support for SMTP authentication (LOGIN, PLAIN, CRAM-MD5).
+- Improved support for SMTP authentication (LOGIN, PLAIN, CRAM-MD5, DIGEST-MD5).
 - Overhauled the server response parsing system.
 - Added optional debugging output (enabled via setDebug()).
 - A timeout value can now be specified for the socket connection.

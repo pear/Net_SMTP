@@ -80,9 +80,9 @@ class Net_SMTP {
 
     /**
      * The list of supported authentication methods, ordered by preference.
-     * @var string
+     * @var array
      */
-    var $_auth_methods = array('CRAM-MD5', 'LOGIN', 'PLAIN');
+    var $_auth_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
 
     /**
      * Constructor
@@ -346,6 +346,9 @@ class Net_SMTP {
         }
 
         switch ($method) {
+            case 'DIGEST-MD5':
+                $result = $this->_authDigest_MD5($uid, $pwd);
+                break;
             case 'CRAM-MD5':
                 $result = $this->_authCRAM_MD5($uid, $pwd);
                 break;
@@ -366,6 +369,50 @@ class Net_SMTP {
         }
 
         return true;
+    }
+
+    /* Authenticates the user using the DIGEST-MD5 method.
+     *
+     * @param string The userid to authenticate as.
+     * @param string The password to authenticate with.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access private
+     */
+    function _authDigest_MD5($uid, $pwd)
+    {
+        include_once('Auth/SASL.php');
+
+        if (PEAR::isError($error = $this->_put('AUTH', 'DIGEST-MD5'))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
+        }
+
+        $challenge = base64_decode($this->_arguments[0]);
+        $digest = &Auth_SASL::factory('digestmd5');
+        $auth_str = base64_encode($digest->getResponse($uid, $pwd, $challenge,
+                                                       $this->host, "smtp"));
+
+        if (PEAR::isError($error = $this->_put($auth_str))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(334))) {
+            return $error;
+        }
+
+        /*
+         * We don't use the protocol's third step because SMTP doesn't allow
+         * subsequent authentication, so we just silently ignore it.
+         */
+        if (PEAR::isError($error = $this->_put(' '))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(235))) {
+            return $error;
+        }
     }
 
     /* Authenticates the user using the CRAM-MD5 method.
