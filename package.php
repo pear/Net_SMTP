@@ -39,7 +39,7 @@ $package->addMaintainer('jon', 'lead', 'Jon Parise', 'jon@php.net');
 $package->addDependency('Net_Socket', false, 'has', 'pkg');
 $package->addDependency('Auth_SASL', false, 'has', 'pkg', true);
 
-if (isset($_GET['make']) || (isset($_SERVER['argv'][1]) && $_SERVER['argv'][1] == 'make')) {
+if ($_SERVER['argv'][1] == 'commit') {
     $result = $package->writePackageFile();
 } else {
     $result = $package->debugPackageFile();
