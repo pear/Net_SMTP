@@ -96,6 +96,19 @@ PLAIN
 The PLAIN authentication method sends the user's password in plain text.
 This method of authentication is not secure and should be avoided.
 
+Secure Connections
+==================
+
+If `secure socket transports`_ have been enabled in PHP, it is possible to
+establish a secure connection to the remote SMTP server::
+
+    $smtp = new Net_SMTP('ssl://mail.example.com', 465);
+
+This example connects to `mail.example.com` on port 465 (a common SMTPS
+port) using the `ssl://` transport.
+
+.. _secure socket transports: http://www.php.net/transports
+
 Data Quoting
 ============
 
