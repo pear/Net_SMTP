@@ -657,7 +657,7 @@ class Net_SMTP {
          * says that if "the parameter is omitted no information is conveyed
          * about the server's fixed maximum message size".
          */
-        if (!empty($this->_esmtp['SIZE'])) {
+        if (isset($this->_esmtp['SIZE']) && ($this->_esmtp['SIZE'] > 0)) {
             if (strlen($data) >= $this->_esmtp['SIZE']) {
                 $this->disconnect();
                 return new PEAR_Error('Message size excedes the server limit');
