@@ -51,7 +51,7 @@ class Net_SMTP extends PEAR {
      * The socket resource being used to connect to the SMTP server.
      * @var resource
      */
-    var $socket;
+    var $_socket = null;
 
     /**
      * The most recent reply code
@@ -105,10 +105,10 @@ class Net_SMTP extends PEAR {
     {
         include_once 'Net/Socket.php';
 
-        if (PEAR::isError($this->socket = new Net_Socket())) {
+        if (PEAR::isError($this->_socket = new Net_Socket())) {
             return new PEAR_Error('unable to create a socket object');
         }
-        if (PEAR::isError($this->socket->connect($this->host, $this->port))) {
+        if (PEAR::isError($this->_socket->connect($this->host, $this->port))) {
             return new PEAR_Error('unable to open socket');
         }
 
@@ -137,7 +137,7 @@ class Net_SMTP extends PEAR {
         if (!$this->validateResponse('221')) {
             return new PEAR_Error('221 Bye not received');
         }
-        if (PEAR::isError($this->socket->disconnect())) {
+        if (PEAR::isError($this->_socket->disconnect())) {
             return new PEAR_Error('socket disconnect failed');
         }
 
@@ -155,7 +155,7 @@ class Net_SMTP extends PEAR {
      */
     function _send($string)
     {
-        $result = $this->socket->write($string);
+        $result = $this->_socket->write($string);
 
         if (PEAR::isError($result)) {
             return new PEAR_Error('Failed to write to socket');
@@ -577,7 +577,7 @@ class Net_SMTP extends PEAR {
      */
     function validateResponse($code)
     {
-        while ($this->lastline = $this->socket->readLine()) {
+        while ($this->lastline = $this->_socket->readLine()) {
             $reply_code = strtok($this->lastline, ' ');
             if (!(strcmp($code, $reply_code))) {
                 $this->code = $reply_code;
@@ -610,7 +610,7 @@ class Net_SMTP extends PEAR {
     {
         $arguments = array();
 
-        while ($this->lastline = $this->socket->readLine()) {
+        while ($this->lastline = $this->_socket->readLine()) {
             $reply_code = strtok($this->lastline, ' ');
             if (!(strcmp($code, $reply_code))) {
                 $arguments[] = substr($this->lastline, strlen($code) + 1,
