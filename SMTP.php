@@ -34,6 +34,7 @@ require_once 'Net/Socket.php';
  */
 class Net_SMTP
 {
+
     /**
      * The server to connect to.
      * @var string
@@ -114,7 +115,7 @@ class Net_SMTP
         if (isset($port)) $this->port = $port;
         if (isset($localhost)) $this->localhost = $localhost;
 
-        $this->_socket = new Net_Socket();
+        $this->_socket = &new Net_Socket();
 
         /*
          * Include the Auth_SASL package.  If the package is not available,
@@ -158,8 +159,8 @@ class Net_SMTP
         }
 
         if (PEAR::isError($error = $this->_socket->write($data))) {
-            return new PEAR_Error('Failed to write to socket: ' .
-                                  $error->getMessage());
+            return PEAR::raiseError('Failed to write to socket: ' .
+                                    $error->getMessage());
         }
 
         return true;
@@ -217,7 +218,7 @@ class Net_SMTP
             /* If we receive an empty line, the connection has been closed. */
             if (empty($line)) {
                 $this->disconnect();
-                return new PEAR_Error("Connection was unexpectedly closed");
+                return PEAR::raiseError("Connection was unexpectedly closed");
             }
 
             /* Read the code and store the rest in the arguments array. */
@@ -252,7 +253,7 @@ class Net_SMTP
             }
         }
 
-        return new PEAR_Error("Invalid response code received from server");
+        return PEAR::raiseError("Invalid response code received from server");
     }
 
     /**
@@ -288,8 +289,8 @@ class Net_SMTP
         $result = $this->_socket->connect($this->host, $this->port,
                                           $persistent, $timeout);
         if (PEAR::isError($result)) {
-            return new PEAR_Error('Failed to connect socket: ' .
-                                  $result->getMessage());
+            return PEAR::raiseError('Failed to connect socket: ' .
+                                    $result->getMessage());
         }
 
         if (PEAR::isError($error = $this->_parseResponse(220))) {
@@ -319,8 +320,8 @@ class Net_SMTP
             return $error;
         }
         if (PEAR::isError($error = $this->_socket->disconnect())) {
-            return new PEAR_Error('Failed to disconnect socket: ' .
-                                  $error->getMessage());
+            return PEAR::raiseError('Failed to disconnect socket: ' .
+                                    $error->getMessage());
         }
 
         return true;
@@ -353,7 +354,7 @@ class Net_SMTP
                 return $error;
             }
             if (PEAR::isError($this->_parseResponse(250))) {
-                return new PEAR_Error('HELO was not accepted: ', $this->_code);
+                return PEAR::raiseError('HELO was not accepted: ', $this->_code);
             }
 
             return true;
@@ -389,7 +390,7 @@ class Net_SMTP
             }
         }
 
-        return new PEAR_Error('No supported authentication methods');
+        return PEAR::raiseError('No supported authentication methods');
     }
 
     /**
@@ -408,13 +409,11 @@ class Net_SMTP
     function auth($uid, $pwd , $method = '')
     {
         if (empty($this->_esmtp['AUTH'])) {
-            return new PEAR_Error('SMTP server does no support authentication');
+            return PEAR::raiseError('SMTP server does no support authentication');
         }
 
-        /*
-         * If no method has been specified, get the name of the best supported
-         * method advertised by the SMTP server.
-         */
+        /* If no method has been specified, get the name of the best
+         * supported method advertised by the SMTP server. */
         if (empty($method)) {
             if (PEAR::isError($method = $this->_getBestAuthMethod())) {
                 /* Return the PEAR_Error object from _getBestAuthMethod(). */
@@ -423,7 +422,7 @@ class Net_SMTP
         } else {
             $method = strtoupper($method);
             if (!in_array($method, $this->auth_methods)) {
-                return new PEAR_Error("$method is not a supported authentication method");
+                return PEAR::raiseError("$method is not a supported authentication method");
             }
         }
 
@@ -441,7 +440,7 @@ class Net_SMTP
                 $result = $this->_authPlain($uid, $pwd);
                 break;
             default:
-                $result = new PEAR_Error("$method is not a supported authentication method");
+                $result = PEAR::raiseError("$method is not a supported authentication method");
                 break;
         }
 
@@ -496,10 +495,9 @@ class Net_SMTP
             return $error;
         }
 
-        /*
-         * We don't use the protocol's third step because SMTP doesn't allow
-         * subsequent authentication, so we just silently ignore it.
-         */
+        /* We don't use the protocol's third step because SMTP doesn't
+         * allow subsequent authentication, so we just silently ignore
+         * it. */
         if (PEAR::isError($error = $this->_put(' '))) {
             return $error;
         }
@@ -731,18 +729,15 @@ class Net_SMTP
      */
     function quotedata(&$data)
     {
-        /*
-         * Change Unix (\n) and Mac (\r) linefeeds into Internet-standard CRLF
-         * (\r\n) linefeeds.
-         */
+        /* Change Unix (\n) and Mac (\r) linefeeds into
+         * Internet-standard CRLF (\r\n) linefeeds. */
         $data = preg_replace("/([^\r]{1})\n/", "\\1\r\n", $data);
         $data = preg_replace("/\n\n/", "\n\r\n", $data);
 
-        /*
-         * Because a single leading period (.) signifies an end to the data,
-         * legitimate leading periods need to be "doubled" (e.g. '..').
-         */
-        $data = preg_replace("/\n\./", "\n..", $data);
+        /* Because a single leading period (.) signifies an end to the
+         * data, legitimate leading periods need to be "doubled"
+         * (e.g. '..'). */
+        $data = str_replace("\n.", "\n..", $data);
     }
 
     /**
@@ -757,16 +752,15 @@ class Net_SMTP
      */
     function data($data)
     {
-        /*
-         * RFC 1870, section 3, subsection 3 states "a value of zero indicates
-         * that no fixed maximum message size is in force".  Furthermore, it
-         * says that if "the parameter is omitted no information is conveyed
-         * about the server's fixed maximum message size".
-         */
+        /* RFC 1870, section 3, subsection 3 states "a value of zero
+         * indicates that no fixed maximum message size is in force".
+         * Furthermore, it says that if "the parameter is omitted no
+         * information is conveyed about the server's fixed maximum
+         * message size". */
         if (isset($this->_esmtp['SIZE']) && ($this->_esmtp['SIZE'] > 0)) {
             if (strlen($data) >= $this->_esmtp['SIZE']) {
                 $this->disconnect();
-                return new PEAR_Error('Message size excedes the server limit');
+                return PEAR::raiseError('Message size excedes the server limit');
             }
         }
 
@@ -781,7 +775,7 @@ class Net_SMTP
         }
 
         if (PEAR::isError($this->_send($data . "\r\n.\r\n"))) {
-            return new PEAR_Error('write to socket failed');
+            return PEAR::raiseError('write to socket failed');
         }
         if (PEAR::isError($error = $this->_parseResponse(250))) {
             return $error;
@@ -983,6 +977,5 @@ class Net_SMTP
     {
         return true;
     }
-}
 
-?>
+}
