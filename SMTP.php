@@ -104,9 +104,16 @@ class Net_SMTP
      * Instantiates a new Net_SMTP object, overriding any defaults
      * with parameters that are passed in.
      *
-     * @param string The server to connect to.
-     * @param int The port to connect to.
-     * @param string The value to give when sending EHLO or HELO.
+     * If you have SSL support in PHP, you can connect to a server
+     * over SSL using an 'ssl://' prefix:
+     *
+     *   // 465 is a common smtps port.
+     *   $smtp = new Net_SMTP('ssl://mail.host.com', 465);
+     *   $smtp->connect();
+     *
+     * @param string  $host       The server to connect to.
+     * @param integer $port       The port to connect to.
+     * @param string  $localhost  The value to give when sending EHLO or HELO.
      *
      * @access  public
      * @since   1.0
