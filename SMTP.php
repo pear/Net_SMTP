@@ -30,25 +30,35 @@ require_once 'Net/Socket.php';
  * @author  Jon Parise <jon@php.net>
  * @author  Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
  */
-class Net_SMTP {
-
+class Net_SMTP
+{
     /**
      * The server to connect to.
      * @var string
+     * @access public
      */
     var $host = 'localhost';
 
     /**
      * The port to connect to.
      * @var int
+     * @access public
      */
     var $port = 25;
 
     /**
      * The value to give when sending EHLO or HELO.
      * @var string
+     * @access public
      */
     var $localhost = 'localhost';
+
+    /**
+     * List of supported authentication methods, in preferential order.
+     * @var array
+     * @access public
+     */
+    var $auth_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
 
     /**
      * Should debugging output be enabled?
@@ -103,6 +113,17 @@ class Net_SMTP {
         if (isset($localhost)) $this->localhost = $localhost;
 
         $this->_socket = new Net_Socket();
+
+        /*
+         * Include the Auth_SASL package.  If the package is not available,
+         * we disable the authentication methods that depend upon it.
+         */
+        if ((@include_once 'Auth/SASL.php') === false) {
+            $pos = array_search('DIGEST-MD5', $this->auth_methods);
+            unset($this->auth_methods[$pos]);
+            $pos = array_search('CRAM-MD5', $this->auth_methods);
+            unset($this->auth_methods[$pos]);
+        }
     }
 
     /**
@@ -350,11 +371,9 @@ class Net_SMTP {
      */
     function _getBestAuthMethod()
     {
-        static $methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
-
         $available_methods = explode(' ', $this->_esmtp['AUTH']);
 
-        foreach ($methods as $method) {
+        foreach ($this->auth_methods as $method) {
             if (in_array($method, $available_methods)) {
                 return $method;
             }
@@ -393,6 +412,9 @@ class Net_SMTP {
             }
         } else {
             $method = strtoupper($method);
+            if (!in_array($method, $this->auth_methods)) {
+                return new PEAR_Error("$method is not a supported authentication method");
+            }
         }
 
         switch ($method) {
@@ -408,7 +430,7 @@ class Net_SMTP {
             case 'PLAIN':
                 $result = $this->_authPlain($uid, $pwd);
                 break;
-            default : 
+            default:
                 $result = new PEAR_Error("$method is not a supported authentication method");
                 break;
         }
@@ -438,8 +460,6 @@ class Net_SMTP {
      */
     function _authDigest_MD5($uid, $pwd)
     {
-        include_once('Auth/SASL.php');
-
         if (PEAR::isError($error = $this->_put('AUTH', 'DIGEST-MD5'))) {
             return $error;
         }
@@ -483,8 +503,6 @@ class Net_SMTP {
      */
     function _authCRAM_MD5($uid, $pwd)
     {
-        include_once 'Auth/SASL.php';
-
         if (PEAR::isError($error = $this->_put('AUTH', 'CRAM-MD5'))) {
             return $error;
         }
