@@ -23,9 +23,11 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
     </maintainer>
   </maintainers>
   <release>
-    <version>1.0</version>
-    <date>2002-06-11</date>
-    <notes>Initial release as PEAR package</notes>
+    <version>1.0.1</version>
+    <date>2002-01-02</date>
+    <notes>
+Corrected an off-by-one bug that corrupted the list of ESMTP capabilities.
+    </notes>
     <state>stable</state>
     <filelist>
         <dir name="Net">
@@ -36,4 +38,15 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
       <dep type="pkg" rel="has">Net_Socket</dep>    
     </deps>
   </release>
+  <changelog>
+    <release>
+      <version>1.0</version>
+      <date>2002-06-11</date>
+      <notes>Initial release as PEAR package</notes>
+      <state>stable</state>
+      <deps>
+        <dep type="pkg" rel="has">Net_Socket</dep>    
+      </deps>
+    </release>
+  </changelog>
 </package>
