@@ -153,7 +153,7 @@ Basic Use
 The following script demonstrates how a simple email message can be sent
 using the Net_SMTP package::
 
-    require 'SMTP.php';
+    require 'Net/SMTP.php';
 
     $host = 'mail.example.com';
     $from = 'user@example.com';
@@ -161,29 +161,34 @@ using the Net_SMTP package::
     $subj = "Subject: Test Message\n";
     $body = "Body Line 1\nBody Line 2";
 
+    /* Create a new Net_SMTP object. */
     if (! ($smtp = new Net_SMTP($host))) {
         die("Unable to instantiate Net_SMTP object\n");
     }
 
+    /* Connect to the SMTP server. */
     if (PEAR::isError($e = $smtp->connect())) {
         die($e->getMessage() . "\n");
     }
 
+    /* Send the 'MAIL FROM:' SMTP command. */
     if (PEAR::isError($smtp->mailFrom($from))) {
         die("Unable to set sender to <$from>\n");
     }
 
-    foreach($rcpt as $recipient) {
-        if (PEAR::isError($res = $smtp->rcptTo($recipient))) {
-            die("Unable to add recipient <$recipient>: " . $res->getMessage() . "\n"
-    );
+    /* Address the message to each of the recipients. */
+    foreach ($rcpt as $to) {
+        if (PEAR::isError($res = $smtp->rcptTo($to))) {
+            die("Unable to add recipient <$to>: " . $res->getMessage() . "\n");
         }
     }
 
+    /* Set the body of the message. */
     if (PEAR::isError($smtp->data($subj . "\r\n" . $body))) {
         die("Unable to send data\n");
     }
 
+    /* Disconnect from the SMTP server. */
     $smtp->disconnect();
 
 .. _PEAR_Error: http://pear.php.net/manual/en/core.pear.pear-error.php
