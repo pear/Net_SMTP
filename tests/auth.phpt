@@ -3,7 +3,7 @@ Net_SMTP: SMTP Authentication
 --FILE--
 <?php
 
-require_once 'SMTP.php';
+require_once 'Net/SMTP.php';
 require_once 'config.php';
 
 if (! ($smtp = new Net_SMTP(TEST_HOSTNAME, TEST_PORT, TEST_LOCALHOST))) {

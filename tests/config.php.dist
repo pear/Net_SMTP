@@ -1,7 +1,7 @@
 <?php
-/*
- * Copy this file to config.php and customize the following values to suit
- * your configuration.
+/**
+ * Copy this file to config.php and customize the following values to
+ * suit your configuration.
  */
 
 define('TEST_HOSTNAME',     'localhost');
