@@ -273,16 +273,18 @@ class Net_SMTP
      *
      * @param   int     $timeout    The timeout value (in seconds) for the
      *                              socket connection.
+     * @param   bool    $persistent Should a persistent socket connection
+     *                              be used?
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      * @since  1.0
      */
-    function connect($timeout = null)
+    function connect($timeout = null, $persistent = false)
     {
         $result = $this->_socket->connect($this->host, $this->port,
-                                          false, $timeout);
+                                          $persistent, $timeout);
         if (PEAR::isError($result)) {
             return new PEAR_Error('Failed to connect socket: ' .
                                   $result->getMessage());
