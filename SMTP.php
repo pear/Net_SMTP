@@ -390,7 +390,7 @@ class Net_SMTP {
             if (PEAR::isError($method = $this->_getBestAuthMethod())) {
                 /* Return the PEAR_Error object from _getBestAuthMethod(). */
                 return $method;
-            } 
+            }
         } else {
             $method = strtoupper($method);
         }
@@ -512,7 +512,7 @@ class Net_SMTP {
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @access private 
+     * @access private
      * @since  1.1.0
      */
     function _authLogin($uid, $pwd)
@@ -549,7 +549,7 @@ class Net_SMTP {
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @access private 
+     * @access private
      * @since  1.1.0
      */
     function _authPlain($uid, $pwd)
