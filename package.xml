@@ -29,7 +29,7 @@
       <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
     </deps>
     <filelist>
-      <dir baseinstalldir="/Net" name="/">
+      <dir baseinstalldir="Net" name="/">
        <dir name="docs">
         <file role="doc" name="guide.txt"/>
         <dir name="examples">

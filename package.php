@@ -26,7 +26,7 @@ $result = $package->setOptions(array(
     'changelognotes'    => $changelog,
     'changelogoldtonew' => false,
     'simpleoutput'      => true,
-    'baseinstalldir'    => '/Net',
+    'baseinstalldir'    => 'Net',
     'packagedirectory'  => ''));
 
 if (PEAR::isError($result)) {
