@@ -17,7 +17,7 @@ Provides an implementation of the SMTP protocol using PEAR's Net_Socket:: class.
     </maintainer>
     <maintainer>
       <user>jon</user>
-      <role>developer</role>
+      <role>lead</role>
       <name>Jon Parise</name>
       <email>jon@php.net</email>
     </maintainer>
