@@ -655,7 +655,7 @@ class Net_SMTP {
          * RFC 1870, section 3, subsection 3 states "a value of zero indicates
          * that no fixed maximum message size is in force".  Furthermore, it
          * says that if "the parameter is omitted no information is conveyed
-         * about the server's fixed maximum message size"
+         * about the server's fixed maximum message size".
          */
         if (!empty($this->_esmtp['SIZE'])) {
             if (strlen($data) >= $this->_esmtp['SIZE']) {
