@@ -29,6 +29,8 @@ require_once 'Net/Socket.php';
  * @author  Chuck Hagenbuch <chuck@horde.org>
  * @author  Jon Parise <jon@php.net>
  * @author  Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
+ *
+ * @example basic.php   A basic implementation of the Net_SMTP package.
  */
 class Net_SMTP
 {
