@@ -252,6 +252,13 @@ class Net_SMTP extends PEAR {
      */
     function data($data)
     {
+        if (isset($this->esmtp['SIZE'])) {
+            if (strlen($data) >= $this->esmtp['SIZE']) {
+                $this->disconnect();
+                return new PEAR_Error('Message size excedes the server limit');
+            }
+        }
+
         $data = preg_replace("/([^\r]{1})\n/", "\\1\r\n", $data);
         $data = preg_replace("/\n\n/", "\n\r\n", $data);
         $data = preg_replace("/\n\./", "\n..", $data);
