@@ -131,7 +131,6 @@ class Net_SMTP extends PEAR {
         }
 
         if (PEAR::isError($error = $this->_socket->write($data))) {
-            echo 'Failed to write to socket: ' .  $error->getMessage() . "\n";
             return new PEAR_Error('Failed to write to socket: ' .
                                   $error->getMessage());
         }
