@@ -264,8 +264,8 @@ class Net_SMTP {
         if (PEAR::isError($error = $this->_parseResponse(220))) {
             return $error;
         }
-        if (!$this->identifySender()) {
-            return new PEAR_Error('unable to identify smtp server');
+        if (PEAR::isError($error = $this->_negotiate())) {
+            return $error;
         }
 
         return true;
@@ -289,6 +289,41 @@ class Net_SMTP {
         if (PEAR::isError($error = $this->_socket->disconnect())) {
             return new PEAR_Error('Failed to disconnect socket: ' .
                                   $error->getMessage());
+        }
+
+        return true;
+    }
+
+    /**
+     * Attempt to send the EHLO command and obtain a list of ESMTP
+     * extensions available, and failing that just send HELO.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access private
+     */
+    function _negotiate()
+    {
+        if (PEAR::isError($error = $this->_put('EHLO', $this->localhost))) {
+            return $error;
+        }
+
+        if (PEAR::isError($this->_parseResponse(250))) {
+            if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
+                return $error;
+            }
+            if (PEAR::isError($this->_parseResponse(250))) {
+                return new PEAR_Error('HELO was not accepted: ', $this->_code);
+            }
+
+            return true;
+        }
+
+        foreach ($this->_arguments as $argument) {
+            $verb = strtok($argument, ' ');
+            $arguments = substr($argument, strlen($verb) + 1,
+                                strlen($argument) - strlen($verb) - 1);
+            $this->esmtp[$verb] = $arguments;
         }
 
         return true;
@@ -368,6 +403,11 @@ class Net_SMTP {
         /* If an error was encountered, return the PEAR_Error object. */
         if (PEAR::isError($result)) {
             return $result;
+        }
+
+        /* RFC-2554 requires us to re-negotiate ESMTP after an AUTH. */
+        if (PEAR::isError($error = $this->_negotiate())) {
+            return $error;
         }
 
         return true;
@@ -751,37 +791,14 @@ class Net_SMTP {
     }
 
     /**
-     * Attempt to send the EHLO command and obtain a list of ESMTP
-     * extensions available, and failing that just send HELO.
+     * Backwards-compatibility method.  identifySender()'s functionality is
+     * now handled internally.
      *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     * @access private
+     * @return  boolean     This method always return true.
+     * @access public
      */
     function identifySender()
     {
-        if (PEAR::isError($error = $this->_put('EHLO', $this->localhost))) {
-            return $error;
-        }
-
-        if (PEAR::isError($this->_parseResponse(250))) {
-            if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
-                return $error;
-            }
-            if (PEAR::isError($this->_parseResponse(250))) {
-                return new PEAR_Error('HELO was not accepted: ', $this->_code);
-            }
-
-            return true;
-        }
-
-        foreach ($this->_arguments as $argument) {
-            $verb = strtok($argument, ' ');
-            $arguments = substr($argument, strlen($verb) + 1,
-                                strlen($argument) - strlen($verb) - 1);
-            $this->esmtp[$verb] = $arguments;
-        }
-
         return true;
     }
 }
