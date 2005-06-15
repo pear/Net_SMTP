@@ -465,11 +465,6 @@ class Net_SMTP
             return $result;
         }
 
-        /* RFC-2554 requires us to re-negotiate ESMTP after an AUTH. */
-        if (PEAR::isError($error = $this->_negotiate())) {
-            return $error;
-        }
-
         return true;
     }
 
