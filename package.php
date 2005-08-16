@@ -3,13 +3,13 @@
 require_once 'PEAR/PackageFileManager.php';
 require_once 'Console/Getopt.php';
 
-$version = '1.2.6';
+$version = '1.2.7';
 $notes = <<<EOT
-Renaming some methods to be compatible with the PEAR coding standards.  Backwards-compatible wrappers have been provided.
+The VRFY command now accepts 252 as a valid response code. (Bug 5083)
 EOT;
 
 $changelog = <<<EOT
-The following methods have been renamed for compliance with the PEAR coding standards: send_from() -> sendFrom(), soml_from() -> somlFrom(), saml_from() -> samlFrom().  Backwards-compatible wrappers have been provided.
+The VRFY command now accepts 252 as a valid response code. (Bug 5083)
 EOT;
 
 $package = new PEAR_PackageFileManager();

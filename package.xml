@@ -19,11 +19,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.2.6</version>
-    <date>2004-04-12</date>
+    <version>1.2.7</version>
+    <date>2005-08-15</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>Renaming some methods to be compatible with the PEAR coding standards.  Backwards-compatible wrappers have been provided.</notes>
+    <notes>The VRFY command now accepts 252 as a valid response code. (Bug 5083)</notes>
     <deps>
       <dep type="pkg" rel="has" optional="no">Net_Socket</dep>
       <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
@@ -47,6 +47,13 @@
     </filelist>
   </release>
   <changelog>
+    <release>
+      <version>1.2.7</version>
+      <date>2005-08-15</date>
+      <license>PHP License</license>
+      <state>stable</state>
+      <notes>The VRFY command now accepts 252 as a valid response code. (Bug 5083)</notes>
+    </release>
     <release>
       <version>1.2.6</version>
       <date>2004-04-12</date>

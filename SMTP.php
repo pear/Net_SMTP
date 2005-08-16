@@ -947,7 +947,7 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_put('VRFY', $string))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->_parseResponse(250))) {
+        if (PEAR::isError($error = $this->_parseResponse(array(250, 252)))) {
             return $error;
         }
 
