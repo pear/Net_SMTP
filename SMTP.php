@@ -36,7 +36,6 @@ require_once 'Net/Socket.php';
  */
 class Net_SMTP
 {
-
     /**
      * The server to connect to.
      * @var string
@@ -666,34 +665,41 @@ class Net_SMTP
     /**
      * Send the MAIL FROM: command.
      *
-     * @param string The sender (reverse path) to set.
+     * @param string $sender    The sender (reverse path) to set.
+     * @param string $params    String containing additional MAIL parameters,
+     *                          such as the NOTIFY flags defined by RFC 1891
+     *                          or the VERP protocol.
      *
-     * @param array optional arguments. Currently supported:
-     *        verp   boolean or string. If true or string
-     *               verp is enabled. If string the characters
-     *               are considered verp separators.
+     *                          If $params is an array, only the 'verp' option
+     *                          is supported.  If 'verp' is true, the XVERP
+     *                          parameter is appended to the MAIL command.  If
+     *                          the 'verp' value is a string, the full
+     *                          XVERP=value parameter is appended.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      * @since  1.0
      */
-    function mailFrom($sender, $args = array())
+    function mailFrom($sender, $params = null)
     {
-        $argstr = '';
+        $args = "FROM:<$sender>";
 
-        if (isset($args['verp'])) {
+        /* Support the deprecated array form of $params. */
+        if (is_array($params) && isset($params['verp'])) {
             /* XVERP */
-            if ($args['verp'] === true) {
-                $argstr .= ' XVERP';
+            if ($params['verp'] === true) {
+                $args .= ' XVERP';
 
             /* XVERP=something */
-            } elseif (trim($args['verp'])) {
-                $argstr .= ' XVERP=' . $args['verp'];
+            } elseif (trim($params['verp'])) {
+                $args .= ' XVERP=' . $params['verp'];
             }
+        } elseif (is_string($params)) {
+            $args .= ' ' . $params;
         }
 
-        if (PEAR::isError($error = $this->_put('MAIL', "FROM:<$sender>$argstr"))) {
+        if (PEAR::isError($error = $this->_put('MAIL', $args))) {
             return $error;
         }
         if (PEAR::isError($error = $this->_parseResponse(250))) {
@@ -706,16 +712,24 @@ class Net_SMTP
     /**
      * Send the RCPT TO: command.
      *
-     * @param string The recipient (forward path) to add.
+     * @param string $recipient The recipient (forward path) to add.
+     * @param string $params    String containing additional RCPT parameters,
+     *                          such as the NOTIFY flags defined by RFC 1891.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
+     *
      * @access public
      * @since  1.0
      */
-    function rcptTo($recipient)
+    function rcptTo($recipient, $params = null)
     {
-        if (PEAR::isError($error = $this->_put('RCPT', "TO:<$recipient>"))) {
+        $args = "TO:<$recipient>";
+        if (is_string($params)) {
+            $args .= ' ' . $params;
+        }
+
+        if (PEAR::isError($error = $this->_put('RCPT', $args))) {
             return $error;
         }
         if (PEAR::isError($error = $this->_parseResponse(array(250, 251)))) {
