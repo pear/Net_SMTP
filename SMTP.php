@@ -123,7 +123,7 @@ class Net_SMTP
         if (isset($port)) $this->port = $port;
         if (isset($localhost)) $this->localhost = $localhost;
 
-        $this->_socket = &new Net_Socket();
+        $this->_socket = new Net_Socket();
 
         /*
          * Include the Auth_SASL package.  If the package is not available,
