@@ -268,7 +268,8 @@ class Net_SMTP
             }
         }
 
-        return PEAR::raiseError('Invalid response code received from server');
+        return PEAR::raiseError('Invalid response code received from server',
+                                $this->_code);
     }
 
     /**

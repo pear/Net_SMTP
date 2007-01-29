@@ -7,11 +7,9 @@ $desc = <<<EOT
 Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
 EOT;
 
-$version = '1.2.8';
+$version = '1.2.9';
 $notes = <<<EOT
-- The mailFrom() and rcptTo() methods now support additional arbitrary parameters. (Request 6339)
-- Upgraded to package.xml version 2 (via package2.xml).
-- Updated the license to PHP 3.0.1.
+We now return the SMTP error code in an invalid response's PEAR_Error object.
 EOT;
 
 $package = new PEAR_PackageFileManager2();
