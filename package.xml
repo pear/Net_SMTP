@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.5.0">
+<package version="1.0" packagerversion="1.5.1">
  <name>Net_SMTP</name>
  <summary>An implementation of the SMTP protocol</summary>
  <description>Provides an implementation of the SMTP protocol using PEAR&apos;s Net_Socket class.
@@ -20,15 +20,15 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.2.9</version>
-  <date>2007-01-28</date>
+  <version>1.2.10</version>
+  <date>2007-03-30</date>
   <license>PHP License</license>
   <state>stable</state>
-  <notes>We now return the SMTP error code in an invalid response&apos;s PEAR_Error object.
+  <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.0.5" optional="no"/>
-   <dep type="pkg" rel="has" optional="no">Net_Socket</dep>
+   <dep type="pkg" rel="ge" version="1.0.7" optional="no">Net_Socket</dep>
    <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
   </deps>
   <filelist>
@@ -50,6 +50,14 @@
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.2.10</version>
+    <date>2007-03-30</date>
+    <license>PHP License</license>
+    <state>stable</state>
+    <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
+    </notes>
+   </release>
    <release>
     <version>1.2.9</version>
     <date>2007-01-28</date>

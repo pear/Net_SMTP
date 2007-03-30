@@ -7,9 +7,9 @@ $desc = <<<EOT
 Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
 EOT;
 
-$version = '1.2.9';
+$version = '1.2.10';
 $notes = <<<EOT
-We now return the SMTP error code in an invalid response's PEAR_Error object.
+Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
 EOT;
 
 $package = new PEAR_PackageFileManager2();
@@ -17,7 +17,7 @@ $package = new PEAR_PackageFileManager2();
 $result = $package->setOptions(array(
     'filelistgenerator' => 'cvs',
     'changelogoldtonew' => false,
-    'simpleoutput'		=> true,
+    'simpleoutput'      => true,
     'baseinstalldir'    => 'Net',
     'packagefile'       => 'package2.xml',
     'packagedirectory'  => '.'));
@@ -43,7 +43,7 @@ $package->setPearinstallerDep('1.4.3');
 $package->addMaintainer('lead', 'jon', 'Jon Parise', 'jon@php.net');
 $package->addMaintainer('lead', 'chagenbu', 'Chuck Hagenbuch', 'chuck@horde.org');
 $package->addIgnore(array('package.php', 'phpdoc.sh', 'package.xml', 'package2.xml'));
-$package->addPackageDepWithChannel('required', 'Net_Socket', 'pear.php.net');
+$package->addPackageDepWithChannel('required', 'Net_Socket', 'pear.php.net', '1.0.7');
 $package->addPackageDepWithChannel('optional', 'Auth_SASL', 'pear.php.net');
 
 $package->generateContents();
