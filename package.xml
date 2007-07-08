@@ -20,12 +20,11 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.2.10</version>
-  <date>2007-03-30</date>
+  <version>1.2.11</version>
+  <date>2007-12-31</date>
   <license>PHP License</license>
   <state>stable</state>
-  <notes>* Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
-* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
+  <notes>* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.0.5" optional="no"/>

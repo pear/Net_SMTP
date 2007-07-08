@@ -22,7 +22,7 @@
  <date>2007-03-30</date>
  <time>17:02:23</time>
  <version>
-  <release>1.2.10</release>
+  <release>1.2.11</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -30,8 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>* Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
-* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
+ <notes>* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
