@@ -30,7 +30,9 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).</notes>
+ <notes>* Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
+* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
+ </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
    <dir name="docs">
