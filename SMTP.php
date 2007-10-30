@@ -149,6 +149,7 @@ class Net_SMTP
         if (isset($localhost)) {
             $this->localhost = $localhost;
         }
+        $this->pipelining = $pipelining;
 
         $this->_socket = new Net_Socket();
 
