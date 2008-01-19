@@ -20,7 +20,7 @@
   <active>yes</active>
  </lead>
  <date>2008-01-19</date>
- <time>15:25:58</time>
+ <time>15:34:23</time>
  <version>
   <release>1.2.11</release>
   <api>1.0.0</api>
@@ -30,15 +30,16 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Updating to package.xml version 2 exclusively.</notes>
+ <notes>- package.xml version 2 is now used exclusively.
+- Skip unit tests when the configuration file is not available.</notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
    <dir name="docs">
-    <dir name="examples">
-     <file name="basic.php" role="doc" />
-    </dir> <!-- /docs/examples -->
     <file name="guide.txt" role="doc" />
    </dir> <!-- /docs -->
+   <dir name="examples">
+    <file name="basic.php" role="doc" />
+   </dir> <!-- /examples -->
    <dir name="tests">
     <file name="auth.phpt" role="test" />
     <file name="basic.phpt" role="test" />
@@ -82,7 +83,8 @@
    </stability>
    <date>2008-01-19</date>
    <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
-   <notes>- Updating to package.xml version 2 exclusively.</notes>
+   <notes>- package.xml version 2 is now used exclusively.
+- Skip unit tests when the configuration file is not available.</notes>
   </release>
   <release>
    <version>
