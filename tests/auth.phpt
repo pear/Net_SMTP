@@ -1,5 +1,7 @@
 --TEST--
 Net_SMTP: SMTP Authentication
+--SKIPIF--
+<?php if (!@include('config.php')) die("skip\n");
 --FILE--
 <?php
 

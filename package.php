@@ -9,7 +9,8 @@ EOT;
 
 $version = '1.2.11';
 $notes = <<<EOT
-- Updating to package.xml version 2 exclusively.
+- package.xml version 2 is now used exclusively.
+- Skip unit tests when the configuration file is not available.
 EOT;
 
 $package = new PEAR_PackageFileManager2();

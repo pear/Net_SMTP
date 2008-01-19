@@ -1,5 +1,7 @@
 --TEST--
 Net_SMTP: Basic Functionality
+--SKIPIF--
+<?php if (!@include('config.php')) die("skip\n");
 --FILE--
 <?php
 
