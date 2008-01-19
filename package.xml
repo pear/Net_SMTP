@@ -1,80 +1,101 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.5.1">
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.6.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+    http://pear.php.net/dtd/tasks-1.0.xsd
+    http://pear.php.net/dtd/package-2.0
+    http://pear.php.net/dtd/package-2.0.xsd">
  <name>Net_SMTP</name>
+ <channel>pear.php.net</channel>
  <summary>An implementation of the SMTP protocol</summary>
- <description>Provides an implementation of the SMTP protocol using PEAR&apos;s Net_Socket class.
- </description>
- <maintainers>
-  <maintainer>
-   <user>jon</user>
-   <name>Jon Parise</name>
-   <email>jon@php.net</email>
-   <role>lead</role>
-  </maintainer>
-  <maintainer>
-   <user>chagenbu</user>
-   <name>Chuck Hagenbuch</name>
-   <email>chuck@horde.org</email>
-   <role>lead</role>
-  </maintainer>
-  </maintainers>
- <release>
-  <version>1.2.11</version>
-  <date>2007-12-31</date>
-  <license>PHP License</license>
-  <state>stable</state>
-  <notes>* Allow SMTP pipelining if the SMTP server supports it (Christian Schmidt, schmidt@php.net).
-  </notes>
-  <deps>
-   <dep type="php" rel="ge" version="4.0.5" optional="no"/>
-   <dep type="pkg" rel="ge" version="1.0.7" optional="no">Net_Socket</dep>
-   <dep type="pkg" rel="has" optional="yes">Auth_SASL</dep>
-  </deps>
-  <filelist>
-   <dir name="/" baseinstalldir="Net">
-    <dir name="docs">
-     <dir name="examples">
-      <file role="doc" name="basic.php"/>
-     </dir> <!-- /docs/examples -->
-     <file role="doc" name="guide.txt"/>
-    </dir> <!-- /docs -->
-    <dir name="tests">
-     <file role="test" name="auth.phpt"/>
-     <file role="test" name="basic.phpt"/>
-     <file role="test" name="config.php.dist"/>
-     <file role="test" name="quotedata.phpt"/>
-    </dir> <!-- /tests -->
-    <file role="php" name="SMTP.php"/>
-   </dir> <!-- / -->
-  </filelist>
- </release>
+ <description>Provides an implementation of the SMTP protocol using PEAR&apos;s Net_Socket class.</description>
+ <lead>
+  <name>Jon Parise</name>
+  <user>jon</user>
+  <email>jon@php.net</email>
+  <active>yes</active>
+ </lead>
+ <lead>
+  <name>Chuck Hagenbuch</name>
+  <user>chagenbu</user>
+  <email>chuck@horde.org</email>
+  <active>yes</active>
+ </lead>
+ <date>2008-01-19</date>
+ <time>15:25:58</time>
+ <version>
+  <release>1.2.11</release>
+  <api>1.0.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
+ <notes>- Updating to package.xml version 2 exclusively.</notes>
+ <contents>
+  <dir baseinstalldir="Net" name="/">
+   <dir name="docs">
+    <dir name="examples">
+     <file name="basic.php" role="doc" />
+    </dir> <!-- /docs/examples -->
+    <file name="guide.txt" role="doc" />
+   </dir> <!-- /docs -->
+   <dir name="tests">
+    <file name="auth.phpt" role="test" />
+    <file name="basic.phpt" role="test" />
+    <file name="config.php.dist" role="test" />
+    <file name="quotedata.phpt" role="test" />
+   </dir> <!-- /tests -->
+   <file name="SMTP.php" role="php" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.0.5</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.3</min>
+   </pearinstaller>
+   <package>
+    <name>Net_Socket</name>
+    <channel>pear.php.net</channel>
+    <min>1.0.7</min>
+   </package>
+  </required>
+  <optional>
+   <package>
+    <name>Auth_SASL</name>
+    <channel>pear.php.net</channel>
+   </package>
+  </optional>
+ </dependencies>
+ <phprelease />
  <changelog>
-   <release>
-    <version>1.2.10</version>
-    <date>2007-03-30</date>
-    <license>PHP License</license>
-    <state>stable</state>
-    <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
-    </notes>
-   </release>
-   <release>
-    <version>1.2.9</version>
-    <date>2007-01-28</date>
-    <license>PHP License</license>
-    <state>stable</state>
-    <notes>We now return the SMTP error code in an invalid response&apos;s PEAR_Error object.
-    </notes>
-   </release>
-   <release>
-    <version>1.2.8</version>
-    <date>2006-02-05</date>
-    <license>PHP License</license>
-    <state>stable</state>
-    <notes>- The mailFrom() and rcptTo() methods now support additional arbitrary parameters. (Request 6339)
-- Upgraded to package.xml version 2 (via package2.xml).
-- Updated the license to PHP 3.0.1.
-    </notes>
-   </release>
+  <release>
+   <version>
+    <release>1.2.11</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-01-19</date>
+   <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
+   <notes>- Updating to package.xml version 2 exclusively.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2.10</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-01-19</date>
+   <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
+   <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).</notes>
+  </release>
  </changelog>
 </package>

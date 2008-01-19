@@ -7,9 +7,9 @@ $desc = <<<EOT
 Provides an implementation of the SMTP protocol using PEAR's Net_Socket class.
 EOT;
 
-$version = '1.2.10';
+$version = '1.2.11';
 $notes = <<<EOT
-Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).
+- Updating to package.xml version 2 exclusively.
 EOT;
 
 $package = new PEAR_PackageFileManager2();
@@ -19,7 +19,7 @@ $result = $package->setOptions(array(
     'changelogoldtonew' => false,
     'simpleoutput'      => true,
     'baseinstalldir'    => 'Net',
-    'packagefile'       => 'package2.xml',
+    'packagefile'       => 'package.xml',
     'packagedirectory'  => '.'));
 
 if (PEAR::isError($result)) {
@@ -42,19 +42,16 @@ $package->setPhpDep('4.0.5');
 $package->setPearinstallerDep('1.4.3');
 $package->addMaintainer('lead', 'jon', 'Jon Parise', 'jon@php.net');
 $package->addMaintainer('lead', 'chagenbu', 'Chuck Hagenbuch', 'chuck@horde.org');
-$package->addIgnore(array('package.php', 'phpdoc.sh', 'package.xml', 'package2.xml'));
+$package->addIgnore(array('package.php', 'phpdoc.sh', 'package.xml'));
 $package->addPackageDepWithChannel('required', 'Net_Socket', 'pear.php.net', '1.0.7');
 $package->addPackageDepWithChannel('optional', 'Auth_SASL', 'pear.php.net');
 
 $package->generateContents();
-$package1 = &$package->exportCompatiblePackageFile1();
 
 if ($_SERVER['argv'][1] == 'commit') {
     $result = $package->writePackageFile();
-    $result = $package1->writePackageFile();
 } else {
     $result = $package->debugPackageFile();
-    $result = $package1->debugPackageFile();
 }
 
 if (PEAR::isError($result)) {
