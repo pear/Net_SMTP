@@ -9,8 +9,9 @@ EOT;
 
 $version = '1.2.11';
 $notes = <<<EOT
-- package.xml version 2 is now used exclusively.
+- We now use package.xml version 2 exclusively.
 - Skip unit tests when the configuration file is not available.
+- Fixing a protocol error when performing DIGEST-MD5 authentication. (Bug 12206)
 EOT;
 
 $package = new PEAR_PackageFileManager2();
