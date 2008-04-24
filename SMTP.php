@@ -728,6 +728,18 @@ class Net_SMTP
     }
 
     /**
+     * Return the list of SMTP service extensions advertised by the server.
+     *
+     * @return array The list of SMTP service extensions.
+     * @access public
+     * @since 1.3
+     */
+    function getServiceExtensions()
+    {
+        return $this->_esmtp;
+    }
+
+    /**
      * Send the MAIL FROM: command.
      *
      * @param string $sender    The sender (reverse path) to set.

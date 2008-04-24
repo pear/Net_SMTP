@@ -22,17 +22,16 @@
  <date>2008-02-14</date>
  <time>21:47:43</time>
  <version>
-  <release>1.2.11</release>
-  <api>1.0.0</api>
+  <release>1.3</release>
+  <api>1.1.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- We now use package.xml version 2 exclusively.
-- Skip unit tests when the configuration file is not available.
-- Fixing a protocol error when performing DIGEST-MD5 authentication. (Bug 12206)</notes>
+ <notes>- Add getServiceExtensions (slusarz@curecanti.org, Bug 13763)
+ </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
    <dir name="docs">
@@ -72,34 +71,4 @@
   </optional>
  </dependencies>
  <phprelease />
- <changelog>
-  <release>
-   <version>
-    <release>1.2.11</release>
-    <api>1.0.0</api>
-   </version>
-   <stability>
-    <release>stable</release>
-    <api>stable</api>
-   </stability>
-   <date>2008-02-14</date>
-   <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
-   <notes>- We now use package.xml version 2 exclusively.
-- Skip unit tests when the configuration file is not available.
-- Fixing a protocol error when performing DIGEST-MD5 authentication. (Bug 12206)</notes>
-  </release>
-  <release>
-   <version>
-    <release>1.2.10</release>
-    <api>1.0.0</api>
-   </version>
-   <stability>
-    <release>stable</release>
-    <api>stable</api>
-   </stability>
-   <date>2008-01-19</date>
-   <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
-   <notes>Allow auth via STARTTLS if PHP supports it (requires Net_Socket 1.0.7) (Johan Ohrn, johan@oern.mine.nu).</notes>
-  </release>
- </changelog>
 </package>
