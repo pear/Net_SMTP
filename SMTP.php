@@ -296,8 +296,8 @@ class Net_SMTP
         /* Compare the server's response code with the valid code/codes. */
         if (is_int($valid) && ($this->_code === $valid)) {
             return true;
-        } elseif (is_array($valid)) {
-            return in_array($this->_code, $valid, true);
+        } elseif (is_array($valid) && in_array($this->_code, $valid, true)) {
+            return true;
         }
 
         return PEAR::raiseError('Invalid response code received from server',

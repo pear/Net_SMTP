@@ -22,7 +22,7 @@
  <date>2008-04-24</date>
  <time>21:47:43</time>
  <version>
-  <release>1.3.0</release>
+  <release>1.3.1</release>
   <api>1.1.0</api>
  </version>
  <stability>
@@ -30,7 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Add getServiceExtensions (slusarz@curecanti.org, Bug 13763)
+ <notes>- Invalid response arrays were returning false instead of a PEAR_Error object. (Thomas Berger)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
