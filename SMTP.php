@@ -460,7 +460,7 @@ class Net_SMTP
      */
     function auth($uid, $pwd , $method = '')
     {
-        if (version_compare(PHP_VERSION, '5.1.0', '>=') && isset($this->_esmtp['STARTTLS'])) {
+        if (version_compare(PHP_VERSION, '5.1.0', '>=') && extension_loaded('openssl') && isset($this->_esmtp['STARTTLS'])) {
             if (PEAR::isError($result = $this->_put('STARTTLS'))) {
                 return $result;
             }
