@@ -146,6 +146,17 @@ also the overhead of copying a large `$data` string to and from the
 
 .. _by reference: http://www.php.net/manual/en/language.references.pass.php
 
+Server Responses
+================
+
+The Net_SMTP package retains the server's last response for further
+inspection.  The ``getResponse()`` method returns a 2-tuple (two element
+array) containing the server's response code as an integer and the response's
+arguments as a string.
+
+Upon a successful connection, the server's greeting string is available via
+the ``getGreeting()`` method.
+
 Debugging
 =========
 
@@ -208,4 +219,4 @@ using the Net_SMTP package::
 .. _Net_Socket: http://pear.php.net/package/Net_Socket
 .. _Auth_SASL: http://pear.php.net/package/Auth_SASL
 
-.. vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab textwidth=76:
+.. vim: tabstop=4 shiftwidth=4 softtabstop=4 expandtab textwidth=78 ft=rst:

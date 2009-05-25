@@ -113,6 +113,13 @@ class Net_SMTP
     var $_arguments = array();
 
     /**
+     * Stores the SMTP server's greeting string.
+     * @var string
+     * @access private
+     */
+    var $_greeting = null;
+
+    /**
      * Stores detected features of the SMTP server.
      * @var array
      * @access private
@@ -320,6 +327,20 @@ class Net_SMTP
     }
 
     /**
+     * Return the SMTP server's greeting string.
+     *
+     * @return  string  A string containing the greeting string, or null if a 
+     *                  greeting has not been received.
+     *
+     * @access  public
+     * @since   1.3.3
+     */
+    function getGreeting()
+    {
+        return $this->_greeting;
+    }
+
+    /**
      * Attempt to connect to the SMTP server.
      *
      * @param   int     $timeout    The timeout value (in seconds) for the
@@ -334,6 +355,7 @@ class Net_SMTP
      */
     function connect($timeout = null, $persistent = false)
     {
+        $this->_greeting = null;
         $result = $this->_socket->connect($this->host, $this->port,
                                           $persistent, $timeout);
         if (PEAR::isError($result)) {
@@ -344,6 +366,10 @@ class Net_SMTP
         if (PEAR::isError($error = $this->_parseResponse(220))) {
             return $error;
         }
+
+        /* Extract and store a copy of the server's greeting string. */
+        list(, $this->_greeting) = $this->getResponse();
+
         if (PEAR::isError($error = $this->_negotiate())) {
             return $error;
         }
