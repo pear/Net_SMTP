@@ -486,7 +486,14 @@ class Net_SMTP
      */
     function auth($uid, $pwd , $method = '')
     {
-        if (version_compare(PHP_VERSION, '5.1.0', '>=') && extension_loaded('openssl') && isset($this->_esmtp['STARTTLS'])) {
+        /* We can only attempt a TLS connection if we're running PHP 5.1.0 or 
+         * later, have access to the OpenSSL extension, are connected to an 
+         * SMTP server which supports the STARTTLS extension, and aren't 
+         * already connected over a secure (SSL) socket connection. */
+        $tls = version_compare(PHP_VERSION, '5.1.0', '>=') && extension_loaded('openssl') &&
+               isset($this->_esmtp['STARTTLS']) && strncasecmp($this->host, 'ssl://', 6) != 0;
+
+        if ($tls) {
             if (PEAR::isError($result = $this->_put('STARTTLS'))) {
                 return $result;
             }
