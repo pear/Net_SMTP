@@ -166,7 +166,19 @@ method::
 
     $smtp->setDebug(true);
 
-The debugging messages will be sent to the standard output stream.
+The debugging messages will be sent to the standard output stream by default.
+If you need more control over the output, you can optionally install your own
+debug handler.
+
+::
+
+    function debugHandler($smtp, $message)
+    {
+        echo "[$smtp->host] $message\n";
+    }
+
+    $smtp->setDebug(true, "debugHandler");
+
 
 Examples
 ========
