@@ -896,7 +896,8 @@ class Net_SMTP
     /**
      * Send the DATA command.
      *
-     * @param string $data  The message body to send.
+     * @param mixed $data   The message data, either as a string or an open
+     *                      file resource.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
@@ -905,21 +906,34 @@ class Net_SMTP
      */
     function data($data)
     {
+        /* Verify that $data is a supported type. */
+        if (!is_string($data) && !is_resource($data)) {
+            return PEAR::raiseError('Expected a string or file resource');
+        }
+
         /* RFC 1870, section 3, subsection 3 states "a value of zero
          * indicates that no fixed maximum message size is in force".
          * Furthermore, it says that if "the parameter is omitted no
          * information is conveyed about the server's fixed maximum
          * message size". */
         if (isset($this->_esmtp['SIZE']) && ($this->_esmtp['SIZE'] > 0)) {
-            if (strlen($data) >= $this->_esmtp['SIZE']) {
+            if (is_resource($data)) {
+                $stat = fstat($data);
+                if ($stat === false) {
+                    return PEAR::raiseError('Failed to get file size');
+                }
+                $size = $stat['size'];
+            } else {
+                $size = strlen($data);
+            }
+
+            if ($size >= $this->_esmtp['SIZE']) {
                 $this->disconnect();
-                return PEAR::raiseError('Message size excedes the server limit');
+                return PEAR::raiseError('Message size exceeds server limit');
             }
         }
 
-        /* Quote the data based on the SMTP standards. */
-        $this->quotedata($data);
-
+        /* Initiate the DATA command. */
         if (PEAR::isError($error = $this->_put('DATA'))) {
             return $error;
         }
@@ -927,9 +941,31 @@ class Net_SMTP
             return $error;
         }
 
-        if (PEAR::isError($result = $this->_send($data . "\r\n.\r\n"))) {
-            return $result;
+        if (is_resource($data)) {
+            /* Stream the contents of the file resource out over our socket 
+             * connection, line by line.  Each line must be run through the 
+             * quoting routine. */
+            while ($line = fgets($data, 1024)) {
+                $this->quotedata($line);
+                if (PEAR::isError($result = $this->_send($line))) {
+                    return $result;
+                }
+            }
+
+            /* Finally, send the DATA terminator sequence. */
+            if (PEAR::isError($result = $this->_send("\r\n.\r\n"))) {
+                return $result;
+            }
+        } else {
+            /* Just send the entire quoted string followed by the DATA 
+             * terminator. */
+            $this->quotedata($data);
+            if (PEAR::isError($result = $this->_send($data . "\r\n.\r\n"))) {
+                return $result;
+            }
         }
+
+        /* Verify that the data was successfully received by the server. */
         if (PEAR::isError($error = $this->_parseResponse(250, $this->pipelining))) {
             return $error;
         }
