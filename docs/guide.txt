@@ -109,6 +109,21 @@ port) using the ``ssl://`` transport.
 
 .. _secure socket transports: http://www.php.net/transports
 
+Sending Data
+============
+
+Message data is sent using the ``data()`` method.  The data can be supplied
+as a single string or as an open file resource.
+
+If a string is provided, it is passed through the `data quoting`_ system and
+sent to the socket connection as a single block.  These operations are all
+memory-based, so sending large messages may result in high memory usage.
+
+If an open file resource is provided, the ``data()`` method will read the
+message data from the file line-by-line.  Each chunk will be quoted and sent
+to the socket connection individually, reducing the overall memory overhead of
+this data sending operation.
+
 Data Quoting
 ============
 
