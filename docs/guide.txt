@@ -113,8 +113,8 @@ Data Quoting
 ============
 
 By default, all outbound string data is quoted in accordance with SMTP
-standards.  This means that all native Unix (``\\n``) and Mac (``\\r``) line
-endings are converted to Internet-standard CRLF (``\\r\\n``) line endings.
+standards.  This means that all native Unix (``\n``) and Mac (``\r``) line
+endings are converted to Internet-standard CRLF (``\r\n``) line endings.
 Also, because the SMTP protocol uses a single leading period (``.``) to signal
 an end to the message data, single leading periods in the original data
 string are "doubled" (e.g. "``..``").
