@@ -124,6 +124,15 @@ message data from the file line-by-line.  Each chunk will be quoted and sent
 to the socket connection individually, reducing the overall memory overhead of
 this data sending operation.
 
+Header data can be specified separately from message body data by passing it
+as the optional second parameter to ``data()``.  This is especially useful
+when an open file resource is being used to supply message data because it
+allows header fields (like *Subject:*) to be built dynamically at runtime.
+
+::
+
+    $smtp->data($fp, "Subject: My Subject");
+
 Data Quoting
 ============
 

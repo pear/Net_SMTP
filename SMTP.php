@@ -898,15 +898,17 @@ class Net_SMTP
     /**
      * Send the DATA command.
      *
-     * @param mixed $data   The message data, either as a string or an open
-     *                      file resource.
+     * @param mixed $data     The message data, either as a string or an open
+     *                        file resource.
+     * @param string $headers The message headers.  If $headers is provided,
+     *                        $data is assumed to contain only body data.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      * @since  1.0
      */
-    function data($data)
+    function data($data, $headers = null)
     {
         /* Verify that $data is a supported type. */
         if (!is_string($data) && !is_resource($data)) {
@@ -919,14 +921,19 @@ class Net_SMTP
          * information is conveyed about the server's fixed maximum
          * message size". */
         if (isset($this->_esmtp['SIZE']) && ($this->_esmtp['SIZE'] > 0)) {
+            /* Start by considering the size of the optional headers string.  
+             * We also account for the addition 4 character "\r\n\r\n"
+             * separator sequence. */
+            $size = (is_null($headers)) ? 0 : strlen($headers) + 4;
+
             if (is_resource($data)) {
                 $stat = fstat($data);
                 if ($stat === false) {
                     return PEAR::raiseError('Failed to get file size');
                 }
-                $size = $stat['size'];
+                $size += $stat['size'];
             } else {
-                $size = strlen($data);
+                $size += strlen($data);
             }
 
             if ($size >= $this->_esmtp['SIZE']) {
@@ -943,6 +950,15 @@ class Net_SMTP
             return $error;
         }
 
+        /* If we have a separate headers string, send it first. */
+        if (!is_null($headers)) {
+            $this->quotedata($line);
+            if (PEAR::isError($result = $this->_send($headers . "\r\n\r\n"))) {
+                return $result;
+            }
+        }
+
+        /* Now we can send the message body data. */
         if (is_resource($data)) {
             /* Stream the contents of the file resource out over our socket 
              * connection, line by line.  Each line must be run through the 
