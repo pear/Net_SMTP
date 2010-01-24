@@ -30,7 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes> The auth() method now includes an optional $tls parameter that determines whether or not TLS authentication should be attempted (if supported by the PHP runtime and the remote SMTP server).  This parameter defaults to true. (Bug #16349)
+ <notes> The auth() method now includes an optional $tls parameter that determines whether or not TLS should be attempted (if supported by the PHP runtime and the remote SMTP server).  This parameter defaults to true. (Bug #16349)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
