@@ -503,22 +503,24 @@ class Net_SMTP
      * @param string The password to authenticate with.
      * @param string The requested authentication method.  If none is
      *               specified, the best supported method will be used.
+     * @param bool   Flag indicating whether or not TLS should be attempted.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access public
      * @since  1.0
      */
-    function auth($uid, $pwd , $method = '')
+    function auth($uid, $pwd , $method = '', $tls = true)
     {
-        /* We can only attempt a TLS connection if we're running PHP 5.1.0 or 
-         * later, have access to the OpenSSL extension, are connected to an 
-         * SMTP server which supports the STARTTLS extension, and aren't 
-         * already connected over a secure (SSL) socket connection. */
-        $tls = version_compare(PHP_VERSION, '5.1.0', '>=') && extension_loaded('openssl') &&
-               isset($this->_esmtp['STARTTLS']) && strncasecmp($this->host, 'ssl://', 6) != 0;
-
-        if ($tls) {
+        /* We can only attempt a TLS connection if one has been requested,
+         * we're running PHP 5.1.0 or later, have access to the OpenSSL 
+         * extension, are connected to an SMTP server which supports the 
+         * STARTTLS extension, and aren't already connected over a secure 
+         * (SSL) socket connection. */
+        if ($tls && version_compare(PHP_VERSION, '5.1.0', '>=') &&
+            extension_loaded('openssl') && isset($this->_esmtp['STARTTLS']) &&
+            strncasecmp($this->host, 'ssl://', 6) !== 0) {
+            /* Start the TLS connection attempt. */
             if (PEAR::isError($result = $this->_put('STARTTLS'))) {
                 return $result;
             }
