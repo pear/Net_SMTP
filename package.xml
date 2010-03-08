@@ -19,10 +19,10 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2010-01-24</date>
- <time>13:47:00</time>
+ <date>2010-03-07</date>
+ <time>20:55:00</time>
  <version>
-  <release>1.4.1</release>
+  <release>1.4.2</release>
   <api>1.1.2</api>
  </version>
  <stability>
@@ -30,9 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes> The auth() method now includes an optional $tls parameter that determines whether or not TLS should be attempted (if supported by the PHP runtime and the remote SMTP server).  This parameter defaults to true. (Bug #16349)
-
-Header data can be specified separately from message body data by passing it as the optional second parameter to ``data()``.  This is especially useful when an open file resource is being used to supply message data because it allows header fields (like *Subject:*) to be built dynamically at runtime. (Request #17012)
+ <notes>Fixing header string quoting in data(). (Bug #17199)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
