@@ -973,18 +973,46 @@ class Net_SMTP
                     return $result;
                 }
             }
-
-            /* Finally, send the DATA terminator sequence. */
-            if (PEAR::isError($result = $this->_send("\r\n.\r\n"))) {
-                return $result;
-            }
         } else {
-            /* Just send the entire quoted string followed by the DATA 
-             * terminator. */
-            $this->quotedata($data);
-            if (PEAR::isError($result = $this->_send($data . "\r\n.\r\n"))) {
-                return $result;
+            /*
+             * Break up the data by sending one chunk (up to 512k) at a time.  
+             * This approach reduces our peak memory usage.
+             */
+            for ($offset = 0; $offset < $size;) {
+                $end = $offset + 512000;
+
+                /*
+                 * Ensure we don't read beyond our data size or span multiple 
+                 * lines.  quotedata() can't properly handle character data 
+                 * that's split across two line break boundaries.
+                 */
+                if ($end >= $size) {
+                    $end = $size;
+                } else {
+                    for (; $end < $size; $end++) {
+                        if ($data[$end] != "\n") {
+                            break;
+                        }
+                    }
+                }
+
+                /* Extract our chunk and run it through the quoting routine. */
+                $chunk = substr($data, $offset, $end - $offset);
+                $this->quotedata($chunk);
+
+                /* If we run into a problem along the way, abort. */
+                if (PEAR::isError($result = $this->_send($chunk))) {
+                    return $result;
+                }
+
+                /* Advance the offset to the end of this chunk. */
+                $offset = $end;
             }
+        }
+
+        /* Finally, send the DATA terminator sequence. */
+        if (PEAR::isError($result = $this->_send("\r\n.\r\n"))) {
+            return $result;
         }
 
         /* Verify that the data was successfully received by the server. */
