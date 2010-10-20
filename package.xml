@@ -30,8 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Reduce peak memory usage when sending large files. (Request 17887)
-- Adding support for proxy authentication. (Request 17358)
+ <notes>Corrected a problem with SMTP servers that don't support the SIZE feature. (Bug 17942)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">

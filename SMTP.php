@@ -919,31 +919,29 @@ class Net_SMTP
             return PEAR::raiseError('Expected a string or file resource');
         }
 
-        /* RFC 1870, section 3, subsection 3 states "a value of zero
-         * indicates that no fixed maximum message size is in force".
-         * Furthermore, it says that if "the parameter is omitted no
-         * information is conveyed about the server's fixed maximum
-         * message size". */
-        if (isset($this->_esmtp['SIZE']) && ($this->_esmtp['SIZE'] > 0)) {
-            /* Start by considering the size of the optional headers string.  
-             * We also account for the addition 4 character "\r\n\r\n"
-             * separator sequence. */
-            $size = (is_null($headers)) ? 0 : strlen($headers) + 4;
+        /* Start by considering the size of the optional headers string.  We
+         * also account for the addition 4 character "\r\n\r\n" separator
+         * sequence. */
+        $size = (is_null($headers)) ? 0 : strlen($headers) + 4;
 
-            if (is_resource($data)) {
-                $stat = fstat($data);
-                if ($stat === false) {
-                    return PEAR::raiseError('Failed to get file size');
-                }
-                $size += $stat['size'];
-            } else {
-                $size += strlen($data);
+        if (is_resource($data)) {
+            $stat = fstat($data);
+            if ($stat === false) {
+                return PEAR::raiseError('Failed to get file size');
             }
+            $size += $stat['size'];
+        } else {
+            $size += strlen($data);
+        }
 
-            if ($size >= $this->_esmtp['SIZE']) {
-                $this->disconnect();
-                return PEAR::raiseError('Message size exceeds server limit');
-            }
+        /* RFC 1870, section 3, subsection 3 states "a value of zero indicates
+         * that no fixed maximum message size is in force".  Furthermore, it
+         * says that if "the parameter is omitted no information is conveyed
+         * about the server's fixed maximum message size". */
+        $limit = (isset($this->_esmtp['SIZE'])) ? $this->_esmtp['SIZE'] : 0;
+        if ($limit > 0 && $size >= $limit) {
+            $this->disconnect();
+            return PEAR::raiseError('Message size exceeds server limit');
         }
 
         /* Initiate the DATA command. */
