@@ -830,7 +830,7 @@ class Net_SMTP
             } elseif (trim($params['verp'])) {
                 $args .= ' XVERP=' . $params['verp'];
             }
-        } elseif (is_string($params)) {
+        } elseif (is_string($params) && !empty($params)) {
             $args .= ' ' . $params;
         }
 
