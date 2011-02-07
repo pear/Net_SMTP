@@ -106,6 +106,13 @@ class Net_SMTP
     var $_socket = null;
 
     /**
+     * The socket I/O timeout value in seconds.
+     * @var int
+     * @access private
+     */
+    var $_timeout = null;
+
+    /**
      * The most recent server response code.
      * @var int
      * @access private
@@ -148,11 +155,13 @@ class Net_SMTP
      * @param integer $port       The port to connect to.
      * @param string  $localhost  The value to give when sending EHLO or HELO.
      * @param boolean $pipeling   Use SMTP command pipelining
+     * @param integer $timeout    Socket I/O timeout in seconds.
      *
      * @access  public
      * @since   1.0
      */
-    function Net_SMTP($host = null, $port = null, $localhost = null, $pipelining = false)
+    function Net_SMTP($host = null, $port = null, $localhost = null,
+        $pipelining = false, $timeout = null)
     {
         if (isset($host)) {
             $this->host = $host;
@@ -166,6 +175,7 @@ class Net_SMTP
         $this->pipelining = $pipelining;
 
         $this->_socket = new Net_Socket();
+        $this->_timeout = $timeout;
 
         /* Include the Auth_SASL package.  If the package is not
          * available, we disable the authentication methods that
@@ -176,6 +186,19 @@ class Net_SMTP
             $pos = array_search('CRAM-MD5', $this->auth_methods);
             unset($this->auth_methods[$pos]);
         }
+    }
+
+    /**
+     * Set the socket I/O timeout value in seconds plus microseconds.
+     *
+     * @param   integer $seconds        Timeout value in seconds.
+     * @param   integer $microseconds   Additional value in microseconds.
+     *
+     * @access  public
+     * @since   1.5.0
+     */
+    function setTimeout($seconds, $microseconds = 0) {
+        return $this->_socket->setTimeout($seconds, $microseconds);
     }
 
     /**
@@ -369,7 +392,7 @@ class Net_SMTP
      * Attempt to connect to the SMTP server.
      *
      * @param   int     $timeout    The timeout value (in seconds) for the
-     *                              socket connection.
+     *                              socket connection attempt.
      * @param   bool    $persistent Should a persistent socket connection
      *                              be used?
      *
@@ -386,6 +409,16 @@ class Net_SMTP
         if (PEAR::isError($result)) {
             return PEAR::raiseError('Failed to connect socket: ' .
                                     $result->getMessage());
+        }
+
+        /*
+         * Now that we're connected, reset the socket's timeout value for 
+         * future I/O operations.  This allows us to have different socket 
+         * timeout values for the initial connection (our $timeout parameter) 
+         * and all other socket operations.
+         */
+        if (PEAR::isError($error = $this->setTimeout($this->_timeout))) {
+            return $error;
         }
 
         if (PEAR::isError($error = $this->_parseResponse(220))) {
