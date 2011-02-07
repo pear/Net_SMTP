@@ -22,7 +22,7 @@
  <date>2011-02-06</date>
  <time>19:00:00</time>
  <version>
-  <release>1.5.0</release>
+  <release>1.5.1</release>
   <api>1.1.3</api>
  </version>
  <stability>
@@ -30,8 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Avoid appending an extra space in mailFrom() when $params is empty. (Bug 17989)
-- Differentiating between a connection timeout and general socket I/O timeouts. (Request 18197)
+ <notes>- Fixing SASL proxy authentication for DIGEST-MD5. (Bug 17538)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">

@@ -650,7 +650,8 @@ class Net_SMTP
         $challenge = base64_decode($this->_arguments[0]);
         $digest = &Auth_SASL::factory('digestmd5');
         $auth_str = base64_encode($digest->getResponse($uid, $pwd, $challenge,
-                                                       $this->host, "smtp"));
+                                                       $this->host, "smtp",
+                                                       $authz));
 
         if (PEAR::isError($error = $this->_put($auth_str))) {
             return $error;
