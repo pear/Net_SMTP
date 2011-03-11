@@ -110,7 +110,7 @@ class Net_SMTP
      * @var int
      * @access private
      */
-    var $_timeout = null;
+    var $_timeout = 0;
 
     /**
      * The most recent server response code.
