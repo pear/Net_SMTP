@@ -161,7 +161,7 @@ class Net_SMTP
      * @since   1.0
      */
     function Net_SMTP($host = null, $port = null, $localhost = null,
-        $pipelining = false, $timeout = null)
+        $pipelining = false, $timeout = 0)
     {
         if (isset($host)) {
             $this->host = $host;

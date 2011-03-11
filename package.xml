@@ -31,6 +31,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
  <notes>- Fixing SASL proxy authentication for DIGEST-MD5. (Bug 17538)
+- Fixing the default socket timeout. (Bug 18335)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
