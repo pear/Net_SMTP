@@ -31,6 +31,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
  <notes>- Avoid requesting immediate socket timeouts. (Bug 18335)
+- Added support for passing additional socket options. (Request 18418)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
