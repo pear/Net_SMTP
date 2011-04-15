@@ -417,8 +417,10 @@ class Net_SMTP
          * timeout values for the initial connection (our $timeout parameter) 
          * and all other socket operations.
          */
-        if (PEAR::isError($error = $this->setTimeout($this->_timeout))) {
-            return $error;
+        if ($this->_timeout > 0) {
+            if (PEAR::isError($error = $this->setTimeout($this->_timeout))) {
+                return $error;
+            }
         }
 
         if (PEAR::isError($error = $this->_parseResponse(220))) {
