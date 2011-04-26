@@ -370,6 +370,31 @@ class Net_SMTP
     }
 
     /**
+     * Issue an SMTP command and verify its response.
+     *
+     * @param   string  $command    The SMTP command string or data.
+     * @param   mixed   $valid      The set of valid response codes.  These
+     *                              may be specified as an array of integer
+     *                              values or as a single integer value.
+     *
+     * @return  mixed   True on success or a PEAR_Error object on failure.
+     *
+     * @access  public
+     * @since   1.6.0
+     */
+    function command($command, $valid)
+    {
+        if (PEAR::isError($error = $this->_put($command))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse($valid))) {
+            return $error;
+        }
+
+        return true;
+    }
+
+    /**
      * Return a 2-tuple containing the last response from the SMTP server.
      *
      * @return  array   A two-element array: the first element contains the

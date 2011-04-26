@@ -22,16 +22,15 @@
  <date>2011-04-16</date>
  <time>18:25:00</time>
  <version>
-  <release>1.5.2</release>
-  <api>1.1.3</api>
+  <release>1.6.0</release>
+  <api>1.2.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Avoid requesting immediate socket timeouts. (Bug 18335)
-- Added support for passing additional socket options. (Request 18418)
+ <notes>- Adding a new command() method for sending arbitrary SMTP commands.
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
