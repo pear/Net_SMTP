@@ -263,7 +263,8 @@ class Net_SMTP
         $result = $this->_socket->write($data);
         if (!$result || PEAR::isError($result)) {
             $msg = ($result) ? $result->getMessage() : "unknown error";
-            return PEAR::raiseError("Failed to write to socket: $msg");
+            return PEAR::raiseError("Failed to write to socket: $msg",
+                                    null, PEAR_ERROR_RETURN);
         }
 
         return $result;
@@ -293,7 +294,8 @@ class Net_SMTP
         }
 
         if (strcspn($command, "\r\n") !== strlen($command)) {
-            return PEAR::raiseError('Commands cannot contain newlines');
+            return PEAR::raiseError('Commands cannot contain newlines',
+                                    null, PEAR_ERROR_RETURN);
         }
 
         return $this->_send($command . "\r\n");
@@ -332,10 +334,11 @@ class Net_SMTP
             while ($line = $this->_socket->readLine()) {
                 $this->_debug("Recv: $line");
 
-                /* If we receive an empty line, the connection has been closed. */
+                /* If we receive an empty line, the connection was closed. */
                 if (empty($line)) {
                     $this->disconnect();
-                    return PEAR::raiseError('Connection was unexpectedly closed');
+                    return PEAR::raiseError('Connection was closed',
+                                            null, PEAR_ERROR_RETURN);
                 }
 
                 /* Read the code and store the rest in the arguments array. */
@@ -367,7 +370,7 @@ class Net_SMTP
         }
 
         return PEAR::raiseError('Invalid response code received from server',
-                                $this->_code);
+                                $this->_code, PEAR_ERROR_RETURN);
     }
 
     /**
@@ -525,7 +528,8 @@ class Net_SMTP
                 return $error;
             }
             if (PEAR::isError($this->_parseResponse(250))) {
-                return PEAR::raiseError('HELO was not accepted: ', $this->_code);
+                return PEAR::raiseError('HELO was not accepted: ', $this->_code,
+                                        PEAR_ERROR_RETURN);
             }
 
             return true;
@@ -565,7 +569,8 @@ class Net_SMTP
             }
         }
 
-        return PEAR::raiseError('No supported authentication methods');
+        return PEAR::raiseError('No supported authentication methods',
+                                null, PEAR_ERROR_RETURN);
     }
 
     /**
