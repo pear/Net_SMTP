@@ -250,7 +250,8 @@ class Net_SMTP
      *
      * @param   string  $data       The string of data to send.
      *
-     * @return  mixed   True on success or a PEAR_Error object on failure.
+     * @return  mixed   The number of bytes that were actually written,
+     *                  or a PEAR_Error object on failure.
      *
      * @access  private
      * @since   1.1.0
@@ -259,13 +260,13 @@ class Net_SMTP
     {
         $this->_debug("Send: $data");
 
-        $error = $this->_socket->write($data);
-        if ($error === false || PEAR::isError($error)) {
-            $msg = ($error) ? $error->getMessage() : "unknown error";
+        $result = $this->_socket->write($data);
+        if ($result === false || PEAR::isError($result)) {
+            $msg = ($result) ? $result->getMessage() : "unknown error";
             return PEAR::raiseError("Failed to write to socket: $msg");
         }
 
-        return true;
+        return $result;
     }
 
     /**
