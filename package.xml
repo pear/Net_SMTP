@@ -31,6 +31,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
  <notes>- Adding a new command() method for sending arbitrary SMTP commands.
+- More kinds of socket write() failures are now detected.
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
