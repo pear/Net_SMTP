@@ -33,6 +33,7 @@
  <notes>- Adding a new command() method for sending arbitrary SMTP commands.
 - More kinds of socket write() failures are now detected.
 - Improved PEAR_Error internal handling. (Bug 18469)
+- External authentication methods are now supported via setAuthMethod().
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">

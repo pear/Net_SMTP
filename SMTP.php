@@ -62,7 +62,7 @@ class Net_SMTP
      * @var array
      * @access public
      */
-    var $auth_methods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'PLAIN');
+    var $auth_methods = array();
 
     /**
      * Use SMTP command pipelining (specified in RFC 2920) if the SMTP
@@ -187,15 +187,16 @@ class Net_SMTP
         $this->_socket_options = $socket_options;
         $this->_timeout = $timeout;
 
-        /* Include the Auth_SASL package.  If the package is not
-         * available, we disable the authentication methods that
-         * depend upon it. */
-        if ((@include_once 'Auth/SASL.php') === false) {
-            $pos = array_search('DIGEST-MD5', $this->auth_methods);
-            unset($this->auth_methods[$pos]);
-            $pos = array_search('CRAM-MD5', $this->auth_methods);
-            unset($this->auth_methods[$pos]);
+        /* Include the Auth_SASL package.  If the package is available, we 
+         * enable the authentication methods that depend upon it. */
+        if ((@include_once 'Auth/SASL.php') === true) {
+            $this->setAuthMethod('CRAM-MD5', array($this, '_authCram_MD5'));
+            $this->setAuthMethod('DIGEST-MD5', array($this, '_authDigest_MD5'));
         }
+
+        /* These standard authentication methods are always available. */
+        $this->setAuthMethod('LOGIN', array($this, '_authLogin'), false);
+        $this->setAuthMethod('PLAIN', array($this, '_authPlain'), false);
     }
 
     /**
@@ -563,7 +564,7 @@ class Net_SMTP
     {
         $available_methods = explode(' ', $this->_esmtp['AUTH']);
 
-        foreach ($this->auth_methods as $method) {
+        foreach ($this->auth_methods as $method => $callback) {
             if (in_array($method, $available_methods)) {
                 return $method;
             }
@@ -630,36 +631,70 @@ class Net_SMTP
             }
         } else {
             $method = strtoupper($method);
-            if (!in_array($method, $this->auth_methods)) {
+            if (!array_key_exists($method, $this->auth_methods)) {
                 return PEAR::raiseError("$method is not a supported authentication method");
             }
         }
 
-        switch ($method) {
-        case 'DIGEST-MD5':
-            $result = $this->_authDigest_MD5($uid, $pwd, $authz);
-            break;
-
-        case 'CRAM-MD5':
-            $result = $this->_authCRAM_MD5($uid, $pwd);
-            break;
-
-        case 'LOGIN':
-            $result = $this->_authLogin($uid, $pwd);
-            break;
-
-        case 'PLAIN':
-            $result = $this->_authPlain($uid, $pwd, $authz);
-            break;
-
-        default:
-            $result = PEAR::raiseError("$method is not a supported authentication method");
-            break;
+        if (!isset($this->auth_methods[$method])) {
+            return PEAR::raiseError("$method is not a supported authentication method");
         }
+
+        if (!is_callable($this->auth_methods[$method], false)) {
+            return PEAR::raiseError("$method authentication method cannot be called");
+        }
+
+        if (is_array($this->auth_methods[$method])) {
+            list($object, $method) = $this->auth_methods[$method];
+            $result = $object->{$method}($uid, $pwd, $authz, $this);
+        } else {
+            $func =  $this->auth_methods[$method];
+            $result = $func($uid, $pwd, $authz, $this);
+         }
 
         /* If an error was encountered, return the PEAR_Error object. */
         if (PEAR::isError($result)) {
             return $result;
+        }
+
+        return true;
+    }
+
+    /**
+     * Add a new authentication method.
+     *
+     * @param string    The authentication method name (e.g. 'PLAIN')
+     * @param mixed     The authentication callback (given as the name of a 
+     *                  function or as an (object, method name) array).
+     * @param bool      Should the new method be prepended to the list of 
+     *                  available methods?  This is the default behavior, 
+     *                  giving the new method the highest priority.
+     *
+     * @return  mixed   True on success or a PEAR_Error object on failure.
+     *
+     * @access public
+     * @since  1.6.0
+     */
+    function setAuthMethod($name, $callback, $prepend = true)
+    {
+        if (!is_string($name)) {
+            return PEAR::raiseError('Method name is not a string');
+        }
+
+        if (!is_string($callback) && !is_array($callback)) {
+            return PEAR::raiseError('Method callback must be string or array');
+        }
+
+        if (is_array($callback)) {
+            if (!is_object($callback[0]) || !is_string($callback[1]))
+                return PEAR::raiseError('Bad mMethod callback array');
+        }
+
+        if ($prepend) {
+            $this->auth_methods = array_merge(array($name => $callback),
+                                              $this->auth_methods);
+        } else {
+            $this->auth_methods[$name] = $callback;
         }
 
         return true;
@@ -722,13 +757,14 @@ class Net_SMTP
      *
      * @param string The userid to authenticate as.
      * @param string The password to authenticate with.
+     * @param string The optional authorization proxy identifier.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private
      * @since  1.1.0
      */
-    function _authCRAM_MD5($uid, $pwd)
+    function _authCRAM_MD5($uid, $pwd, $authz = '')
     {
         if (PEAR::isError($error = $this->_put('AUTH', 'CRAM-MD5'))) {
             return $error;
@@ -761,13 +797,14 @@ class Net_SMTP
      *
      * @param string The userid to authenticate as.
      * @param string The password to authenticate with.
+     * @param string The optional authorization proxy identifier.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @access private
      * @since  1.1.0
      */
-    function _authLogin($uid, $pwd)
+    function _authLogin($uid, $pwd, $authz = '')
     {
         if (PEAR::isError($error = $this->_put('AUTH', 'LOGIN'))) {
             return $error;
