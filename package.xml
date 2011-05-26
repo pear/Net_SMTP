@@ -34,6 +34,7 @@
 - More kinds of socket write() failures are now detected.
 - Improved PEAR_Error internal handling. (Bug 18469)
 - External authentication methods are now supported via setAuthMethod().
+- Resource-based data streams are no longer terminated prematurely. (Bug 18563)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
