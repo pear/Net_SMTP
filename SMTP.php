@@ -1080,7 +1080,7 @@ class Net_SMTP
             /* Stream the contents of the file resource out over our socket 
              * connection, line by line.  Each line must be run through the 
              * quoting routine. */
-            while (($line = fread($data, 8192)) !== false) {
+            while (strlen($line = fread($data, 8192)) > 0) {
                 /* If the last character is an newline, we need to grab the
                  * next character to check to see if it is a period. */
                 while (!feof($data)) {
