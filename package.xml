@@ -22,7 +22,7 @@
  <date>2011-06-05</date>
  <time>20:40:00</time>
  <version>
-  <release>1.6.0</release>
+  <release>1.6.1</release>
   <api>1.2.0</api>
  </version>
  <stability>
@@ -30,11 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Adding a new command() method for sending arbitrary SMTP commands.
-- More kinds of socket write() failures are now detected.
-- Improved PEAR_Error internal handling. (Bug 18469)
-- External authentication methods are now supported via setAuthMethod().
-- Resource-based data streams are no longer terminated prematurely. (Bug 18563)
+ <notes>- Fixing the detection of SASL-based AUTH methods. (Bug #18594)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
