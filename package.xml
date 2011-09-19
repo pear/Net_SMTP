@@ -22,7 +22,7 @@
  <date>2011-08-13</date>
  <time>10:00:00</time>
  <version>
-  <release>1.6.1</release>
+  <release>1.6.2</release>
   <api>1.2.0</api>
  </version>
  <stability>
@@ -30,7 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Fixing the detection of SASL-based AUTH methods. (Bug #18594)
+ <notes>- Update to Auth_SASL 1.0.5 and its new IANA names. (Request 18837)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
@@ -67,6 +67,7 @@
    <package>
     <name>Auth_SASL</name>
     <channel>pear.php.net</channel>
+    <min>1.0.5</min>
    </package>
   </optional>
  </dependencies>
