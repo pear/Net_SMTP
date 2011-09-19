@@ -1,5 +1,5 @@
 --TEST--
-Net_SMTP: quotedata() \n | \r  => \r\n replacement
+Net_SMTP: quotedata()
 --FILE--
 <?php
 
@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 require_once 'Net/SMTP.php';
 
 $tests = array(
+    /* Newlines */
     "\n"               => "\r\n",
     "\r\n"             => "\r\n",
     "\nxx"             => "\r\nxx",
@@ -37,25 +38,32 @@ $tests = array(
     "xx\r\r"           => "xx\r\n\r\n",
     "xx\rxx\nxx\r\nxx" => "xx\r\nxx\r\nxx\r\nxx",
     "\r\r\n\n"         => "\r\n\r\n\r\n",
+
+    /* Dots */
+    "."                 => "..",
+    "xxx\n."            => "xxx\r\n..",
+    "xxx\n.\nxxx"       => "xxx\r\n..\r\nxxx",
+    "xxx.\n.xxx"        => "xxx.\r\n..xxx",
 );
 
-$hadError = false;
-foreach ($tests as $input => $expect) {
+function literal($x)
+{
+    return str_replace(array("\r", "\n"), array('\r', '\n'), $x);
+}
+
+$error = false;
+foreach ($tests as $input => $expected) {
     $output = $input;
     Net_SMTP::quotedata($output);
-    if ($output != $expect) {
-        echo "Error: input " . prettyprint($input) . ", output " . prettyprint($output) . ", expected " . prettyprint($expect) . "\n";
-        $hadError = true;
+    if ($output != $expected) {
+        printf("Error: '%s' => '%s' (expected: '%s')",
+            literal($input), literal($output), literal($expected));
+        $error = true;
     }
 }
 
-if (!$hadError) {
+if (!$error) {
     echo "success\n";
-}
-
-function prettyprint($x)
-{
-    return str_replace(array("\r", "\n"), array('\r', '\n'), $x);
 }
 
 --EXPECT--

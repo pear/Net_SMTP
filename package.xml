@@ -19,8 +19,8 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2011-08-13</date>
- <time>10:00:00</time>
+ <date>2011-09-18</date>
+ <time>17:00:00</time>
  <version>
   <release>1.6.2</release>
   <api>1.2.0</api>
@@ -31,6 +31,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
  <notes>- Update to Auth_SASL 1.0.5 and its new IANA names. (Request 18837)
+- Improve quotedata()'s handling of leading dots. (Bug 18819)
  </notes>
  <contents>
   <dir baseinstalldir="Net" name="/">
