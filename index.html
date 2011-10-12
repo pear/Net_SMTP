@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
+<title>The Net_SMTP Package</title>
+<style type="text/css">
+
+body {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 0.8em;
+	letter-spacing: 0.01em;
+	line-height: 1.5em;
+	text-align: justify;
+	margin: 0 auto;
+	width: 48em;
+}
+
+a:link, a:visited {
+	color: #00c;
+	padding-bottom: 0;
+	text-decoration: none;
+	border-bottom: 1px solid #dbd5c5;
+}
+
+a:hover {
+	padding-bottom: 0;
+	border-bottom: 2px solid #dbd5c5;
+}
+
+h1, h2, h3 {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-weight: normal;
+	line-height: normal;
+}
+
+h1 {
+	font-size: 2.1em;
+	letter-spacing: -0.02em;
+	margin-top: 30px;
+	text-align: center;
+}
+
+h2 {
+	font-size: 1.6em;
+	font-style: italic;
+	margin: 30px 0 10px 0;
+}
+
+h3 {
+	font-size: 1.3em;
+	font-style: italic;
+	margin-top: 20px;
+}
+
+li {
+	line-height: 135%;
+}
+
+ul, ol {
+	margin: 0 0 1em 2em;
+	padding: 0 0 0 1em;
+}
+
+hr {
+	background-color: #ccc;
+	border: 0px none;
+	color: #eee;
+	height: 1px;
+	margin: 30px 0px;
+}
+
+blockquote, pre {
+	background-color: #f9f9f9;
+	border: 1px solid #eee;
+	border-left: 2px solid #ccc;
+	padding: 1em;
+}
+
+blockquote {
+	color: #666;
+	line-height: 1.3em;
+}
+
+pre {
+	line-height: normal;
+	overflow: auto;
+}
+
+pre.code-block {
+	padding-bottom: 0;
+}
+
+tt, pre, code, samp, kbd {
+	color: #333;
+	font-family: Consolas, 'Lucida Console', monospace;
+	font-size: 13px;
+}
+
+label em {
+	font-weight: normal;
+}
+
+form {
+	margin: 0;
+	padding: 0;
+}
+
+.code-block .err { border: 1px solid #FF0000 } /* Error */
+.code-block .k,.kn { color: #369 } /* Keywords */
+.code-block .c,.cm,.cp,.c1 { color: #666; font-style: italic } /* Comments */
+.code-block .n { color: #000 } /* Names */
+.code-block .p { color: #000 } /* Punctuation */
+.code-block .nc,.nf,.nn { color: #333; font-weight: bold } /* Symbol Names */
+.code-block .s { color: #933 } /* Literal.String */
+.code-block .sd { color: #666 } /* Literal.String.Doc */
+
+</style>
+</head>
+<body>
+<div class="document" id="the-net-smtp-package">
+<h1 class="title">The Net_SMTP Package</h1>
+<h2 class="subtitle" id="user-documentation">User Documentation</h2>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Author:</th><td class="field-body">Jon Parise</td>
+</tr>
+<tr class="field"><th class="field-name">Contact:</th><td class="field-body"><a class="reference external" href="mailto:jon&#37;&#52;&#48;php&#46;net">jon<span>&#64;</span>php<span>&#46;</span>net</a></td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="auto-toc simple">
+<li><a class="reference internal" href="#dependencies" id="id1">1&nbsp;&nbsp;&nbsp;Dependencies</a><ul class="auto-toc">
+<li><a class="reference internal" href="#the-pear-error-class" id="id2">1.1&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">PEAR_Error</tt> Class</a></li>
+<li><a class="reference internal" href="#the-net-socket-package" id="id3">1.2&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Net_Socket</tt> Package</a></li>
+<li><a class="reference internal" href="#the-auth-sasl-package" id="id4">1.3&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Auth_SASL</tt> Package</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#error-handling" id="id5">2&nbsp;&nbsp;&nbsp;Error Handling</a></li>
+<li><a class="reference internal" href="#smtp-authentication" id="id6">3&nbsp;&nbsp;&nbsp;SMTP Authentication</a><ul class="auto-toc">
+<li><a class="reference internal" href="#digest-md5" id="id7">3.1&nbsp;&nbsp;&nbsp;DIGEST-MD5</a></li>
+<li><a class="reference internal" href="#cram-md5" id="id8">3.2&nbsp;&nbsp;&nbsp;CRAM-MD5</a></li>
+<li><a class="reference internal" href="#login" id="id9">3.3&nbsp;&nbsp;&nbsp;LOGIN</a></li>
+<li><a class="reference internal" href="#plain" id="id10">3.4&nbsp;&nbsp;&nbsp;PLAIN</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#secure-connections" id="id11">4&nbsp;&nbsp;&nbsp;Secure Connections</a></li>
+<li><a class="reference internal" href="#sending-data" id="id12">5&nbsp;&nbsp;&nbsp;Sending Data</a></li>
+<li><a class="reference internal" href="#data-quoting" id="id13">6&nbsp;&nbsp;&nbsp;Data Quoting</a></li>
+<li><a class="reference internal" href="#server-responses" id="id14">7&nbsp;&nbsp;&nbsp;Server Responses</a></li>
+<li><a class="reference internal" href="#debugging" id="id15">8&nbsp;&nbsp;&nbsp;Debugging</a></li>
+<li><a class="reference internal" href="#examples" id="id16">9&nbsp;&nbsp;&nbsp;Examples</a><ul class="auto-toc">
+<li><a class="reference internal" href="#basic-use" id="id17">9.1&nbsp;&nbsp;&nbsp;Basic Use</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="dependencies">
+<h2>1&nbsp;&nbsp;&nbsp;Dependencies</h2>
+<div class="section" id="the-pear-error-class">
+<h3>1.1&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">PEAR_Error</tt> Class</h3>
+<p>The Net_SMTP package uses the <a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> class for all of its <a class="reference internal" href="#error-handling">error
+handling</a>.</p>
+</div>
+<div class="section" id="the-net-socket-package">
+<h3>1.2&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Net_Socket</tt> Package</h3>
+<p>The <a class="reference external" href="http://pear.php.net/package/Net_Socket">Net_Socket</a> package is used as the basis for all network communications.</p>
+</div>
+<div class="section" id="the-auth-sasl-package">
+<h3>1.3&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Auth_SASL</tt> Package</h3>
+<p>The <a class="reference external" href="http://pear.php.net/package/Auth_SASL">Auth_SASL</a> package is an optional dependency.  If it is available, the
+Net_SMTP package will be able to support the <a class="reference internal" href="#digest-md5">DIGEST-MD5</a> and <a class="reference internal" href="#cram-md5">CRAM-MD5</a> SMTP
+authentication methods.  Otherwise, only the <a class="reference internal" href="#login">LOGIN</a> and <a class="reference internal" href="#plain">PLAIN</a> methods will
+be available.</p>
+</div>
+</div>
+<div class="section" id="error-handling">
+<h2>2&nbsp;&nbsp;&nbsp;Error Handling</h2>
+<p>All of the Net_SMTP class's public methods return a <a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> object if an
+error occurs.  The standard way to check for a PEAR_Error object is by using
+<a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear.iserror.php">PEAR::isError()</a>:</p>
+<pre class="literal-block">
+if (PEAR::isError($error = $smtp-&gt;connect())) {
+    die($error-&gt;getMessage());
+}
+</pre>
+</div>
+<div class="section" id="smtp-authentication">
+<h2>3&nbsp;&nbsp;&nbsp;SMTP Authentication</h2>
+<p>The Net_SMTP package supports the SMTP authentication standard (as defined
+by <a class="reference external" href="http://www.ietf.org/rfc/rfc2554.txt">RFC-2554</a>).  The Net_SMTP package supports the following authentication
+methods, in order of preference:</p>
+<div class="section" id="digest-md5">
+<h3>3.1&nbsp;&nbsp;&nbsp;DIGEST-MD5</h3>
+<p>The DIGEST-MD5 authentication method uses <a class="reference external" href="http://www.rsasecurity.com/">RSA Data Security Inc.</a>'s MD5
+Message Digest algorithm.  It is considered the most secure method of SMTP
+authentication.</p>
+<p><strong>Note:</strong> The DIGEST-MD5 authentication method is only supported if the
+<a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
+</div>
+<div class="section" id="cram-md5">
+<h3>3.2&nbsp;&nbsp;&nbsp;CRAM-MD5</h3>
+<p>The CRAM-MD5 authentication method has been superseded by the <a class="reference internal" href="#digest-md5">DIGEST-MD5</a>
+method in terms of security.  It is provided here for compatibility with
+older SMTP servers that may not support the newer DIGEST-MD5 algorithm.</p>
+<p><strong>Note:</strong> The CRAM-MD5 authentication method is only supported if the
+<a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
+</div>
+<div class="section" id="login">
+<h3>3.3&nbsp;&nbsp;&nbsp;LOGIN</h3>
+<p>The LOGIN authentication method encrypts the user's password using the
+<a class="reference external" href="http://www.php.net/manual/en/function.base64-encode.php">Base64</a> encoding scheme.  Because decrypting a Base64-encoded string is
+trivial, LOGIN is not considered a secure authentication method and should
+be avoided.</p>
+</div>
+<div class="section" id="plain">
+<h3>3.4&nbsp;&nbsp;&nbsp;PLAIN</h3>
+<p>The PLAIN authentication method sends the user's password in plain text.
+This method of authentication is not secure and should be avoided.</p>
+</div>
+</div>
+<div class="section" id="secure-connections">
+<h2>4&nbsp;&nbsp;&nbsp;Secure Connections</h2>
+<p>If <a class="reference external" href="http://www.php.net/transports">secure socket transports</a> have been enabled in PHP, it is possible to
+establish a secure connection to the remote SMTP server:</p>
+<pre class="literal-block">
+$smtp = new Net_SMTP('ssl://mail.example.com', 465);
+</pre>
+<p>This example connects to <tt class="docutils literal">mail.example.com</tt> on port 465 (a common SMTPS
+port) using the <tt class="docutils literal"><span class="pre">ssl://</span></tt> transport.</p>
+</div>
+<div class="section" id="sending-data">
+<h2>5&nbsp;&nbsp;&nbsp;Sending Data</h2>
+<p>Message data is sent using the <tt class="docutils literal">data()</tt> method.  The data can be supplied
+as a single string or as an open file resource.</p>
+<p>If a string is provided, it is passed through the <a class="reference internal" href="#data-quoting">data quoting</a> system and
+sent to the socket connection as a single block.  These operations are all
+memory-based, so sending large messages may result in high memory usage.</p>
+<p>If an open file resource is provided, the <tt class="docutils literal">data()</tt> method will read the
+message data from the file line-by-line.  Each chunk will be quoted and sent
+to the socket connection individually, reducing the overall memory overhead of
+this data sending operation.</p>
+<p>Header data can be specified separately from message body data by passing it
+as the optional second parameter to <tt class="docutils literal">data()</tt>.  This is especially useful
+when an open file resource is being used to supply message data because it
+allows header fields (like <em>Subject:</em>) to be built dynamically at runtime.</p>
+<pre class="literal-block">
+$smtp-&gt;data($fp, &quot;Subject: My Subject&quot;);
+</pre>
+</div>
+<div class="section" id="data-quoting">
+<h2>6&nbsp;&nbsp;&nbsp;Data Quoting</h2>
+<p>By default, all outbound string data is quoted in accordance with SMTP
+standards.  This means that all native Unix (<tt class="docutils literal">\n</tt>) and Mac (<tt class="docutils literal">\r</tt>) line
+endings are converted to Internet-standard CRLF (<tt class="docutils literal">\r\n</tt>) line endings.
+Also, because the SMTP protocol uses a single leading period (<tt class="docutils literal">.</tt>) to signal
+an end to the message data, single leading periods in the original data
+string are &quot;doubled&quot; (e.g. &quot;<tt class="docutils literal">..</tt>&quot;).</p>
+<p>These string transformation can be expensive when large blocks of data are
+involved.  For example, the Net_SMTP package is not aware of MIME parts (it
+just sees the MIME message as one big string of characters), so it is not
+able to skip non-text attachments when searching for characters that may
+need to be quoted.</p>
+<p>Because of this, it is possible to extend the Net_SMTP class in order to
+implement your own custom quoting routine.  Just create a new class based on
+the Net_SMTP class and reimplement the <tt class="docutils literal">quotedata()</tt> method:</p>
+<pre class="literal-block">
+require 'Net_SMTP.php';
+
+class Net_SMTP_custom extends Net_SMTP
+{
+    function quotedata($data)
+    {
+        /* Perform custom data quoting */
+    }
+}
+</pre>
+<p>Note that the <tt class="docutils literal">$data</tt> parameter will be passed to the <tt class="docutils literal">quotedata()</tt>
+function <a class="reference external" href="http://www.php.net/manual/en/language.references.pass.php">by reference</a>.  This means that you can operate directly on
+<tt class="docutils literal">$data</tt>.  It also the overhead of copying a large <tt class="docutils literal">$data</tt> string to and
+from the <tt class="docutils literal">quotedata()</tt> method.</p>
+</div>
+<div class="section" id="server-responses">
+<h2>7&nbsp;&nbsp;&nbsp;Server Responses</h2>
+<p>The Net_SMTP package retains the server's last response for further
+inspection.  The <tt class="docutils literal">getResponse()</tt> method returns a 2-tuple (two element
+array) containing the server's response code as an integer and the response's
+arguments as a string.</p>
+<p>Upon a successful connection, the server's greeting string is available via
+the <tt class="docutils literal">getGreeting()</tt> method.</p>
+</div>
+<div class="section" id="debugging">
+<h2>8&nbsp;&nbsp;&nbsp;Debugging</h2>
+<p>The Net_SMTP package contains built-in debugging output routines (disabled by
+default).  Debugging output must be explicitly enabled via the <tt class="docutils literal">setDebug()</tt>
+method:</p>
+<pre class="literal-block">
+$smtp-&gt;setDebug(true);
+</pre>
+<p>The debugging messages will be sent to the standard output stream by default.
+If you need more control over the output, you can optionally install your own
+debug handler.</p>
+<pre class="literal-block">
+function debugHandler($smtp, $message)
+{
+    echo &quot;[$smtp-&gt;host] $message\n&quot;;
+}
+
+$smtp-&gt;setDebug(true, &quot;debugHandler&quot;);
+</pre>
+</div>
+<div class="section" id="examples">
+<h2>9&nbsp;&nbsp;&nbsp;Examples</h2>
+<div class="section" id="basic-use">
+<h3>9.1&nbsp;&nbsp;&nbsp;Basic Use</h3>
+<p>The following script demonstrates how a simple email message can be sent
+using the Net_SMTP package:</p>
+<pre class="literal-block">
+require 'Net/SMTP.php';
+
+$host = 'mail.example.com';
+$from = 'user&#64;example.com';
+$rcpt = array('recipient1&#64;example.com', 'recipient2&#64;example.com');
+$subj = &quot;Subject: Test Message\n&quot;;
+$body = &quot;Body Line 1\nBody Line 2&quot;;
+
+/* Create a new Net_SMTP object. */
+if (! ($smtp = new Net_SMTP($host))) {
+    die(&quot;Unable to instantiate Net_SMTP object\n&quot;);
+}
+
+/* Connect to the SMTP server. */
+if (PEAR::isError($e = $smtp-&gt;connect())) {
+    die($e-&gt;getMessage() . &quot;\n&quot;);
+}
+
+/* Send the 'MAIL FROM:' SMTP command. */
+if (PEAR::isError($smtp-&gt;mailFrom($from))) {
+    die(&quot;Unable to set sender to &lt;$from&gt;\n&quot;);
+}
+
+/* Address the message to each of the recipients. */
+foreach ($rcpt as $to) {
+    if (PEAR::isError($res = $smtp-&gt;rcptTo($to))) {
+        die(&quot;Unable to add recipient &lt;$to&gt;: &quot; . $res-&gt;getMessage() . &quot;\n&quot;);
+    }
+}
+
+/* Set the body of the message. */
+if (PEAR::isError($smtp-&gt;data($subj . &quot;\r\n&quot; . $body))) {
+    die(&quot;Unable to send data\n&quot;);
+}
+
+/* Disconnect from the SMTP server. */
+$smtp-&gt;disconnect();
+</pre>
+</div>
+</div>
+</div>
+</body>
+</html>
