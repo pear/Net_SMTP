@@ -34,7 +34,7 @@
 - Improve quotedata()'s handling of leading dots. (Bug 18819)
  </notes>
  <contents>
-  <dir baseinstalldir="Net" name="/">
+  <dir baseinstalldir="/" name="/">
    <dir name="docs">
     <file name="guide.txt" role="doc" />
    </dir> <!-- /docs -->
@@ -47,7 +47,7 @@
     <file name="config.php.dist" role="test" />
     <file name="quotedata.phpt" role="test" />
    </dir> <!-- /tests -->
-   <file name="SMTP.php" role="php" />
+   <file name="Net/SMTP.php" role="php" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
