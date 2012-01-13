@@ -3,7 +3,6 @@ Net_SMTP: quotedata()
 --FILE--
 <?php
 
-error_reporting(E_ALL);
 require_once 'Net/SMTP.php';
 
 $tests = array(
