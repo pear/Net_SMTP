@@ -17,7 +17,7 @@ if (! ($smtp = new Net_SMTP($host))) {
 if (PEAR::isError($e = $smtp->connect())) {
     die($e->getMessage() . "\n");
 }
-
+$smtp->auth('username','password');
 /* Send the 'MAIL FROM:' SMTP command. */
 if (PEAR::isError($smtp->mailFrom($from))) {
     die("Unable to set sender to <$from>\n");
