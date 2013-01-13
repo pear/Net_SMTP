@@ -6,3 +6,5 @@
 /tests/*.log
 /tests/*.out
 /tests/config.php
+.DS_Store
+
