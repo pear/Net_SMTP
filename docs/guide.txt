@@ -15,10 +15,10 @@
 Dependencies
 ============
 
-The ``PEAR_Error`` Class
+The ``PEAR_Exception`` Class
 ------------------------
 
-The Net_SMTP package uses the `PEAR_Error`_ class for all of its `error
+The Net_SMTP package uses the `PEAR_Exception`_ object for all of its `error
 handling`_.
 
 The ``Net_Socket`` Package
@@ -37,15 +37,15 @@ be available.
 Error Handling
 ==============
 
-All of the Net_SMTP class's public methods return a PEAR_Error_ object if an
+All of the Net_SMTP class's public methods throw a PEAR_Exception_ object if an
 error occurs.  The standard way to check for a PEAR_Error object is by using
-`PEAR::isError()`_::
+try/catch blocks::
 
-    if (PEAR::isError($error = $smtp->connect())) {
-        die($error->getMessage());
+    try {
+        $smtp->connect();
+    } catch (PEAR_Exception $e) {
+        die($e->getMessage());
     }
-
-.. _PEAR::isError(): http://pear.php.net/manual/en/core.pear.pear.iserror.php
 
 SMTP Authentication
 ===================
@@ -225,31 +225,39 @@ using the Net_SMTP package::
     }
 
     /* Connect to the SMTP server. */
-    if (PEAR::isError($e = $smtp->connect())) {
+    try {
+        $smtp->connect();
+    } catch (PEAR_Exception $e) {
         die($e->getMessage() . "\n");
     }
 
     /* Send the 'MAIL FROM:' SMTP command. */
-    if (PEAR::isError($smtp->mailFrom($from))) {
+    try {
+        $smtp->mailFrom($from);
+    } catch (PEAR_Exception $e) {
         die("Unable to set sender to <$from>\n");
     }
 
     /* Address the message to each of the recipients. */
-    foreach ($rcpt as $to) {
-        if (PEAR::isError($res = $smtp->rcptTo($to))) {
-            die("Unable to add recipient <$to>: " . $res->getMessage() . "\n");
+    try {
+        foreach ($rcpt as $to) {
+            $smtp->rcptTo($to);
         }
+    } catch (PEAR_Exception $e) {
+        die("Unable to add recipient <$to>: " . $e->getMessage() . "\n");
     }
 
     /* Set the body of the message. */
-    if (PEAR::isError($smtp->data($subj . "\r\n" . $body))) {
+    try {
+        $smtp->data($subj . "\r\n" . $body);
+    } catch (PEAR_Exception $e) {
         die("Unable to send data\n");
     }
 
     /* Disconnect from the SMTP server. */
     $smtp->disconnect();
 
-.. _PEAR_Error: http://pear.php.net/manual/en/core.pear.pear-error.php
+.. _PEAR_Exception: http://pear.php.net/manual/en/core.pear.pear-exception.php
 .. _Net_Socket: http://pear.php.net/package/Net_Socket
 .. _Auth_SASL: http://pear.php.net/package/Auth_SASL
 
