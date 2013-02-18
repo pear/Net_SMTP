@@ -12,20 +12,28 @@ if (! ($smtp = new Net_SMTP(TEST_HOSTNAME, TEST_PORT, TEST_LOCALHOST))) {
 	die("Unable to instantiate Net_SMTP object\n");
 }
 
-if (PEAR::isError($e = $smtp->connect())) {
+try {
+    $smtp->connect();
+} catch (Exception $e) {
 	die($e->getMessage() . "\n");
 }
 
-if (PEAR::isError($smtp->mailFrom(TEST_FROM))) {
+try {
+    $smtp->mailFrom(TEST_FROM);
+} catch (Exception $e) {
 	die('Unable to set sender to <' . TEST_FROM . ">\n");
 }
 
-if (PEAR::isError($res = $smtp->rcptTo(TEST_TO))) {
+try {
+    $smtp->rcptTo(TEST_TO);
+} catch (Exception $e) {
 	die('Unable to add recipient <' . TEST_TO . '>: ' .
-		$res->getMessage() . "\n");
+		$e->getMessage() . "\n");
 }
 
-if (PEAR::isError($smtp->data(TEST_SUBJECT . "\r\n" . TEST_BODY))) {
+try {
+    $smtp->data(TEST_SUBJECT . "\r\n" . TEST_BODY);
+} catch (Exception $e) {
 	die("Unable to send data\n");
 }
 
