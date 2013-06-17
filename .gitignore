@@ -1,6 +1,7 @@
 .DS_Store
 
-# /tests/
+# Tests
+run-tests.log
 /tests/*.diff
 /tests/*.exp
 /tests/*.log
