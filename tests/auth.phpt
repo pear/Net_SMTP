@@ -17,19 +17,7 @@ if (PEAR::isError($e = $smtp->connect())) {
 }
 
 if (PEAR::isError($e = $smtp->auth(TEST_AUTH_USER, TEST_AUTH_PASS))) {
-}
-
-if (PEAR::isError($smtp->mailFrom(TEST_FROM))) {
-	die('Unable to set sender to <' . TEST_FROM . ">\n");
-}
-
-if (PEAR::isError($res = $smtp->rcptTo(TEST_TO))) {
-	die('Unable to add recipient <' . TEST_TO . '>: ' .
-		$res->getMessage() . "\n");
-}
-
-if (PEAR::isError($smtp->data(TEST_SUBJECT . "\r\n" . TEST_BODY))) {
-	die("Unable to send data\n");
+	die("Authentication failure\n");
 }
 
 $smtp->disconnect();
