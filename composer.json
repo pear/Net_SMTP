@@ -3,6 +3,7 @@
         {
             "email": "jon@php.net",
             "name": "Jon Parise",
+            "homepage": "http://www.indelible.org",
             "role": "Lead"
         },
         {
@@ -16,12 +17,13 @@
             "Net": "./"
         }
     },
-    "description": "More info available on: http://pear.php.net/package/Net_SMTP",
+    "description": "An implementation of the SMTP protocol",
     "include-path": [
         "./"
     ],
     "license": "PHP License",
     "name": "pear/net_smtp",
+    "homepage": "http://pear.github.io/Net_SMTP/",
     "support": {
         "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_SMTP",
         "source": "https://github.com/pear/Net_SMTP"
