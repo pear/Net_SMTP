@@ -18,6 +18,11 @@
         }
     },
     "description": "An implementation of the SMTP protocol",
+    "keywords": [
+        "smtp",
+        "mail",
+        "email"
+    ],
     "include-path": [
         "./"
     ],
