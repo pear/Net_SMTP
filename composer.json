@@ -13,7 +13,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "Net_SMTP": "./"
+            "Net": "./"
         }
     },
     "description": "More info available on: http://pear.php.net/package/Net_SMTP",
@@ -28,9 +28,13 @@
     },
     "type": "library",
     "require": {
-        "pear/pear_exception": "*"
+        "pear/pear_exception": "*",
+        "pear/net_socket": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
+    },
+    "suggest": {
+        "pear/auth_sasl": "Install optionally via your project's composer.json"
     }
 }
