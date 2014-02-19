@@ -30,7 +30,7 @@
     "name": "pear/net_smtp",
     "homepage": "http://pear.github.io/Net_SMTP/",
     "support": {
-        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_SMTP",
+        "issues": "https://github.com/pear/Net_SMTP/issues",
         "source": "https://github.com/pear/Net_SMTP"
     },
     "type": "library",
