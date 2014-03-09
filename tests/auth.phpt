@@ -12,11 +12,15 @@ if (! ($smtp = new Net_SMTP(TEST_HOSTNAME, TEST_PORT, TEST_LOCALHOST))) {
 	die("Unable to instantiate Net_SMTP object\n");
 }
 
-if (PEAR::isError($e = $smtp->connect())) {
+try {
+    $e = $smtp->connect();
+} catch (Exception $e) {
 	die($e->getMessage() . "\n");
 }
 
-if (PEAR::isError($e = $smtp->auth(TEST_AUTH_USER, TEST_AUTH_PASS))) {
+try {
+    $smtp->auth(TEST_AUTH_USER, TEST_AUTH_PASS);
+} catch (Exception $e) {
 	die("Authentication failure\n");
 }
 
