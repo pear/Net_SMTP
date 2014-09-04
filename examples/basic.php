@@ -14,32 +14,24 @@ if (! ($smtp = new Net_SMTP($host))) {
 }
 
 /* Connect to the SMTP server. */
-try {
-    $smtp->connect();
-} catch (PEAR_Exception $e) {
+if (PEAR::isError($e = $smtp->connect())) {
     die($e->getMessage() . "\n");
 }
 $smtp->auth('username','password');
 /* Send the 'MAIL FROM:' SMTP command. */
-try {
-    $smtp->mailFrom($from);
-} catch (PEAR_Exception $e) {
+if (PEAR::isError($smtp->mailFrom($from))) {
     die("Unable to set sender to <$from>\n");
 }
 
 /* Address the message to each of the recipients. */
-try {
-    foreach ($rcpt as $to) {
-        $smtp->rcptTo($to);
+foreach ($rcpt as $to) {
+    if (PEAR::isError($res = $smtp->rcptTo($to))) {
+        die("Unable to add recipient <$to>: " . $res->getMessage() . "\n");
     }
-} catch (PEAR_Exception $e) {
-    die("Unable to add recipient <$to>: " . $e->getMessage() . "\n");
 }
 
 /* Set the body of the message. */
-try {
-    $smtp->data($subj . "\r\n" . $body);
-} catch (PEAR_Exception $e) {
+if (PEAR::isError($smtp->data($subj . "\r\n" . $body))) {
     die("Unable to send data\n");
 }
 

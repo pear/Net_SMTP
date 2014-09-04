@@ -51,11 +51,9 @@ function literal($x)
 }
 
 $error = false;
-$smtp = new Net_SMTP();
-
 foreach ($tests as $input => $expected) {
     $output = $input;
-    $smtp->quotedata($output);
+    Net_SMTP::quotedata($output);
     if ($output != $expected) {
         printf("Error: '%s' => '%s' (expected: '%s')",
             literal($input), literal($output), literal($expected));
