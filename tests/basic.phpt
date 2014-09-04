@@ -12,9 +12,7 @@ if (! ($smtp = new Net_SMTP(TEST_HOSTNAME, TEST_PORT, TEST_LOCALHOST))) {
 	die("Unable to instantiate Net_SMTP object\n");
 }
 
-try {
-    $e = $smtp->connect();
-} catch (Exception $e) {
+if (PEAR::isError($e = $smtp->connect())) {
 	die($e->getMessage() . "\n");
 }
 
@@ -22,21 +20,16 @@ if (PEAR::isError($e = $smtp->auth(TEST_AUTH_USER, TEST_AUTH_PASS))) {
     die("Authentication failure\n");
 }
 
-try {
-    $smtp->mailFrom(TEST_FROM);
-} catch (Exception $e) {
+if (PEAR::isError($smtp->mailFrom(TEST_FROM))) {
 	die('Unable to set sender to <' . TEST_FROM . ">\n");
 }
 
-try {
-    $smtp->rcptTo(TEST_TO);
-} catch (Exception $e) {	die('Unable to add recipient <' . TEST_TO . '>: ' .
-		$e->getMessage() . "\n");
+if (PEAR::isError($res = $smtp->rcptTo(TEST_TO))) {
+	die('Unable to add recipient <' . TEST_TO . '>: ' .
+		$res->getMessage() . "\n");
 }
 
-try {
-    $smtp->data(TEST_SUBJECT . "\r\n" . TEST_BODY);
-} catch (Exception $e) {
+if (PEAR::isError($smtp->data('Subject: ' . TEST_SUBJECT . "\r\n\r\n" . TEST_BODY))) {
 	die("Unable to send data\n");
 }
 
