@@ -394,22 +394,25 @@ class Net_SMTP
     /**
      * Attempt to connect to the SMTP server.
      *
-     * @param int $timeout      The timeout value (in seconds) for the
-     *                          socket connection attempt.
-     * @param bool $persistent  Should a persistent socket connection
-     *                          be used?
+     * @param   int     $timeout    The timeout value (in seconds) for the
+     *                              socket connection attempt.
+     * @param   bool    $persistent Should a persistent socket connection
+     *                              be used?
      *
-     * @throws PEAR_Exception
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access public
+     * @since  1.0
      */
-    public function connect($timeout = null, $persistent = false)
+    function connect($timeout = null, $persistent = false)
     {
         $this->_greeting = null;
         $result = $this->_socket->connect($this->host, $this->port,
                                           $persistent, $timeout,
                                           $this->_socket_options);
         if (PEAR::isError($result)) {
-            throw new PEAR_Exception('Failed to connect socket: ' . $result->getMessage(),
-                                     $result);
+            return PEAR::raiseError('Failed to connect socket: ' .
+                                    $result->getMessage());
         }
 
         /*
@@ -419,15 +422,21 @@ class Net_SMTP
          * and all other socket operations.
          */
         if ($this->_timeout > 0) {
-            $this->setTimeout($this->_timeout);
+            if (PEAR::isError($error = $this->setTimeout($this->_timeout))) {
+                return $error;
+            }
         }
 
-        $this->_parseResponse(220);
-        
+        if (PEAR::isError($error = $this->_parseResponse(220))) {
+            return $error;
+        }
+
         /* Extract and store a copy of the server's greeting string. */
         list(, $this->_greeting) = $this->getResponse();
 
-        $this->_negotiate();
+        if (PEAR::isError($error = $this->_negotiate())) {
+            return $error;
+        }
 
         return true;
     }
@@ -435,17 +444,22 @@ class Net_SMTP
     /**
      * Attempt to disconnect from the SMTP server.
      *
-     * @throws PEAR_Exception
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @access public
+     * @since  1.0
      */
-    public function disconnect()
+    function disconnect()
     {
-        $this->_put('QUIT');
-        
-        $this->_parseResponse(221);
-        
+        if (PEAR::isError($error = $this->_put('QUIT'))) {
+            return $error;
+        }
+        if (PEAR::isError($error = $this->_parseResponse(221))) {
+            return $error;
+        }
         if (PEAR::isError($error = $this->_socket->disconnect())) {
-            throw new PEAR_Exception('Failed to disconnect socket: ' .
-                                     $error->getMessage());
+            return PEAR::raiseError('Failed to disconnect socket: ' .
+                                    $error->getMessage());
         }
 
         return true;
@@ -455,18 +469,27 @@ class Net_SMTP
      * Attempt to send the EHLO command and obtain a list of ESMTP
      * extensions available, and failing that just send HELO.
      *
-     * @throws PEAR_Exception
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     *
+     * @access private
+     * @since  1.1.0
      */
-    protected function _negotiate()
+    function _negotiate()
     {
-        $this->_put('EHLO', $this->localhost);
+        if (PEAR::isError($error = $this->_put('EHLO', $this->localhost))) {
+            return $error;
+        }
 
-        try {
-            $this->_parseResponse(250);
-        } catch (PEAR_Exception $e) {
+        if (PEAR::isError($this->_parseResponse(250))) {
             /* If the EHLO failed, try the simpler HELO command. */
-            $this->_put('HELO', $this->localhost);
-            $this->_parseResponse(250);
+            if (PEAR::isError($error = $this->_put('HELO', $this->localhost))) {
+                return $error;
+            }
+            if (PEAR::isError($this->_parseResponse(250))) {
+                return PEAR::raiseError('HELO was not accepted: ', $this->_code,
+                                        PEAR_ERROR_RETURN);
+            }
 
             return true;
         }
