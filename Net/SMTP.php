@@ -1118,22 +1118,6 @@ class Net_SMTP
     }
 
     /**
-     * Backwards-compatibility wrapper for sendFrom().
-     *
-     * @param string $path The reverse path to send.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     *
-     * @since 1.0
-     * @deprecated 1.2.6
-     */
-    public function send_from($path)
-    {
-        return sendFrom($path);
-    }
-
-    /**
      * Send the SOML FROM: command.
      *
      * @param string $path The reverse path to send.
@@ -1155,22 +1139,6 @@ class Net_SMTP
     }
 
     /**
-     * Backwards-compatibility wrapper for somlFrom().
-     *
-     * @param string $path The reverse path to send.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     *
-     * @since 1.0
-     * @deprecated 1.2.6
-     */
-    public function soml_from($path)
-    {
-        return somlFrom($path);
-    }
-
-    /**
      * Send the SAML FROM: command.
      *
      * @param string $path The reverse path to send.
@@ -1189,22 +1157,6 @@ class Net_SMTP
         }
 
         return true;
-    }
-
-    /**
-     * Backwards-compatibility wrapper for samlFrom().
-     *
-     * @param string $path The reverse path to send.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     *
-     * @since 1.0
-     * @deprecated 1.2.6
-     */
-    public function saml_from($path)
-    {
-        return samlFrom($path);
     }
 
     /**
