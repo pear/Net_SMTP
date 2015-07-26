@@ -35,7 +35,7 @@
     },
     "type": "library",
     "require": {
-        "pear/pear_exception": "*",
+        "pear/pear-core-minimal": "*",
         "pear/net_socket": "*"
     },
     "require-dev": {
