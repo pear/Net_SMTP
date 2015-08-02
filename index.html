@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
 <title>The Net_SMTP Package</title>
 <style type="text/css">
 
@@ -170,7 +170,16 @@ handling</a>.</p>
 </div>
 <div class="section" id="the-net-socket-package">
 <h3>1.2&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Net_Socket</tt> Package</h3>
-<p>The <a class="reference external" href="http://pear.php.net/package/Net_Socket">Net_Socket</a> package is used as the basis for all network communications.</p>
+<p>The <a class="reference external" href="http://pear.php.net/package/Net_Socket">Net_Socket</a> package is used as the basis for all network communications.
+Connection options can be specified via the <cite>$socket_options</cite> construction
+parameter:</p>
+<pre class="literal-block">
+$socket_options = array('ssl' =&gt; array('verify_peer_name' =&gt; false));
+$smtp = new Net_SMTP($host, null, null, false, 0, $socket_options);
+</pre>
+<p><strong>Note:</strong> PHP 5.6 introduced <a class="reference external" href="http://php.net/manual/en/migration56.openssl.php">OpenSSL changes</a>. Peer certificate verification
+is now enabled by default. Although not recommended, <cite>$socket_options</cite> can be
+used to disable peer verification (as shown above).</p>
 </div>
 <div class="section" id="the-auth-sasl-package">
 <h3>1.3&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Auth_SASL</tt> Package</h3>
