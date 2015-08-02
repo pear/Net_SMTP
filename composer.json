@@ -35,8 +35,8 @@
     },
     "type": "library",
     "require": {
-        "php": ">=4.0.5",
-        "pear/pear_exception": "*",
+        "php": ">=5.0.0",
+        "pear/pear-core-minimal": "*",
         "pear/net_socket": "*"
     },
     "require-dev": {
