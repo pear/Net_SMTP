@@ -36,6 +36,8 @@
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
+   <file name="LICENSE" role="doc" />
+   <file name="README.rst" role="doc" />
    <dir name="docs">
     <file name="guide.txt" role="doc" />
    </dir> <!-- /docs -->
