@@ -1087,7 +1087,7 @@ class Net_SMTP
         $terminator = (substr($last, -2) == "\r\n" ? '' : "\r\n") . ".\r\n";
 
         /* Finally, send the DATA terminator sequence. */
-        if (PEAR::isError($result = $this->_send($terminator))) {
+        if (PEAR::isError($result = $this->send($terminator))) {
             return $result;
         }
 
