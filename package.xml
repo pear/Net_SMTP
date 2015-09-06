@@ -30,9 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Fix redundant CRLF terminator sequence.
-- Add a note about $socket_options and OpenSSL.
-- Add Composer support.
+ <notes>This version drops PHP 4 support in favor of more modern PHP language constructs.
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
