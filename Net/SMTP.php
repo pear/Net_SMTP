@@ -1046,6 +1046,8 @@ class Net_SMTP
                     return $result;
                 }
             }
+
+             $last = $line;
         } else {
             /*
              * Break up the data by sending one chunk (up to 512k) at a time.  
@@ -1081,6 +1083,8 @@ class Net_SMTP
                 /* Advance the offset to the end of this chunk. */
                 $offset = $end;
             }
+
+            $last = $chunk;
         }
 
         /* Don't add another CRLF sequence if it's already in the data */
