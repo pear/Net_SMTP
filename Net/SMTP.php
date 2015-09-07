@@ -572,7 +572,17 @@ class Net_SMTP
             if (PEAR::isError($result = $this->parseResponse(220))) {
                 return $result;
             }
-            if (PEAR::isError($result = $this->socket->enableCrypto(true, STREAM_CRYPTO_METHOD_TLS_CLIENT))) {
+            if (isset($this->socket_options['ssl']['crypto_method'])) {
+                $crypto_method = $this->socket_options['ssl']['crypto_method'];
+            } else {
+                /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
+                 * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
+                 * inconsistent across PHP versions. */
+                $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
+                                 | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+                                 | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+            }
+            if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
                 return $result;
             } elseif ($result !== true) {
                 return PEAR::raiseError('STARTTLS failed');
