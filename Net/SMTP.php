@@ -1034,6 +1034,9 @@ class Net_SMTP
             if (PEAR::isError($result = $this->send($headers . "\r\n\r\n"))) {
                 return $result;
             }
+
+            /* Subtract the headers size now that they've been sent. */
+            $size -= strlen($headers) + 4;
         }
 
         /* Now we can send the message body data. */

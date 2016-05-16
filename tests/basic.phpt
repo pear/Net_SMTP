@@ -29,7 +29,8 @@ if (PEAR::isError($res = $smtp->rcptTo(TEST_TO))) {
         $res->getMessage() . "\n");
 }
 
-if (PEAR::isError($smtp->data('Subject: ' . TEST_SUBJECT . "\r\n\r\n" . TEST_BODY))) {
+$headers = 'Subject: ' . TEST_SUBJECT;
+if (PEAR::isError($smtp->data(TEST_BODY, $headers))) {
     die("Unable to send data\n");
 }
 
