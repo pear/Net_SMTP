@@ -3,12 +3,12 @@
 // +----------------------------------------------------------------------+
 // | PHP Version 5 and 7                                                  |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2015 The PHP Group                                |
+// | Copyright (c) 1997-2015 Jon Parise and Chuck Hagenbuch               |
 // +----------------------------------------------------------------------+
-// | This source file is subject to version 2.02 of the PHP license,      |
+// | This source file is subject to version 3.01 of the PHP license,      |
 // | that is bundled with this package in the file LICENSE, and is        |
 // | available at through the world-wide-web at                           |
-// | http://www.php.net/license/2_02.txt.                                 |
+// | http://www.php.net/license/3_01.txt.                                 |
 // | If you did not receive a copy of the PHP license and are unable to   |
 // | obtain it through the world-wide-web, please send a note to          |
 // | license@php.net so we can mail you a copy immediately.               |
@@ -169,7 +169,7 @@ class Net_SMTP
         $this->socket_options = $socket_options;
         $this->timeout        = $timeout;
 
-        /* Include the Auth_SASL package.  If the package is available, we 
+        /* Include the Auth_SASL package.  If the package is available, we
          * enable the authentication methods that depend upon it. */
         if (@include_once 'Auth/SASL.php') {
             $this->setAuthMethod('CRAM-MD5', array($this, 'authCramMD5'));
@@ -572,7 +572,17 @@ class Net_SMTP
             if (PEAR::isError($result = $this->parseResponse(220))) {
                 return $result;
             }
-            if (PEAR::isError($result = $this->socket->enableCrypto(true, STREAM_CRYPTO_METHOD_TLS_CLIENT))) {
+            if (isset($this->socket_options['ssl']['crypto_method'])) {
+                $crypto_method = $this->socket_options['ssl']['crypto_method'];
+            } else {
+                /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
+                 * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
+                 * inconsistent across PHP versions. */
+                $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
+                                 | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+                                 | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+            }
+            if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
                 return $result;
             } elseif ($result !== true) {
                 return PEAR::raiseError('STARTTLS failed');
@@ -1024,12 +1034,15 @@ class Net_SMTP
             if (PEAR::isError($result = $this->send($headers . "\r\n\r\n"))) {
                 return $result;
             }
+
+            /* Subtract the headers size now that they've been sent. */
+            $size -= strlen($headers) + 4;
         }
 
         /* Now we can send the message body data. */
         if (is_resource($data)) {
-            /* Stream the contents of the file resource out over our socket 
-             * connection, line by line.  Each line must be run through the 
+            /* Stream the contents of the file resource out over our socket
+             * connection, line by line.  Each line must be run through the
              * quoting routine. */
             while (strlen($line = fread($data, 8192)) > 0) {
                 /* If the last character is an newline, we need to grab the
@@ -1047,18 +1060,18 @@ class Net_SMTP
                 }
             }
 
-            $last = $line;
+             $last = $line;
         } else {
             /*
-             * Break up the data by sending one chunk (up to 512k) at a time.  
+             * Break up the data by sending one chunk (up to 512k) at a time.
              * This approach reduces our peak memory usage.
              */
             for ($offset = 0; $offset < $size;) {
                 $end = $offset + 512000;
 
                 /*
-                 * Ensure we don't read beyond our data size or span multiple 
-                 * lines.  quotedata() can't properly handle character data 
+                 * Ensure we don't read beyond our data size or span multiple
+                 * lines.  quotedata() can't properly handle character data
                  * that's split across two line break boundaries.
                  */
                 if ($end >= $size) {
@@ -1091,7 +1104,7 @@ class Net_SMTP
         $terminator = (substr($last, -2) == "\r\n" ? '' : "\r\n") . ".\r\n";
 
         /* Finally, send the DATA terminator sequence. */
-        if (PEAR::isError($result = $this->_send($terminator))) {
+        if (PEAR::isError($result = $this->send($terminator))) {
             return $result;
         }
 
