@@ -563,7 +563,7 @@ class Net_SMTP
          * (SSL) socket connection. */
         if ($tls && version_compare(PHP_VERSION, '5.1.0', '>=')
             && extension_loaded('openssl') && isset($this->esmtp['STARTTLS'])
-            && strncasecmp($this->host, 'ssl://', 6) !== 0
+            ($this->esmtp['STARTTLS']) && strncasecmp($this->host, 'ssl://', 6) !== 0
         ) {
             /* Start the TLS connection attempt. */
             if (PEAR::isError($result = $this->put('STARTTLS'))) {
