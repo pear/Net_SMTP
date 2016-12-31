@@ -753,8 +753,9 @@ class Net_SMTP
             return $error;
         }
 
+        $auth_sasl = new Auth_SASL;
         $challenge = base64_decode($this->arguments[0]);
-        $cram      = Auth_SASL::factory('cram-md5');
+        $cram      = $auth_sasl->factory('cram-md5');
         $auth_str  = base64_encode($cram->getResponse($uid, $pwd, $challenge));
 
         if (PEAR::isError($error = $this->put($auth_str))) {
