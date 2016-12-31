@@ -701,7 +701,8 @@ class Net_SMTP
             return $error;
         }
 
-        $digest    = Auth_SASL::factory('digest-md5');
+        $auth_sasl = new Auth_SASL;
+        $digest    = $auth_sasl->factory('digest-md5');
         $challenge = base64_decode($this->arguments[0]);
         $auth_str  = base64_encode(
             $digest->getResponse($uid, $pwd, $challenge, $this->host, "smtp", $authz)
