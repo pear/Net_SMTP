@@ -1000,7 +1000,7 @@ class Net_SMTP
         /* Start by considering the size of the optional headers string.  We
          * also account for the addition 4 character "\r\n\r\n" separator
          * sequence. */
-        $size = (is_null($headers)) ? 0 : strlen($headers) + 4;
+        $size = $h_size = (is_null($headers)) ? 0 : strlen($headers) + 4;
 
         if (is_resource($data)) {
             $stat = fstat($data);
@@ -1038,7 +1038,7 @@ class Net_SMTP
             }
 
             /* Subtract the headers size now that they've been sent. */
-            $size -= strlen($headers) + 4;
+            $size -= $h_size;
         }
 
         /* Now we can send the message body data. */
