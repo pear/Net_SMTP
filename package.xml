@@ -19,10 +19,10 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2016-05-30</date>
+ <date>2017-01-14</date>
  <time>00:00:00</time>
  <version>
-  <release>1.7.2</release>
+  <release>1.7.3</release>
   <api>1.3.0</api>
  </version>
  <stability>
@@ -30,7 +30,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
- <notes>- Fix size calculation when headers are provided (#27)
+ <notes>- Fix MIME boundary size calculation (#34)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
