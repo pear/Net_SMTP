@@ -1,5 +1,7 @@
 language: php
-install: composer install
+install:
+  - composer install
+  - phpenv rehash
 php:
   - 5.4
   - 5.5
