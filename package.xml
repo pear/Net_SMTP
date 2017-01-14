@@ -31,6 +31,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP License</license>
  <notes>- Fix MIME boundary size calculation (#34)
+- Workaround E_DEPRECATED warning on Auth_SASL::factory() call (#29)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
