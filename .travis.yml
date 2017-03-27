@@ -1,6 +1,8 @@
 language: php
 install:
   - pear install package.xml
+  - phpenv rehash
+  - pear config-show
 php:
   - 5.4.44
   - 5.5
