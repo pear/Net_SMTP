@@ -190,7 +190,7 @@ class Net_SMTP
 
         /* Include the Auth_SASL package.  If the package is available, we
          * enable the authentication methods that depend upon it. */
-        if (@include_once 'Auth/SASL.php') {
+        if (file_exists('Auth/SASL.php')) {
             $this->setAuthMethod('CRAM-MD5', array($this, 'authCramMD5'));
             $this->setAuthMethod('DIGEST-MD5', array($this, 'authDigestMD5'));
         }
