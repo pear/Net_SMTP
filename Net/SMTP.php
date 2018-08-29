@@ -191,6 +191,10 @@ class Net_SMTP
         $this->gssapi_principal = $gssapi_principal;
         $this->gssapi_cname     = $gssapi_cname;
 
+        /* If PHP krb5 extension is loaded, we enable GSSAPI method. */
+        if (extension_loaded('krb5')) {
+            $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'), false);
+        }
 
         /* Include the Auth_SASL package.  If the package is available, we
          * enable the authentication methods that depend upon it. */
@@ -202,7 +206,6 @@ class Net_SMTP
         /* These standard authentication methods are always available. */
         $this->setAuthMethod('LOGIN', array($this, 'authLogin'), false);
         $this->setAuthMethod('PLAIN', array($this, 'authPlain'), false);
-        $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'), false);
     }
 
     /**
@@ -876,11 +879,12 @@ class Net_SMTP
         return true;
     }
 
-        /**
+     /**
      * Authenticates the user using the GSSAPI method.
      *
-     * @note PHP krb5 extension is required and the service principal and
-     *       credentials cache must have been set.
+     * PHP krb5 extension is required,
+     * service principal and credentials cache must be set.
+     *
      * @param string $uid   The userid to authenticate as.
      * @param string $pwd   The password to authenticate with.
      * @param string $authz The optional authorization proxy identifier.
@@ -901,10 +905,6 @@ class Net_SMTP
                 return true;
             }
             return $error;
-        }
-
-        if (!extension_loaded('krb5')) {
-            return PEAR::raiseError('The krb5 extension is required for GSSAPI authentication', 2);
         }
 
         if (!$this->gssapi_principal) {
@@ -962,7 +962,6 @@ class Net_SMTP
         }
 
         return true;
-
     }
 
     /**
