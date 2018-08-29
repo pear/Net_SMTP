@@ -892,7 +892,6 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      */
-
     protected function authGSSAPI($uid, $pwd, $authz = '')
     {
         if (PEAR::isError($error = $this->put('AUTH', 'GSSAPI'))) {
