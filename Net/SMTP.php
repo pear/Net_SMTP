@@ -171,7 +171,8 @@ class Net_SMTP
      * @since 1.0
      */
     public function __construct($host = null, $port = null, $localhost = null,
-        $pipelining = false, $timeout = 0, $socket_options = null
+        $pipelining = false, $timeout = 0, $socket_options = null,
+        $gssapi_principal=null, $gssapi_cname=null
     ) {
         if (isset($host)) {
             $this->host = $host;
@@ -183,10 +184,13 @@ class Net_SMTP
             $this->localhost = $localhost;
         }
 
-        $this->pipelining      = $pipelining;
-        $this->socket         = new Net_Socket();
-        $this->socket_options = $socket_options;
-        $this->timeout        = $timeout;
+        $this->pipelining       = $pipelining;
+        $this->socket           = new Net_Socket();
+        $this->socket_options   = $socket_options;
+        $this->timeout          = $timeout;
+        $this->gssapi_principal = $gssapi_principal;
+        $this->gssapi_cname     = $gssapi_cname;
+
 
         /* Include the Auth_SASL package.  If the package is available, we
          * enable the authentication methods that depend upon it. */
@@ -198,6 +202,7 @@ class Net_SMTP
         /* These standard authentication methods are always available. */
         $this->setAuthMethod('LOGIN', array($this, 'authLogin'), false);
         $this->setAuthMethod('PLAIN', array($this, 'authPlain'), false);
+        $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'), false);
     }
 
     /**
@@ -869,6 +874,95 @@ class Net_SMTP
         }
 
         return true;
+    }
+
+        /**
+     * Authenticates the user using the GSSAPI method.
+     *
+     * @note PHP krb5 extension is required and the service principal and
+     *       credentials cache must have been set.
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     */
+
+    protected function authGSSAPI($uid, $pwd, $authz = '')
+    {
+        if (PEAR::isError($error = $this->put('AUTH', 'GSSAPI'))) {
+            return $error;
+        }
+        /* 334: Continue authentication request */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            /* 503: Error: already authenticated */
+            if ($this->code === 503) {
+                return true;
+            }
+            return $error;
+        }
+
+        if (!extension_loaded('krb5')) {
+            return PEAR::raiseError('The krb5 extension is required for GSSAPI authentication', 2);
+        }
+
+        if (!$this->gssapi_principal) {
+            return PEAR::raiseError('No Kerberos service principal set', 2);
+        }
+
+        if (!$this->gssapi_cname) {
+            return PEAR::raiseError('No Kerberos service CName set', 2);
+        }
+
+        putenv('KRB5CCNAME=' . $this->gssapi_cname);
+
+        try {
+            $ccache = new KRB5CCache();
+            $ccache->open($this->gssapi_cname);
+
+            $gssapicontext = new GSSAPIContext();
+            $gssapicontext->acquireCredentials($ccache);
+
+            $token   = '';
+            $success = $gssapicontext->initSecContext($this->gssapi_principal, null, null, null, $token);
+            $token   = base64_encode($token);
+        }
+        catch (Exception $e) {
+            return PEAR::raiseError('GSSAPI authentication failed: ' . $e->getMessage());
+        }
+
+        if (PEAR::isError($error = $this->put($token))) {
+            return $error;
+        }
+
+        /* 334: Continue authentication request */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            return $error;
+        }
+
+        $response = $this->arguments[0];
+
+        try {
+            $challenge = base64_decode($response);
+            $gssapicontext->unwrap($challenge, $challenge);
+            $gssapicontext->wrap($challenge, $challenge, true);
+        }
+        catch (Exception $e) {
+            return PEAR::raiseError('GSSAPI authentication failed: ' . $e->getMessage());
+        }
+
+        if (PEAR::isError($error = $this->put(base64_encode($challenge)))) {
+            return $error;
+        }
+
+        /* 235: Authentication successful */
+        if (PEAR::isError($error = $this->parseResponse(235))) {
+            return $error;
+        }
+
+        return true;
+
     }
 
     /**
