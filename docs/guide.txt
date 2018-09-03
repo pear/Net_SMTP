@@ -87,7 +87,7 @@ DIGEST-MD5
 ----------
 
 The DIGEST-MD5 authentication method uses `RSA Data Security Inc.`_'s MD5
-Message Digest algorithm.  It is considered more secure method of SMTP
+Message Digest algorithm.  It is considered a more secure method of SMTP
 authentication than PLAIN or LOGIN, while still vulnerable to MitM attacks
 without TLS/SSL.
 
