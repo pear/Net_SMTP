@@ -161,12 +161,14 @@ class Net_SMTP
      *   $smtp = new Net_SMTP('ssl://mail.host.com', 465);
      *   $smtp->connect();
      *
-     * @param string  $host           The server to connect to.
-     * @param integer $port           The port to connect to.
-     * @param string  $localhost      The value to give when sending EHLO or HELO.
-     * @param boolean $pipelining     Use SMTP command pipelining
-     * @param integer $timeout        Socket I/O timeout in seconds.
-     * @param array   $socket_options Socket stream_context_create() options.
+     * @param string  $host             The server to connect to.
+     * @param integer $port             The port to connect to.
+     * @param string  $localhost        The value to give when sending EHLO or HELO.
+     * @param boolean $pipelining       Use SMTP command pipelining
+     * @param integer $timeout          Socket I/O timeout in seconds.
+     * @param array   $socket_options   Socket stream_context_create() options.
+     * @param string  $gssapi_principal GSSAPI service principal name
+     * @param string  $gssapi_cname     GSSAPI credentials cache
      *
      * @since 1.0
      */
@@ -193,7 +195,7 @@ class Net_SMTP
 
         /* If PHP krb5 extension is loaded, we enable GSSAPI method. */
         if (extension_loaded('krb5')) {
-            $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'), false);
+            $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'));
         }
 
         /* Include the Auth_SASL package.  If the package is available, we
@@ -911,7 +913,7 @@ class Net_SMTP
         }
 
         if (!$this->gssapi_cname) {
-            return PEAR::raiseError('No Kerberos service CName set', 2);
+            return PEAR::raiseError('No Kerberos credentials cache set', 2);
         }
 
         putenv('KRB5CCNAME=' . $this->gssapi_cname);
