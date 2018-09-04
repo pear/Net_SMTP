@@ -912,16 +912,16 @@ class Net_SMTP
             return PEAR::raiseError('No Kerberos service principal set', 2);
         }
 
-        if (!$this->gssapi_cname) {
-            return PEAR::raiseError('No Kerberos credentials cache set', 2);
+        if (!empty($this->gssapi_cname)) {
+            putenv('KRB5CCNAME=' . $this->gssapi_cname);
         }
-
-        putenv('KRB5CCNAME=' . $this->gssapi_cname);
 
         try {
             $ccache = new KRB5CCache();
-            $ccache->open($this->gssapi_cname);
-
+            if (!empty($this->gssapi_cname)) {
+                $ccache->open($this->gssapi_cname);
+            }
+            
             $gssapicontext = new GSSAPIContext();
             $gssapicontext->acquireCredentials($ccache);
 
