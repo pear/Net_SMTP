@@ -72,8 +72,8 @@ GSSAPI
 
 The GSSAPI authentication method uses Kerberos 5 protocol (RFC-4120_).
 Does not use user/password.
-Requires Service Principal ``gssapi_principal`` and
-Credentials Cache ``gssapi_cname`` parameters.
+Requires Service Principal ``gssapi_principal`` parameter and has optional
+Credentials Cache ``gssapi_cname`` parameter.
 Requires DNS and Key Distribution Center (KDC) setup.
 It is considered the most secure method of SMTP authentication.
 
