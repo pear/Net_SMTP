@@ -918,8 +918,10 @@ class Net_SMTP
 
         try {
             $ccache = new KRB5CCache();
-            $ccache->open($this->gssapi_cname);
-
+            if ($this->gssapi_cname) {
+                $ccache->open($this->gssapi_cname);
+            }
+            
             $gssapicontext = new GSSAPIContext();
             $gssapicontext->acquireCredentials($ccache);
 
