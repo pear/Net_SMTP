@@ -912,13 +912,13 @@ class Net_SMTP
             return PEAR::raiseError('No Kerberos service principal set', 2);
         }
 
-        if ($this->gssapi_cname) {
+        if (!empty($this->gssapi_cname)) {
             putenv('KRB5CCNAME=' . $this->gssapi_cname);
         }
 
         try {
             $ccache = new KRB5CCache();
-            if ($this->gssapi_cname) {
+            if (!empty($this->gssapi_cname)) {
                 $ccache->open($this->gssapi_cname);
             }
             
