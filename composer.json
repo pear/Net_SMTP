@@ -36,8 +36,8 @@
     "type": "library",
     "require": {
         "php": ">=5.4.0",
-        "pear/pear-core-minimal": "*",
-        "pear/net_socket": "*"
+        "pear/pear-core-minimal": "@stable",
+        "pear/net_socket": "@stable"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
