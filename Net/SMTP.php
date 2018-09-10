@@ -1131,7 +1131,6 @@ class Net_SMTP
          * about the server's fixed maximum message size". */
         $limit = (isset($this->esmtp['SIZE'])) ? $this->esmtp['SIZE'] : 0;
         if ($limit > 0 && $size >= $limit) {
-            $this->disconnect();
             return PEAR::raiseError('Message size exceeds server limit');
         }
 
