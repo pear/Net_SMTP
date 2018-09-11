@@ -12,7 +12,6 @@ install:
   - pear list
   - pear upgrade --force pear/pear
   - pear list
-  - pear upgrade xml_util
   - pear install package.xml
   - pear list
 script:
