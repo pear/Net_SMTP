@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.12: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.14: http://docutils.sourceforge.net/" />
 <title>The Net_SMTP Package</title>
 <style type="text/css">
 
@@ -144,19 +144,20 @@ form {
 </li>
 <li><a class="reference internal" href="#error-handling" id="id5">2&nbsp;&nbsp;&nbsp;Error Handling</a></li>
 <li><a class="reference internal" href="#smtp-authentication" id="id6">3&nbsp;&nbsp;&nbsp;SMTP Authentication</a><ul class="auto-toc">
-<li><a class="reference internal" href="#digest-md5" id="id7">3.1&nbsp;&nbsp;&nbsp;DIGEST-MD5</a></li>
-<li><a class="reference internal" href="#cram-md5" id="id8">3.2&nbsp;&nbsp;&nbsp;CRAM-MD5</a></li>
-<li><a class="reference internal" href="#login" id="id9">3.3&nbsp;&nbsp;&nbsp;LOGIN</a></li>
-<li><a class="reference internal" href="#plain" id="id10">3.4&nbsp;&nbsp;&nbsp;PLAIN</a></li>
+<li><a class="reference internal" href="#gssapi" id="id7">3.1&nbsp;&nbsp;&nbsp;GSSAPI</a></li>
+<li><a class="reference internal" href="#digest-md5" id="id8">3.2&nbsp;&nbsp;&nbsp;DIGEST-MD5</a></li>
+<li><a class="reference internal" href="#cram-md5" id="id9">3.3&nbsp;&nbsp;&nbsp;CRAM-MD5</a></li>
+<li><a class="reference internal" href="#login" id="id10">3.4&nbsp;&nbsp;&nbsp;LOGIN</a></li>
+<li><a class="reference internal" href="#plain" id="id11">3.5&nbsp;&nbsp;&nbsp;PLAIN</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#secure-connections" id="id11">4&nbsp;&nbsp;&nbsp;Secure Connections</a></li>
-<li><a class="reference internal" href="#sending-data" id="id12">5&nbsp;&nbsp;&nbsp;Sending Data</a></li>
-<li><a class="reference internal" href="#data-quoting" id="id13">6&nbsp;&nbsp;&nbsp;Data Quoting</a></li>
-<li><a class="reference internal" href="#server-responses" id="id14">7&nbsp;&nbsp;&nbsp;Server Responses</a></li>
-<li><a class="reference internal" href="#debugging" id="id15">8&nbsp;&nbsp;&nbsp;Debugging</a></li>
-<li><a class="reference internal" href="#examples" id="id16">9&nbsp;&nbsp;&nbsp;Examples</a><ul class="auto-toc">
-<li><a class="reference internal" href="#basic-use" id="id17">9.1&nbsp;&nbsp;&nbsp;Basic Use</a></li>
+<li><a class="reference internal" href="#secure-connections" id="id12">4&nbsp;&nbsp;&nbsp;Secure Connections</a></li>
+<li><a class="reference internal" href="#sending-data" id="id13">5&nbsp;&nbsp;&nbsp;Sending Data</a></li>
+<li><a class="reference internal" href="#data-quoting" id="id14">6&nbsp;&nbsp;&nbsp;Data Quoting</a></li>
+<li><a class="reference internal" href="#server-responses" id="id15">7&nbsp;&nbsp;&nbsp;Server Responses</a></li>
+<li><a class="reference internal" href="#debugging" id="id16">8&nbsp;&nbsp;&nbsp;Debugging</a></li>
+<li><a class="reference internal" href="#examples" id="id17">9&nbsp;&nbsp;&nbsp;Examples</a><ul class="auto-toc">
+<li><a class="reference internal" href="#basic-use" id="id18">9.1&nbsp;&nbsp;&nbsp;Basic Use</a></li>
 </ul>
 </li>
 </ul>
@@ -205,16 +206,28 @@ if (PEAR::isError($error = $smtp-&gt;connect())) {
 <p>The Net_SMTP package supports the SMTP authentication standard (as defined
 by <a class="reference external" href="http://www.ietf.org/rfc/rfc2554.txt">RFC-2554</a>).  The Net_SMTP package supports the following authentication
 methods, in order of preference:</p>
+<div class="section" id="gssapi">
+<h3>3.1&nbsp;&nbsp;&nbsp;GSSAPI</h3>
+<p>The GSSAPI authentication method uses Kerberos 5 protocol (<a class="reference external" href="https://tools.ietf.org/html/rfc4120">RFC-4120</a>).
+Does not use user/password.
+Requires Service Principal <tt class="docutils literal">gssapi_principal</tt> parameter and
+has an optional Credentials Cache <tt class="docutils literal">gssapi_cname</tt> parameter.
+Requires DNS and Key Distribution Center (KDC) setup.
+It is considered the most secure method of SMTP authentication.</p>
+<p><strong>Note:</strong> The GSSAPI authentication method is only supported
+if the <a class="reference external" href="https://pecl.php.net/package/krb5">krb5</a> php extension is available.</p>
+</div>
 <div class="section" id="digest-md5">
-<h3>3.1&nbsp;&nbsp;&nbsp;DIGEST-MD5</h3>
+<h3>3.2&nbsp;&nbsp;&nbsp;DIGEST-MD5</h3>
 <p>The DIGEST-MD5 authentication method uses <a class="reference external" href="http://www.rsasecurity.com/">RSA Data Security Inc.</a>'s MD5
-Message Digest algorithm.  It is considered the most secure method of SMTP
-authentication.</p>
+Message Digest algorithm.  It is considered a more secure method of SMTP
+authentication than PLAIN or LOGIN, while still vulnerable to MitM attacks
+without TLS/SSL.</p>
 <p><strong>Note:</strong> The DIGEST-MD5 authentication method is only supported if the
 <a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
 </div>
 <div class="section" id="cram-md5">
-<h3>3.2&nbsp;&nbsp;&nbsp;CRAM-MD5</h3>
+<h3>3.3&nbsp;&nbsp;&nbsp;CRAM-MD5</h3>
 <p>The CRAM-MD5 authentication method has been superseded by the <a class="reference internal" href="#digest-md5">DIGEST-MD5</a>
 method in terms of security.  It is provided here for compatibility with
 older SMTP servers that may not support the newer DIGEST-MD5 algorithm.</p>
@@ -222,14 +235,14 @@ older SMTP servers that may not support the newer DIGEST-MD5 algorithm.</p>
 <a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
 </div>
 <div class="section" id="login">
-<h3>3.3&nbsp;&nbsp;&nbsp;LOGIN</h3>
+<h3>3.4&nbsp;&nbsp;&nbsp;LOGIN</h3>
 <p>The LOGIN authentication method encrypts the user's password using the
 <a class="reference external" href="http://www.php.net/manual/en/function.base64-encode.php">Base64</a> encoding scheme.  Because decrypting a Base64-encoded string is
 trivial, LOGIN is not considered a secure authentication method and should
 be avoided.</p>
 </div>
 <div class="section" id="plain">
-<h3>3.4&nbsp;&nbsp;&nbsp;PLAIN</h3>
+<h3>3.5&nbsp;&nbsp;&nbsp;PLAIN</h3>
 <p>The PLAIN authentication method sends the user's password in plain text.
 This method of authentication is not secure and should be avoided.</p>
 </div>
