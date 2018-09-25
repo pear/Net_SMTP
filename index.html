@@ -166,25 +166,25 @@ form {
 <h2>1&nbsp;&nbsp;&nbsp;Dependencies</h2>
 <div class="section" id="the-pear-error-class">
 <h3>1.1&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">PEAR_Error</tt> Class</h3>
-<p>The Net_SMTP package uses the <a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> class for all of its <a class="reference internal" href="#error-handling">error
+<p>The Net_SMTP package uses the <a class="reference external" href="https://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> class for all of its <a class="reference internal" href="#error-handling">error
 handling</a>.</p>
 </div>
 <div class="section" id="the-net-socket-package">
 <h3>1.2&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Net_Socket</tt> Package</h3>
-<p>The <a class="reference external" href="http://pear.php.net/package/Net_Socket">Net_Socket</a> package is used as the basis for all network communications.
+<p>The <a class="reference external" href="https://pear.php.net/package/Net_Socket">Net_Socket</a> package is used as the basis for all network communications.
 Connection options can be specified via the <cite>$socket_options</cite> construction
 parameter:</p>
 <pre class="literal-block">
 $socket_options = array('ssl' =&gt; array('verify_peer_name' =&gt; false));
 $smtp = new Net_SMTP($host, null, null, false, 0, $socket_options);
 </pre>
-<p><strong>Note:</strong> PHP 5.6 introduced <a class="reference external" href="http://php.net/manual/en/migration56.openssl.php">OpenSSL changes</a>. Peer certificate verification
+<p><strong>Note:</strong> PHP 5.6 introduced <a class="reference external" href="https://php.net/manual/en/migration56.openssl.php">OpenSSL changes</a>. Peer certificate verification
 is now enabled by default. Although not recommended, <cite>$socket_options</cite> can be
 used to disable peer verification (as shown above).</p>
 </div>
 <div class="section" id="the-auth-sasl-package">
 <h3>1.3&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">Auth_SASL</tt> Package</h3>
-<p>The <a class="reference external" href="http://pear.php.net/package/Auth_SASL">Auth_SASL</a> package is an optional dependency.  If it is available, the
+<p>The <a class="reference external" href="https://pear.php.net/package/Auth_SASL">Auth_SASL</a> package is an optional dependency.  If it is available, the
 Net_SMTP package will be able to support the <a class="reference internal" href="#digest-md5">DIGEST-MD5</a> and <a class="reference internal" href="#cram-md5">CRAM-MD5</a> SMTP
 authentication methods.  Otherwise, only the <a class="reference internal" href="#login">LOGIN</a> and <a class="reference internal" href="#plain">PLAIN</a> methods will
 be available.</p>
@@ -192,9 +192,9 @@ be available.</p>
 </div>
 <div class="section" id="error-handling">
 <h2>2&nbsp;&nbsp;&nbsp;Error Handling</h2>
-<p>All of the Net_SMTP class's public methods return a <a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> object if an
+<p>All of the Net_SMTP class's public methods return a <a class="reference external" href="https://pear.php.net/manual/en/core.pear.pear-error.php">PEAR_Error</a> object if an
 error occurs.  The standard way to check for a PEAR_Error object is by using
-<a class="reference external" href="http://pear.php.net/manual/en/core.pear.pear.iserror.php">PEAR::isError()</a>:</p>
+<a class="reference external" href="https://pear.php.net/manual/en/core.pear.pear.iserror.php">PEAR::isError()</a>:</p>
 <pre class="literal-block">
 if (PEAR::isError($error = $smtp-&gt;connect())) {
     die($error-&gt;getMessage());
@@ -204,7 +204,7 @@ if (PEAR::isError($error = $smtp-&gt;connect())) {
 <div class="section" id="smtp-authentication">
 <h2>3&nbsp;&nbsp;&nbsp;SMTP Authentication</h2>
 <p>The Net_SMTP package supports the SMTP authentication standard (as defined
-by <a class="reference external" href="http://www.ietf.org/rfc/rfc2554.txt">RFC-2554</a>).  The Net_SMTP package supports the following authentication
+by <a class="reference external" href="https://www.ietf.org/rfc/rfc2554.txt">RFC-2554</a>).  The Net_SMTP package supports the following authentication
 methods, in order of preference:</p>
 <div class="section" id="gssapi">
 <h3>3.1&nbsp;&nbsp;&nbsp;GSSAPI</h3>
@@ -219,12 +219,12 @@ if the <a class="reference external" href="https://pecl.php.net/package/krb5">kr
 </div>
 <div class="section" id="digest-md5">
 <h3>3.2&nbsp;&nbsp;&nbsp;DIGEST-MD5</h3>
-<p>The DIGEST-MD5 authentication method uses <a class="reference external" href="http://www.rsasecurity.com/">RSA Data Security Inc.</a>'s MD5
+<p>The DIGEST-MD5 authentication method uses <a class="reference external" href="https://www.rsasecurity.com/">RSA Data Security Inc.</a>'s MD5
 Message Digest algorithm.  It is considered a more secure method of SMTP
 authentication than PLAIN or LOGIN, while still vulnerable to MitM attacks
 without TLS/SSL.</p>
 <p><strong>Note:</strong> The DIGEST-MD5 authentication method is only supported if the
-<a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
+<a class="reference external" href="https://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
 </div>
 <div class="section" id="cram-md5">
 <h3>3.3&nbsp;&nbsp;&nbsp;CRAM-MD5</h3>
@@ -232,12 +232,12 @@ without TLS/SSL.</p>
 method in terms of security.  It is provided here for compatibility with
 older SMTP servers that may not support the newer DIGEST-MD5 algorithm.</p>
 <p><strong>Note:</strong> The CRAM-MD5 authentication method is only supported if the
-<a class="reference external" href="http://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
+<a class="reference external" href="https://pear.php.net/package/Auth_SASL">AUTH_SASL</a> package is available.</p>
 </div>
 <div class="section" id="login">
 <h3>3.4&nbsp;&nbsp;&nbsp;LOGIN</h3>
 <p>The LOGIN authentication method encrypts the user's password using the
-<a class="reference external" href="http://www.php.net/manual/en/function.base64-encode.php">Base64</a> encoding scheme.  Because decrypting a Base64-encoded string is
+<a class="reference external" href="https://www.php.net/manual/en/function.base64-encode.php">Base64</a> encoding scheme.  Because decrypting a Base64-encoded string is
 trivial, LOGIN is not considered a secure authentication method and should
 be avoided.</p>
 </div>
@@ -249,7 +249,7 @@ This method of authentication is not secure and should be avoided.</p>
 </div>
 <div class="section" id="secure-connections">
 <h2>4&nbsp;&nbsp;&nbsp;Secure Connections</h2>
-<p>If <a class="reference external" href="http://www.php.net/transports">secure socket transports</a> have been enabled in PHP, it is possible to
+<p>If <a class="reference external" href="https://www.php.net/transports">secure socket transports</a> have been enabled in PHP, it is possible to
 establish a secure connection to the remote SMTP server:</p>
 <pre class="literal-block">
 $smtp = new Net_SMTP('ssl://mail.example.com', 465);
@@ -304,7 +304,7 @@ class Net_SMTP_custom extends Net_SMTP
 }
 </pre>
 <p>Note that the <tt class="docutils literal">$data</tt> parameter will be passed to the <tt class="docutils literal">quotedata()</tt>
-function <a class="reference external" href="http://www.php.net/manual/en/language.references.pass.php">by reference</a>.  This means that you can operate directly on
+function <a class="reference external" href="https://www.php.net/manual/en/language.references.pass.php">by reference</a>.  This means that you can operate directly on
 <tt class="docutils literal">$data</tt>.  It also the overhead of copying a large <tt class="docutils literal">$data</tt> string to and
 from the <tt class="docutils literal">quotedata()</tt> method.</p>
 </div>
