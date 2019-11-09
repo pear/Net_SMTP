@@ -1,4 +1,7 @@
 language: php
+branches:
+  only:
+    - "master"
 sudo: false
 php:
   - 5.6
