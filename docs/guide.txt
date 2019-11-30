@@ -123,10 +123,12 @@ The PLAIN authentication method sends the user's password in plain text.
 This method of authentication is not secure and should be avoided.
 
 XOAUTH2
------
+-------
 
-The XOAUTH2 authentication method sends username and an OAuth2 access token.
-See https://developers.google.com/gmail/imap/xoauth2-protocol#smtp_protocol_exchange
+The XOAUTH2 authentication method sends a username and an OAuth2 access token
+as per `Gmail's SASL XOAUTH2 documentation`__.
+
+.. __: https://developers.google.com/gmail/imap/xoauth2-protocol#smtp_protocol_exchange
 
 Secure Connections
 ==================

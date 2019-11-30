@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------+
 // | PHP Version 5 and 7                                                  |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2017 Jon Parise and Chuck Hagenbuch               |
+// | Copyright (c) 1997-2019 Jon Parise and Chuck Hagenbuch               |
 // | All rights reserved.                                                 |
 // |                                                                      |
 // | Redistribution and use in source and binary forms, with or without   |
@@ -975,7 +975,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.8.2
+     * @since 1.9.0
      */
     public function authXOAuth2($uid, $token, $authz, $conn)
     {

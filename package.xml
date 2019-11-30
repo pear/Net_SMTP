@@ -16,9 +16,9 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2018-09-25</date>
+ <date>2019-11-30</date>
  <version>
-  <release>1.8.1</release>
+  <release>1.9.0</release>
   <api>1.3.0</api>
  </version>
  <stability>
@@ -27,9 +27,7 @@
  </stability>
  <license uri="https://opensource.org/licenses/bsd-license.php">BSD-2-Clause</license>
  <notes>
-* Don't disconnect when message size exceeds server limit
-* Added GSSAPI support via the PECL krb5 module
-* Updated composer requirements to use stable dependencies
+* Added support for the XOAUTH2 authentication method
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
