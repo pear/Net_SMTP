@@ -13,3 +13,6 @@ run-tests.log
 composer.lock
 composer.phar
 vendor
+
+# docs
+docs/index.html

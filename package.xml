@@ -16,9 +16,9 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2020-06-06</date>
+ <date>2020-08-13</date>
  <version>
-  <release>1.9.1</release>
+  <release>1.9.2</release>
   <api>1.3.0</api>
  </version>
  <stability>
@@ -27,14 +27,12 @@
  </stability>
  <license uri="https://opensource.org/licenses/bsd-license.php">BSD-2-Clause</license>
  <notes>
-* Added .gitattributes for nicer packaging
+* Repackage documentation
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <file name="LICENSE" role="doc" />
-   <dir name="docs">
-    <file name="guide.txt" role="doc" />
-   </dir> <!-- /docs -->
+   <file name="README.rst" role="doc" />
    <dir name="examples">
     <file name="basic.php" role="doc" />
    </dir> <!-- /examples -->
