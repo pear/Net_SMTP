@@ -3,7 +3,7 @@
 // +----------------------------------------------------------------------+
 // | PHP Version 5 and 7                                                  |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2019 Jon Parise and Chuck Hagenbuch               |
+// | Copyright (c) 1997-2021 Jon Parise and Chuck Hagenbuch               |
 // | All rights reserved.                                                 |
 // |                                                                      |
 // | Redistribution and use in source and binary forms, with or without   |
@@ -614,7 +614,7 @@ class Net_SMTP
                  * SMTP server. */
                 $this->negotiate();
             } else {
-                return PEAR::raiseError('STARTTLS failed');
+                return false;
             }
             
             return true;
@@ -644,7 +644,7 @@ class Net_SMTP
          * (SSL) socket connection. */
         if ($tls) {
             /* Start the TLS connection attempt. */
-            if(PEAR::isError($starttls = $this->starttls())){
+            if (PEAR::isError($starttls = $this->starttls())) {
                 return $starttls;
             }
         }
