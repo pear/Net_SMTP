@@ -575,7 +575,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, true on success, or false if SSL/TLS
      *               isn't available.
-     * @since 1.9.3
+     * @since 1.10.0
      */
     public function starttls()
     {
