@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.14: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
 <title>The Net_SMTP Package</title>
 <style type="text/css">
 
@@ -134,7 +134,7 @@ form {
 </tbody>
 </table>
 <div class="contents topic" id="table-of-contents">
-<p class="topic-title first">Table of Contents</p>
+<p class="topic-title">Table of Contents</p>
 <ul class="auto-toc simple">
 <li><a class="reference internal" href="#dependencies" id="id2">1&nbsp;&nbsp;&nbsp;Dependencies</a><ul class="auto-toc">
 <li><a class="reference internal" href="#the-pear-error-class" id="id3">1.1&nbsp;&nbsp;&nbsp;The <tt class="docutils literal">PEAR_Error</tt> Class</a></li>
@@ -262,6 +262,9 @@ $smtp = new Net_SMTP('ssl://mail.example.com', 465);
 </pre>
 <p>This example connects to <tt class="docutils literal">mail.example.com</tt> on port 465 (a common SMTPS
 port) using the <tt class="docutils literal"><span class="pre">ssl://</span></tt> transport.</p>
+<p>TLS/SSL is enabled for authenticated connections by default (via the <tt class="docutils literal">auth()</tt>
+method's <tt class="docutils literal">$tls</tt> parameter), but the <a class="reference external" href="https://tools.ietf.org/html/rfc3207"><tt class="docutils literal">STARTTLS</tt></a> command can also be sent
+manually using the <tt class="docutils literal">starttls()</tt> method.</p>
 </div>
 <div class="section" id="sending-data">
 <h2>5&nbsp;&nbsp;&nbsp;Sending Data</h2>
