@@ -141,7 +141,13 @@ establish a secure connection to the remote SMTP server::
 This example connects to ``mail.example.com`` on port 465 (a common SMTPS
 port) using the ``ssl://`` transport.
 
+TLS/SSL is enabled for authenticated connections by default (via the ``auth()``
+method's ``$tls`` parameter), but the |STARTTLS|_ command can also be sent
+manually using the ``starttls()`` method.
+
 .. _secure socket transports: https://www.php.net/transports
+.. |STARTTLS| replace:: ``STARTTLS``
+.. _STARTTLS: https://tools.ietf.org/html/rfc3207
 
 Sending Data
 ============

@@ -573,7 +573,8 @@ class Net_SMTP
      * Establish STARTTLS Connection.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
+     *               kind of failure, true on success, or false if SSL/TLS
+     *               isn't available.
      * @since 1.9.3
      */
     public function starttls()
