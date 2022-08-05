@@ -485,22 +485,32 @@ class Net_SMTP
     /**
      * Attempt to disconnect from the SMTP server.
      *
+     * @param bool $force Forces a disconnection of the socket even if
+     *                    the QUIT command fails
+     *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.0
      */
-    public function disconnect()
+    public function disconnect($force = false)
     {
-        if (PEAR::isError($error = $this->put('QUIT'))) {
-            return $error;
+        /* parseResponse is only needed if put QUIT is successful */
+        if (!PEAR::isError($error = $this->put('QUIT'))) {
+            $error = $this->parseResponse(221);
         }
-        if (PEAR::isError($error = $this->parseResponse(221))) {
-            return $error;
+
+        /* disconnecting socket if there is no error on the QUIT
+         * command or force disconnecting is requested */
+        if (!PEAR::isError($error) || $force) {
+            if (PEAR::isError($error_socket = $this->socket->disconnect())) {
+                return PEAR::raiseError(
+                    'Failed to disconnect socket: ' . $error_socket->getMessage()
+                );
+            }
         }
-        if (PEAR::isError($error = $this->socket->disconnect())) {
-            return PEAR::raiseError(
-                'Failed to disconnect socket: ' . $error->getMessage()
-            );
+
+        if (PEAR::isError($error)) {
+            return $error;
         }
 
         return true;
