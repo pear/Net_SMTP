@@ -151,6 +151,18 @@ class Net_SMTP
     protected $esmtp = array();
 
     /**
+     * GSSAPI principal.
+     * @var string
+     */
+    protected $gssapi_principal = null;
+
+    /**
+     * GSSAPI principal.
+     * @var string
+     */
+    protected $gssapi_cname = null;
+
+    /**
      * Instantiates a new Net_SMTP object, overriding any defaults
      * with parameters that are passed in.
      *
@@ -174,7 +186,7 @@ class Net_SMTP
      */
     public function __construct($host = null, $port = null, $localhost = null,
         $pipelining = false, $timeout = 0, $socket_options = null,
-        $gssapi_principal=null, $gssapi_cname=null
+        $gssapi_principal = null, $gssapi_cname = null
     ) {
         if (isset($host)) {
             $this->host = $host;
