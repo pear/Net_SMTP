@@ -16,9 +16,15 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2021-03-19</date>
+ <lead>
+  <name>Armin Graefe</name>
+  <user>schengawegga</user>
+  <email>schengawegga@gmail.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2022-09-23</date>
  <version>
-  <release>1.10.0</release>
+  <release>1.10.1</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -27,7 +33,9 @@
  </stability>
  <license uri="https://opensource.org/licenses/bsd-license.php">BSD-2-Clause</license>
  <notes>
-* Add the starttls() method
+* BugFix: (authXOAuth2) longer tokens violate maximum SMTP command line length #70
+* BugFix: (disconnect) socket will not disconnect on erroneous response upon QUIT message #71
+* BugFix: Fix PHP 8.2 deprecation warnings on undefined properties #72
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
