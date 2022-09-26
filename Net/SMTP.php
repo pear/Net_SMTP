@@ -1,40 +1,58 @@
 <?php
-/** vim: set expandtab softtabstop=4 tabstop=4 shiftwidth=4: */
-// +----------------------------------------------------------------------+
-// | PHP Version 5 and 7                                                  |
-// +----------------------------------------------------------------------+
-// | Copyright (c) 1997-2021 Jon Parise and Chuck Hagenbuch               |
-// | All rights reserved.                                                 |
-// |                                                                      |
-// | Redistribution and use in source and binary forms, with or without   |
-// | modification, are permitted provided that the following conditions   |
-// | are met:                                                             |
-// |                                                                      |
-// | 1. Redistributions of source code must retain the above copyright    |
-// |    notice, this list of conditions and the following disclaimer.     |
-// |                                                                      |
-// | 2. Redistributions in binary form must reproduce the above copyright |
-// |    notice, this list of conditions and the following disclaimer in   |
-// |    the documentation and/or other materials provided with the        |
-// |    distribution.                                                     |
-// |                                                                      |
-// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS  |
-// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT    |
-// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS    |
-// | FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE       |
-// | COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, |
-// | INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, |
-// | BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;     |
-// | LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER     |
-// | CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT   |
-// | LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN    |
-// | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE      |
-// | POSSIBILITY OF SUCH DAMAGE.                                          |
-// +----------------------------------------------------------------------+
-// | Authors: Chuck Hagenbuch <chuck@horde.org>                           |
-// |          Jon Parise <jon@php.net>                                    |
-// |          Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>      |
-// +----------------------------------------------------------------------+
+/**
+ * +----------------------------------------------------------------------+
+ * | PHP Version 5, 7 and 8                                               |
+ * +----------------------------------------------------------------------+
+ * | Copyright (c) 1997-2022 Jon Parise and Chuck Hagenbuch               |
+ * | All rights reserved.                                                 |
+ * |                                                                      |
+ * | Redistribution and use in source and binary forms, with or without   |
+ * | modification, are permitted provided that the following conditions   |
+ * | are met:                                                             |
+ * |                                                                      |
+ * | 1. Redistributions of source code must retain the above copyright    |
+ * |    notice, this list of conditions and the following disclaimer.     |
+ * |                                                                      |
+ * | 2. Redistributions in binary form must reproduce the above copyright |
+ * |    notice, this list of conditions and the following disclaimer in   |
+ * |    the documentation and/or other materials provided with the        |
+ * |    distribution.                                                     |
+ * |                                                                      |
+ * | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS  |
+ * | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT    |
+ * | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS    |
+ * | FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE       |
+ * | COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, |
+ * | INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, |
+ * | BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;     |
+ * | LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER     |
+ * | CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT   |
+ * | LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN    |
+ * | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE      |
+ * | POSSIBILITY OF SUCH DAMAGE.                                          |
+ * +----------------------------------------------------------------------+
+ * | Authors: Chuck Hagenbuch <chuck@horde.org>                           |
+ * |          Jon Parise <jon@php.net>                                    |
+ * |          Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>      |
+ * |          Armin Graefe <schengawegga@gmail.com>                       |
+ * +----------------------------------------------------------------------+
+ *
+ * Provides an implementation of the SMTP protocol using PEAR's
+ * Net_Socket class.
+ *
+ * @category Network
+ * @package  Net_SMTP
+ * @author   Chuck Hagenbuch <chuck@horde.org>
+ * @author   Jon Parise <jon@php.net>
+ * @author   Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
+ * @author   Armin Graefe <schengawegga@gmail.com>
+ * @license  http://opensource.org/licenses/bsd-license.php BSD-2-Clause
+ * @link     https://pear.php.net/package/Net_SMTP/
+ *
+ * @example basic.php A basic implementation of the Net_SMTP package.
+ *
+ * vim: set expandtab softtabstop=4 tabstop=4 shiftwidth=4: 
+ */
 
 require_once 'PEAR.php';
 require_once 'Net/Socket.php';
@@ -43,11 +61,14 @@ require_once 'Net/Socket.php';
  * Provides an implementation of the SMTP protocol using PEAR's
  * Net_Socket class.
  *
- * @package Net_SMTP
- * @author  Chuck Hagenbuch <chuck@horde.org>
- * @author  Jon Parise <jon@php.net>
- * @author  Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
- * @license http://opensource.org/licenses/bsd-license.php BSD-2-Clause
+ * @category Network
+ * @package  Net_SMTP
+ * @author   Chuck Hagenbuch <chuck@horde.org>
+ * @author   Jon Parise <jon@php.net>
+ * @author   Damian Alejandro Fernandez Sosa <damlists@cnba.uba.ar>
+ * @author   Armin Graefe <schengawegga@gmail.com>
+ * @license  http://opensource.org/licenses/bsd-license.php BSD-2-Clause
+ * @link     https://pear.php.net/package/Net_SMTP/
  *
  * @example basic.php A basic implementation of the Net_SMTP package.
  */
@@ -55,24 +76,28 @@ class Net_SMTP
 {
     /**
      * The server to connect to.
+     *
      * @var string
      */
     public $host = 'localhost';
 
     /**
      * The port to connect to.
+     *
      * @var int
      */
     public $port = 25;
 
     /**
      * The value to give when sending EHLO or HELO.
+     *
      * @var string
      */
     public $localhost = 'localhost';
 
     /**
      * List of supported authentication methods, in preferential order.
+     *
      * @var array
      */
     public $auth_methods = array();
@@ -91,30 +116,35 @@ class Net_SMTP
 
     /**
      * Number of pipelined commands.
+     *
      * @var int
      */
     protected $pipelined_commands = 0;
 
     /**
      * Should debugging output be enabled?
+     *
      * @var boolean
      */
     protected $debug = false;
 
     /**
      * Debug output handler.
+     *
      * @var callback
      */
     protected $debug_handler = null;
 
     /**
      * The socket resource being used to connect to the SMTP server.
+     *
      * @var resource
      */
     protected $socket = null;
 
     /**
      * Array of socket options that will be passed to Net_Socket::connect().
+     *
      * @see stream_context_create()
      * @var array
      */
@@ -122,42 +152,49 @@ class Net_SMTP
 
     /**
      * The socket I/O timeout value in seconds.
+     *
      * @var int
      */
     protected $timeout = 0;
 
     /**
      * The most recent server response code.
+     *
      * @var int
      */
     protected $code = -1;
 
     /**
      * The most recent server response arguments.
+     *
      * @var array
      */
     protected $arguments = array();
 
     /**
      * Stores the SMTP server's greeting string.
+     *
      * @var string
      */
     protected $greeting = null;
 
     /**
      * Stores detected features of the SMTP server.
+     *
      * @var array
      */
     protected $esmtp = array();
 
     /**
      * GSSAPI principal.
+     *
      * @var string
      */
     protected $gssapi_principal = null;
 
     /**
      * GSSAPI principal.
+     *
      * @var string
      */
     protected $gssapi_cname = null;
@@ -229,6 +266,8 @@ class Net_SMTP
      * @param integer $seconds      Timeout value in seconds.
      * @param integer $microseconds Additional value in microseconds.
      *
+     * @return void
+     *
      * @since 1.5.0
      */
     public function setTimeout($seconds, $microseconds = 0)
@@ -242,6 +281,8 @@ class Net_SMTP
      * @param boolean  $debug   New value for the debugging flag.
      * @param callback $handler Debug handler callback
      *
+     * @return void
+     *
      * @since 1.1.0
      */
     public function setDebug($debug, $handler = null)
@@ -254,6 +295,8 @@ class Net_SMTP
      * Write the given debug text to the current debug output handler.
      *
      * @param string $message Debug mesage text.
+     *
+     * @return void
      *
      * @since 1.3.3
      */
@@ -384,11 +427,16 @@ class Net_SMTP
         /* Compare the server's response code with the valid code/codes. */
         if (is_int($valid) && ($this->code === $valid)) {
             return true;
-        } elseif (is_array($valid) && in_array($this->code, $valid, true)) {
+        }
+
+        if (is_array($valid) && in_array($this->code, $valid, true)) {
             return true;
         }
 
-        return PEAR::raiseError('Invalid response code received from server', $this->code);
+        return PEAR::raiseError(
+            'Invalid response code received from server',
+            $this->code
+        );
     }
 
     /**
@@ -426,7 +474,7 @@ class Net_SMTP
      */
     public function getResponse()
     {
-        return array($this->code, join("\n", $this->arguments));
+        return array($this->code, implode("\n", $this->arguments));
     }
 
     /**
@@ -452,7 +500,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function connect($timeout = null, $persistent = false)
     {
@@ -502,7 +550,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function disconnect($force = false)
     {
@@ -576,7 +624,7 @@ class Net_SMTP
      * @return mixed Returns a string containing the name of the best
      *               supported authentication method or a PEAR_Error object
      *               if a failure condition is encountered.
-     * @since 1.1.0
+     * @since  1.1.0
      */
     protected function getBestAuthMethod()
     {
@@ -597,7 +645,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, true on success, or false if SSL/TLS
      *               isn't available.
-     * @since 1.10.0
+     * @since  1.10.0
      */
     public function starttls()
     {
@@ -609,36 +657,42 @@ class Net_SMTP
         if (version_compare(PHP_VERSION, '5.1.0', '>=')
             && extension_loaded('openssl') && isset($this->esmtp['STARTTLS'])
             && strncasecmp($this->host, 'ssl://', 6) !== 0
-            ) {
-                /* Start the TLS connection attempt. */
-                if (PEAR::isError($result = $this->put('STARTTLS'))) {
-                    return $result;
-                }
-                if (PEAR::isError($result = $this->parseResponse(220))) {
-                    return $result;
-                }
-                if (isset($this->socket_options['ssl']['crypto_method'])) {
-                    $crypto_method = $this->socket_options['ssl']['crypto_method'];
-                } else {
-                    /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
-                     * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
-                     * inconsistent across PHP versions. */
-                    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
-                }
-                if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
-                    return $result;
-                } elseif ($result !== true) {
-                    return PEAR::raiseError('STARTTLS failed');
-                }
-                
-                /* Send EHLO again to recieve the AUTH string from the
-                 * SMTP server. */
-                $this->negotiate();
-            } else {
-                return false;
+        ) {
+            /* Start the TLS connection attempt. */
+            if (PEAR::isError($result = $this->put('STARTTLS'))) {
+                return $result;
             }
+            if (PEAR::isError($result = $this->parseResponse(220))) {
+                return $result;
+            }
+            if (isset($this->socket_options['ssl']['crypto_method'])) {
+                $crypto_method = $this->socket_options['ssl']['crypto_method'];
+            } else {
+                /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
+                 * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
+                 * inconsistent across PHP versions. */
+                $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
+                | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
+                | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+            }
+            if (PEAR::isError(
+                $result = $this->socket->enableCrypto(true, $crypto_method)
+            )
+            ) {
+                return $result;
+            }
+
+            if ($result !== true
+            ) {
+                return PEAR::raiseError('STARTTLS failed');
+            }
+
+            /* Send EHLO again to recieve the AUTH string from the
+             * SMTP server. */
+                $this->negotiate();
+        } else {
+            return false;
+        }
             
             return true;
     }
@@ -651,12 +705,12 @@ class Net_SMTP
      * @param string $method The requested authentication method.  If none is
      *                       specified, the best supported method will be used.
      * @param bool   $tls    Flag indicating whether or not TLS should be attempted.
-     * @param string $authz  An optional authorization identifier.  If specified, this
+     * @param string $authz  An optional authorization identifier. If specified, this
      *                       identifier will be used as the authorization proxy.
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function auth($uid, $pwd , $method = '', $tls = true, $authz = '')
     {
@@ -686,16 +740,22 @@ class Net_SMTP
         } else {
             $method = strtoupper($method);
             if (!array_key_exists($method, $this->auth_methods)) {
-                return PEAR::raiseError("$method is not a supported authentication method");
+                return PEAR::raiseError(
+                    "$method is not a supported authentication method"
+                );
             }
         }
 
         if (!isset($this->auth_methods[$method])) {
-            return PEAR::raiseError("$method is not a supported authentication method");
+            return PEAR::raiseError(
+                "$method is not a supported authentication method"
+            );
         }
 
         if (!is_callable($this->auth_methods[$method], false)) {
-            return PEAR::raiseError("$method authentication method cannot be called");
+            return PEAR::raiseError(
+                "$method authentication method cannot be called"
+            );
         }
 
         if (is_array($this->auth_methods[$method])) {
@@ -764,7 +824,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.1.0
+     * @since  1.1.0
      */
     protected function authDigestMD5($uid, $pwd, $authz = '')
     {
@@ -805,6 +865,7 @@ class Net_SMTP
         if (PEAR::isError($error = $this->parseResponse(235))) {
             return $error;
         }
+        return true;
     }
 
     /**
@@ -816,7 +877,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.1.0
+     * @since  1.1.0
      */
     protected function authCRAMMD5($uid, $pwd, $authz = '')
     {
@@ -856,7 +917,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.1.0
+     * @since  1.1.0
      */
     protected function authLogin($uid, $pwd, $authz = '')
     {
@@ -901,7 +962,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.1.0
+     * @since  1.1.0
      */
     protected function authPlain($uid, $pwd, $authz = '')
     {
@@ -917,7 +978,9 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_str = base64_encode($authz . chr(0) . $uid . chr(0) . $pwd);
+        $auth_str = base64_encode(
+            $authz . chr(0) . $uid . chr(0) . $pwd
+        );
 
         if (PEAR::isError($error = $this->put($auth_str))) {
             return $error;
@@ -932,18 +995,18 @@ class Net_SMTP
     }
 
      /**
-     * Authenticates the user using the GSSAPI method.
-     *
-     * PHP krb5 extension is required,
-     * service principal and credentials cache must be set.
-     *
-     * @param string $uid   The userid to authenticate as.
-     * @param string $pwd   The password to authenticate with.
-     * @param string $authz The optional authorization proxy identifier.
-     *
-     * @return mixed Returns a PEAR_Error with an error message on any
-     *               kind of failure, or true on success.
-     */
+      * Authenticates the user using the GSSAPI method.
+      *
+      * PHP krb5 extension is required,
+      * service principal and credentials cache must be set.
+      *
+      * @param string $uid   The userid to authenticate as.
+      * @param string $pwd   The password to authenticate with.
+      * @param string $authz The optional authorization proxy identifier.
+      *
+      * @return mixed Returns a PEAR_Error with an error message on any
+      *               kind of failure, or true on success.
+      */
     protected function authGSSAPI($uid, $pwd, $authz = '')
     {
         if (PEAR::isError($error = $this->put('AUTH', 'GSSAPI'))) {
@@ -976,11 +1039,15 @@ class Net_SMTP
             $gssapicontext->acquireCredentials($ccache);
 
             $token   = '';
-            $success = $gssapicontext->initSecContext($this->gssapi_principal, null, null, null, $token);
+            $success = $gssapicontext->initSecContext(
+                $this->gssapi_principal, null, null, null, $token
+            );
             $token   = base64_encode($token);
         }
         catch (Exception $e) {
-            return PEAR::raiseError('GSSAPI authentication failed: ' . $e->getMessage());
+            return PEAR::raiseError(
+                'GSSAPI authentication failed: ' . $e->getMessage()
+            );
         }
 
         if (PEAR::isError($error = $this->put($token))) {
@@ -1000,7 +1067,9 @@ class Net_SMTP
             $gssapicontext->wrap($challenge, $challenge, true);
         }
         catch (Exception $e) {
-            return PEAR::raiseError('GSSAPI authentication failed: ' . $e->getMessage());
+            return PEAR::raiseError(
+                'GSSAPI authentication failed: ' . $e->getMessage()
+            );
         }
 
         if (PEAR::isError($error = $this->put(base64_encode($challenge)))) {
@@ -1021,25 +1090,34 @@ class Net_SMTP
      * @param string $uid   The userid to authenticate as.
      * @param string $token The access token to authenticate with.
      * @param string $authz The optional authorization proxy identifier.
+     * @param object $conn  The current object
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.9.0
+     * @since  1.9.0
      */
     public function authXOAuth2($uid, $token, $authz, $conn)
     {
         $auth = base64_encode("user=$uid\1auth=$token\1\1");
 
-        // Maximum length of the base64-encoded token to be sent in the initial response is 497 bytes, according to
-        // RFC 4954 (https://datatracker.ietf.org/doc/html/rfc4954); for longer tokens an empty initial
-        // response MUST be sent and the token must be sent separately
-        // (497 bytes = 512 bytes /SMTP command length limit/ - 13 bytes /"AUTH XOAUTH2 "/ - 2 bytes /CRLF/)
+        // Maximum length of the base64-encoded token to be sent in the initial
+        // response is 497 bytes, according to RFC 4954
+        // (https://datatracker.ietf.org/doc/html/rfc4954); for longer tokens an
+        // empty initial response MUST be sent and the token must be sent separately
+        // (497 bytes = 512 bytes /SMTP command length limit/ - 13 bytes
+        // /"AUTH XOAUTH2 "/ - 2 bytes /CRLF/)
         if (strlen($auth) <= 497) {
-            if (PEAR::isError($error = $this->put('AUTH', 'XOAUTH2 ' . $auth))) {
+            if (PEAR::isError(
+                $error = $this->put('AUTH', 'XOAUTH2 ' . $auth)
+            )
+            ) {
                 return $error;
             }
         } else {
-            if (PEAR::isError($error = $this->put('AUTH', 'XOAUTH2'))) {
+            if (PEAR::isError(
+                $error = $this->put('AUTH', 'XOAUTH2')
+            )
+            ) {
                 return $error;
             }
 
@@ -1082,7 +1160,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function helo($domain)
     {
@@ -1100,7 +1178,7 @@ class Net_SMTP
      * Return the list of SMTP service extensions advertised by the server.
      *
      * @return array The list of SMTP service extensions.
-     * @since 1.3
+     * @since  1.3
      */
     public function getServiceExtensions()
     {
@@ -1123,7 +1201,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function mailFrom($sender, $params = null)
     {
@@ -1143,7 +1221,10 @@ class Net_SMTP
         if (PEAR::isError($error = $this->put('MAIL', $args))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1172,7 +1253,10 @@ class Net_SMTP
         if (PEAR::isError($error = $this->put('RCPT', $args))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(array(250, 251), $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(array(250, 251), $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1186,8 +1270,10 @@ class Net_SMTP
      * easier overloading for the cases where it is desirable to
      * customize the quoting behavior.
      *
-     * @param string &$data The message text to quote. The string must be passed
-     *                      by reference, and the text will be modified in place.
+     * @param string $data The message text to quote. The string must be passed
+     *                     by reference, and the text will be modified in place.
+     *
+     * @return void
      *
      * @since 1.2
      */
@@ -1198,7 +1284,9 @@ class Net_SMTP
         $data = preg_replace('/^\./m', '..', $data);
 
         /* Change Unix (\n) and Mac (\r) linefeeds into CRLF's (\r\n). */
-        $data = preg_replace('/(?:\r\n|\n|\r(?!\n))/', "\r\n", $data);
+        $data = preg_replace(
+            '/(?:\r\n|\n|\r(?!\n))/', "\r\n", $data
+        );
     }
 
     /**
@@ -1211,7 +1299,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function data($data, $headers = null)
     {
@@ -1333,7 +1421,10 @@ class Net_SMTP
         }
 
         /* Verify that the data was successfully received by the server. */
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1347,14 +1438,20 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.2.6
+     * @since  1.2.6
      */
     public function sendFrom($path)
     {
-        if (PEAR::isError($error = $this->put('SEND', "FROM:<$path>"))) {
+        if (PEAR::isError(
+            $error = $this->put('SEND', "FROM:<$path>")
+        )
+        ) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1368,14 +1465,20 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.2.6
+     * @since  1.2.6
      */
     public function somlFrom($path)
     {
-        if (PEAR::isError($error = $this->put('SOML', "FROM:<$path>"))) {
+        if (PEAR::isError(
+            $error = $this->put('SOML', "FROM:<$path>")
+        )
+        ) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1389,14 +1492,20 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.2.6
+     * @since  1.2.6
      */
     public function samlFrom($path)
     {
-        if (PEAR::isError($error = $this->put('SAML', "FROM:<$path>"))) {
+        if (PEAR::isError(
+            $error = $this->put('SAML', "FROM:<$path>")
+        )
+        ) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1415,7 +1524,10 @@ class Net_SMTP
         if (PEAR::isError($error = $this->put('RSET'))) {
             return $error;
         }
-        if (PEAR::isError($error = $this->parseResponse(250, $this->pipelining))) {
+        if (PEAR::isError(
+            $error = $this->parseResponse(250, $this->pipelining)
+        )
+        ) {
             return $error;
         }
 
@@ -1429,7 +1541,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function vrfy($string)
     {
@@ -1449,7 +1561,7 @@ class Net_SMTP
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
-     * @since 1.0
+     * @since  1.0
      */
     public function noop()
     {
