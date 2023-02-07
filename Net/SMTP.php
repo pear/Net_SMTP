@@ -426,7 +426,7 @@ class Net_SMTP
      */
     public function getResponse()
     {
-        return array($this->code, join("\n", $this->arguments));
+        return array($this->code, implode("\n", $this->arguments));
     }
 
     /**
@@ -623,23 +623,34 @@ class Net_SMTP
                     /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
                      * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
                      * inconsistent across PHP versions. */
-                    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+                    }
+
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                    }
+
+                    //New Crypto-Method since PHP7.4
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
+                    }
                 }
                 if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
                     return $result;
                 } elseif ($result !== true) {
                     return PEAR::raiseError('STARTTLS failed');
                 }
-                
+
                 /* Send EHLO again to recieve the AUTH string from the
                  * SMTP server. */
                 $this->negotiate();
             } else {
                 return false;
             }
-            
+
             return true;
     }
         
