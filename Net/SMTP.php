@@ -51,7 +51,7 @@
  *
  * @example basic.php A basic implementation of the Net_SMTP package.
  *
- * vim: set expandtab softtabstop=4 tabstop=4 shiftwidth=4: 
+ * vim: set expandtab softtabstop=4 tabstop=4 shiftwidth=4:
  */
 
 require_once 'PEAR.php';
