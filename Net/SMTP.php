@@ -639,18 +639,22 @@ class Net_SMTP
                     }
                 }
 
-                $result = 0;
-                while ($result == 0) {
+                $do_count = 0;
+                do {
                     $result = $this->socket->enableCrypto(true, $crypto_method);
                     if ($this->socket->isBlocking() !== true) {
                         usleep(1);
                     }
-                }
+                    $do_count++;
+                } while ($result == 0 && $do_count < 100);
 
                 if (PEAR::isError($result)) {
                     return $result;
                 } elseif ($result !== true) {
-                    return PEAR::raiseError('STARTTLS failed [enableCrypto: ' . var_export($result, true) . '; crypto_method: ' . var_export($crypto_method, true) . ']');
+                    return PEAR::raiseError('STARTTLS failed 
+                        [enableCrypto: ' . var_export($result, true) . '; 
+                        crypto_method: ' . var_export($crypto_method, true) . '; 
+                        do_count: ' . $do_count . ']');
                 }
 
                 /* Send EHLO again to recieve the AUTH string from the
