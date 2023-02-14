@@ -638,7 +638,16 @@ class Net_SMTP
                         $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
                     }
                 }
-                if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
+
+                $result = 0;
+                while ($result == 0) {
+                    $result = $this->socket->enableCrypto(true, $crypto_method);
+                    if ($this->socket->isBlocking() !== true) {
+                        usleep(1);
+                    }
+                }
+
+                if (PEAR::isError($result)) {
                     return $result;
                 } elseif ($result !== true) {
                     return PEAR::raiseError('STARTTLS failed [enableCrypto: ' . var_export($result, true) . '; crypto_method: ' . var_export($crypto_method, true) . ']');
