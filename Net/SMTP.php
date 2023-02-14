@@ -641,7 +641,7 @@ class Net_SMTP
                 if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
                     return $result;
                 } elseif ($result !== true) {
-                    return PEAR::raiseError('STARTTLS failed');
+                    return PEAR::raiseError('STARTTLS failed [enableCrypto: ' . var_export($result, true) . '; crypto_method: ' . var_export($crypto_method, true) . ']');
                 }
 
                 /* Send EHLO again to recieve the AUTH string from the
