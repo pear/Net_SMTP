@@ -652,10 +652,31 @@ class Net_SMTP
                 if (PEAR::isError($result)) {
                     return $result;
                 } elseif ($result !== true) {
-                    return PEAR::raiseError('STARTTLS failed 
-                        [enableCrypto: ' . var_export($result, true) . '; 
-                        crypto_method: ' . var_export($crypto_method, true) . '; 
-                        attempts: ' . $attempts . ']');
+                    $crypto_types_arr = array_filter(
+                        get_defined_constants(false),
+                        function($key) {
+                            return substr($key,0,21) == 'STREAM_CRYPTO_METHOD_';
+                        },
+                        ARRAY_FILTER_USE_KEY
+                    );
+
+                    $error_types_arr = array_filter(
+                        get_defined_constants(false),
+                        function($key) {
+                            return substr($key,0,2) == 'E_';
+                        },
+                        ARRAY_FILTER_USE_KEY
+                        );
+
+                    return PEAR::raiseError('STARTTLS failed ' .
+                        '{enableCrypto: ' . var_export($result, true) . '; ' .
+                        'crypto_method: ' .
+                        array_search($crypto_method, $crypto_types_arr) .
+                        ' (' . var_export($crypto_method, true) . '); ' .
+                        'attempts: ' . $attempts . '; ' .
+                        array_search(error_get_last()['type'], $error_types_arr) .
+                        ' (' . error_get_last()['type'] . '): ' .
+                        error_get_last()['message'] . '}');
                 }
 
                 /* Send EHLO again to recieve the AUTH string from the
