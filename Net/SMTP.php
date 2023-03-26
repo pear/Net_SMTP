@@ -1538,8 +1538,6 @@ class Net_SMTP
      *
      * @param string $filter The string to filter
      * @return array Filtered constants array.
-     *
-     * @since 1.10.2
      */
     private function getDefinedConstantsKeyFilter($filter) {
         $constants_filtered = array();
