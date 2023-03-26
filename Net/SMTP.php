@@ -1546,7 +1546,7 @@ class Net_SMTP
         $filter_length = strlen($filter);
         $constants = get_defined_constants();
         foreach ($constants as $key=>$value){
-            if(substr($key,0,$filter_length) == $filter) {
+            if (substr($key, 0, $filter_length) == $filter) {
                 $constants_filtered[$key] = $value;
             }
         }
