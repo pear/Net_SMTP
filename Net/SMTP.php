@@ -656,10 +656,10 @@ class Net_SMTP
 
                 if ($result !== true) {
                     $last_error = error_get_last();
-                    $crypto_types_arr = $this->getDefinedConstantsFilter(
+                    $crypto_types_arr = $this->getDefinedConstantsKeyFilter(
                         'STREAM_CRYPTO_METHOD_'
                     );
-                    $error_types_arr = $this->getDefinedConstantsFilter(
+                    $error_types_arr = $this->getDefinedConstantsKeyFilter(
                         'E_'
                     );
 
@@ -1541,7 +1541,7 @@ class Net_SMTP
      *
      * @since 1.10.2
      */
-    private function getDefinedConstantsFilter($filter) {
+    private function getDefinedConstantsKeyFilter($filter) {
         $constants_filtered = array();
         $filter_length = strlen($filter);
         $constants = get_defined_constants();
