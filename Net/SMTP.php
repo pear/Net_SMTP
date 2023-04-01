@@ -1165,9 +1165,6 @@ class Net_SMTP
         return true;
     }
 
-
-
-
     /**
      * Authenticates the user using the SCRAM-SHA-1 method.
      *
@@ -1279,11 +1276,40 @@ class Net_SMTP
         }
 
         $auth_sasl = new Auth_SASL;
-        $challenge = base64_decode($this->arguments[0]);
         $cram      = $auth_sasl->factory($this->scram_sha_hash_algorithm);
+        $auth_str  = base64_encode($cram->getResponse($uid, $pwd));
+
+        /* Step 1: Send first authentication request */
+        if (PEAR::isError($error = $this->put($auth_str))) {
+            return $error;
+        }
+
+        /* 334: Continue authentication request with password salt */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            return $error;
+        }
+
+        $challenge = base64_decode($this->arguments[0]);
         $auth_str  = base64_encode($cram->getResponse($uid, $pwd, $challenge));
 
+        /* Step 2: Send salted authentication request */
         if (PEAR::isError($error = $this->put($auth_str))) {
+            return $error;
+        }
+
+        /* 334: Continue authentication request with password salt */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            return $error;
+        }
+
+        /* Verify server signature */
+        $verification = $cram->processOutcome(base64_decode($this->arguments[0]));
+        if ($verification == false) {
+            return PEAR::raiseError("SCRAM Server verification on step 3 not successful");
+        }
+
+        /* Step 3: Send a request to acknowledge verification */
+        if (PEAR::isError($error = $this->put("NOOP"))) {
             return $error;
         }
 
@@ -1292,10 +1318,6 @@ class Net_SMTP
             return $error;
         }
     }
-
-
-
-
 
     /**
      * Send the HELO command.
