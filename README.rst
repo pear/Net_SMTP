@@ -6,8 +6,8 @@
  User Documentation
 --------------------
 
-:Author:    Jon Parise, Armin Graefe
-:Contact:   jon@php.net, schengawegga@gmail.com
+:Author:    "Jon Parise", "Armin Graefe"
+:Contact:   "jon@php.net", "schengawegga@gmail.com"
 
 .. contents:: Table of Contents
 .. section-numbering::
