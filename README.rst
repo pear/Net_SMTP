@@ -6,8 +6,8 @@
  User Documentation
 --------------------
 
-:Author:    Jon Parise
-:Contact:   jon@php.net
+:Author:    Jon Parise, Armin Graefe
+:Contact:   jon@php.net, schengawegga@gmail.com
 
 .. contents:: Table of Contents
 .. section-numbering::
@@ -41,9 +41,9 @@ The ``Auth_SASL`` Package
 -------------------------
 
 The `Auth_SASL`_ package is an optional dependency.  If it is available, the
-Net_SMTP package will be able to support the DIGEST-MD5_ and CRAM-MD5_ SMTP
-authentication methods.  Otherwise, only the LOGIN_ and PLAIN_ methods will
-be available.
+Net_SMTP package will be able to support the DIGEST-MD5_, CRAM-MD5_ and
+SCRAM-SHA_ SMTP authentication methods. Otherwise, only the LOGIN_ and
+PLAIN_ methods will be available.
 
 Error Handling
 ==============
@@ -104,6 +104,19 @@ method in terms of security.  It is provided here for compatibility with
 older SMTP servers that may not support the newer DIGEST-MD5 algorithm.
 
 **Note:** The CRAM-MD5 authentication method is only supported if the
+AUTH_SASL_ package is available.
+
+SCRAM-SHA
+--------
+
+In cryptography, the Salted Challenge Response Authentication Mechanism (SCRAM)
+is a family of modern, password-based challenge–response authentication mechanisms
+providing authentication to a server.
+
+Available mechanisms are SCRAM-SHA-1, SCRAM-SHA-224, SCRAM-SHA-256, SCRAM-SHA-384
+and SCRAM-SHA-512.
+
+**Note:** The SCRAM-SHA authentication method is only supported if the
 AUTH_SASL_ package is available.
 
 LOGIN
