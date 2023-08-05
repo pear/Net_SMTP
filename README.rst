@@ -74,7 +74,7 @@ CRAM-MD5 (DEPRECATED)
 --------
 
 **DEPRECATED**
-This authentication method is no longer secure.
+This authentication method is no longer secure and should be avoided.
 
 The CRAM-MD5 authentication method has been superseded by the DIGEST-MD5_
 method in terms of security.  It is provided here for compatibility with
@@ -87,7 +87,7 @@ DIGEST-MD5 (DEPRECATED)
 ----------
 
 **DEPRECATED**
-This authentication method is no longer secure.
+This authentication method is no longer secure and should be avoided.
 
 The DIGEST-MD5 authentication method uses `RSA Data Security Inc.`_'s MD5
 Message Digest algorithm.  It is considered a more secure method of SMTP
@@ -115,21 +115,25 @@ if the krb5_ php extension is available.
 .. _RFC-4120: https://tools.ietf.org/html/rfc4120
 .. _krb5: https://pecl.php.net/package/krb5
 
-LOGIN
+LOGIN (DEPRECATED)
 -----
+
+**DEPRECATED**
+This authentication method is no longer secure and should be avoided.
 
 The LOGIN authentication method encrypts the user's password using the
 Base64_ encoding scheme.  Because decrypting a Base64-encoded string is
-trivial, LOGIN is not considered a secure authentication method and should
-be avoided.
+trivial.
 
 .. _Base64: https://www.php.net/manual/en/function.base64-encode.php
 
-PLAIN
+PLAIN (DEPRECATED)
 -----
 
+**DEPRECATED**
+This authentication method is no longer secure and should be avoided.
+
 The PLAIN authentication method sends the user's password in plain text.
-This method of authentication is not secure and should be avoided.
 
 SCRAM
 --------
