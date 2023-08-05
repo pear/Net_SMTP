@@ -777,6 +777,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authDigestMD5($uid, $pwd, $authz = '')
     {
@@ -829,6 +830,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authCRAMMD5($uid, $pwd, $authz = '')
     {
@@ -869,6 +871,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authLogin($uid, $pwd, $authz = '')
     {
@@ -914,6 +917,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authPlain($uid, $pwd, $authz = '')
     {
