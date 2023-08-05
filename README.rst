@@ -70,6 +70,35 @@ methods, in order of preference:
 
 .. _RFC-2554: https://www.ietf.org/rfc/rfc2554.txt
 
+CRAM-MD5 (DEPRECATED)
+--------
+
+**DEPRECATED**
+This authentication method is no longer secure.
+
+The CRAM-MD5 authentication method has been superseded by the DIGEST-MD5_
+method in terms of security.  It is provided here for compatibility with
+older SMTP servers that may not support the newer DIGEST-MD5 algorithm.
+
+**Note:** The CRAM-MD5 authentication method is only supported if the
+AUTH_SASL_ package is available.
+
+DIGEST-MD5 (DEPRECATED)
+----------
+
+**DEPRECATED**
+This authentication method is no longer secure.
+
+The DIGEST-MD5 authentication method uses `RSA Data Security Inc.`_'s MD5
+Message Digest algorithm.  It is considered a more secure method of SMTP
+authentication than PLAIN or LOGIN, while still vulnerable to MitM attacks
+without TLS/SSL.
+
+**Note:** The DIGEST-MD5 authentication method is only supported if the
+AUTH_SASL_ package is available.
+
+.. _RSA Data Security Inc.: https://www.rsasecurity.com/
+
 GSSAPI
 ------
 
@@ -86,42 +115,6 @@ if the krb5_ php extension is available.
 .. _RFC-4120: https://tools.ietf.org/html/rfc4120
 .. _krb5: https://pecl.php.net/package/krb5
 
-DIGEST-MD5
-----------
-
-The DIGEST-MD5 authentication method uses `RSA Data Security Inc.`_'s MD5
-Message Digest algorithm.  It is considered a more secure method of SMTP
-authentication than PLAIN or LOGIN, while still vulnerable to MitM attacks
-without TLS/SSL.
-
-**Note:** The DIGEST-MD5 authentication method is only supported if the
-AUTH_SASL_ package is available.
-
-.. _RSA Data Security Inc.: https://www.rsasecurity.com/
-
-CRAM-MD5
---------
-
-The CRAM-MD5 authentication method has been superseded by the DIGEST-MD5_
-method in terms of security.  It is provided here for compatibility with
-older SMTP servers that may not support the newer DIGEST-MD5 algorithm.
-
-**Note:** The CRAM-MD5 authentication method is only supported if the
-AUTH_SASL_ package is available.
-
-SCRAM-SHA
---------
-
-In cryptography, the Salted Challenge Response Authentication Mechanism (SCRAM)
-is a family of modern, password-based challenge–response authentication mechanisms
-providing authentication to a server.
-
-Available mechanisms are SCRAM-SHA-1, SCRAM-SHA-224, SCRAM-SHA-256, SCRAM-SHA-384
-and SCRAM-SHA-512.
-
-**Note:** The SCRAM-SHA authentication method is only supported if the
-AUTH_SASL_ package is available.
-
 LOGIN
 -----
 
@@ -137,6 +130,19 @@ PLAIN
 
 The PLAIN authentication method sends the user's password in plain text.
 This method of authentication is not secure and should be avoided.
+
+SCRAM
+--------
+
+In cryptography, the Salted Challenge Response Authentication Mechanism (SCRAM)
+is a family of modern, password-based challenge–response authentication mechanisms
+providing authentication to a server.
+
+Available mechanisms are SCRAM-SHA-1, SCRAM-SHA-224, SCRAM-SHA-256, SCRAM-SHA-384
+and SCRAM-SHA-512.
+
+**Note:** The SCRAM-SHA authentication method is only supported if the
+AUTH_SASL_ package is available.
 
 XOAUTH2
 -------
