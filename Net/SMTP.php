@@ -781,6 +781,8 @@ class Net_SMTP
      */
     protected function authDigestMD5($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method DIGEST-MD5 is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'DIGEST-MD5'))) {
             return $error;
         }
@@ -834,6 +836,8 @@ class Net_SMTP
      */
     protected function authCRAMMD5($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method CRAM-MD5 is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'CRAM-MD5'))) {
             return $error;
         }
@@ -875,6 +879,8 @@ class Net_SMTP
      */
     protected function authLogin($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method LOGIN is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'LOGIN'))) {
             return $error;
         }
@@ -921,6 +927,8 @@ class Net_SMTP
      */
     protected function authPlain($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method PLAIN is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'PLAIN'))) {
             return $error;
         }
