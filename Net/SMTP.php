@@ -796,8 +796,7 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_sasl = new Auth_SASL;
-        $digest    = $auth_sasl->factory('digest-md5');
+        $digest    = Auth_SASL::factory('digest-md5');
         $challenge = base64_decode($this->arguments[0]);
         $auth_str  = base64_encode(
             $digest->getResponse($uid, $pwd, $challenge, $this->host, "smtp", $authz)
@@ -852,9 +851,8 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_sasl = new Auth_SASL;
         $challenge = base64_decode($this->arguments[0]);
-        $cram      = $auth_sasl->factory('cram-md5');
+        $cram      = Auth_SASL::factory('cram-md5');
         $auth_str  = base64_encode($cram->getResponse($uid, $pwd, $challenge));
 
         if (PEAR::isError($error = $this->put($auth_str))) {
@@ -1214,8 +1212,7 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_sasl = new Auth_SASL;
-        $cram      = $auth_sasl->factory($this->scram_sha_hash_algorithm);
+        $cram      = Auth_SASL::factory($this->scram_sha_hash_algorithm);
         $auth_str  = base64_encode($cram->getResponse($uid, $pwd));
 
         /* Step 1: Send first authentication request */
