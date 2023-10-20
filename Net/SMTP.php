@@ -426,7 +426,7 @@ class Net_SMTP
      */
     public function getResponse()
     {
-        return array($this->code, join("\n", $this->arguments));
+        return array($this->code, implode("\n", $this->arguments));
     }
 
     /**
@@ -623,23 +623,77 @@ class Net_SMTP
                     /* STREAM_CRYPTO_METHOD_TLS_ANY_CLIENT constant does not exist
                      * and STREAM_CRYPTO_METHOD_SSLv23_CLIENT constant is
                      * inconsistent across PHP versions. */
-                    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT
-                    | @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                    $crypto_method = STREAM_CRYPTO_METHOD_TLS_CLIENT;
+
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT;
+                    }
+
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+                    }
+
+                    if (defined('STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT')) {
+                        $crypto_method |= @STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT;
+                    }
                 }
-                if (PEAR::isError($result = $this->socket->enableCrypto(true, $crypto_method))) {
-                    return $result;
-                } elseif ($result !== true) {
-                    return PEAR::raiseError('STARTTLS failed');
+
+                for ($attempts = 1; $attempts < 15; $attempts++) {
+                    if(PEAR::isError(
+                            $result = $this->socket->enableCrypto(
+                                true, $crypto_method)
+                        )
+                    ) {
+                        return $result;
+                    }
+                    if ($this->socket->isBlocking() !== true) {
+                        usleep($attempts);
+                    }
+                    if ($result !== 0) {
+                        break;
+                    }
                 }
-                
+
+                if ($result !== true) {
+                    $last_error = error_get_last();
+                    $crypto_types_arr = $this->getDefinedConstantsKeyFilter(
+                        'STREAM_CRYPTO_METHOD_'
+                    );
+                    $error_types_arr = $this->getDefinedConstantsKeyFilter(
+                        'E_'
+                    );
+
+                    $resultErrorString = "STARTTLS failed ";
+                    //{enableCrypto: false;
+                    $resultErrorString .= "{enableCrypto: %s; ";
+                    //crypto_method: STREAM_CRYPTO_METHOD_TLS_CLIENT (3);
+                    $resultErrorString .= "crypto_method: %s (%s); ";
+                    //attempts: 1;
+                    $resultErrorString .= "attempts: %d; ";
+                    //E_ERROR (1): ErrorMessage}
+                    $resultErrorString .= "%s (%s): %s}";
+
+                    return PEAR::raiseError(
+                        sprintf(
+                            $resultErrorString,
+                            var_export($result, true),
+                            array_search($crypto_method, $crypto_types_arr),
+                            var_export($crypto_method, true),
+                            $attempts,
+                            array_search($last_error['type'], $error_types_arr),
+                            $last_error['type'],
+                            $last_error['message']
+                        )
+                    );
+                }
+
                 /* Send EHLO again to recieve the AUTH string from the
                  * SMTP server. */
                 $this->negotiate();
             } else {
                 return false;
             }
-            
+
             return true;
     }
         
@@ -1474,5 +1528,26 @@ class Net_SMTP
     public function identifySender()
     {
         return true;
+    }
+
+    /**
+     * Backwards-compatibility method.
+     * array_filter alternative in PHP5.4 for using
+     * key filter because array_filter mode parameter
+     * is only available since PHP5.6.
+     *
+     * @param string $filter The string to filter
+     * @return array Filtered constants array.
+     */
+    private function getDefinedConstantsKeyFilter($filter) {
+        $constants_filtered = array();
+        $filter_length = strlen($filter);
+        $constants = get_defined_constants();
+        foreach ($constants as $key=>$value){
+            if (substr($key, 0, $filter_length) == $filter) {
+                $constants_filtered[$key] = $value;
+            }
+        }
+        return $constants_filtered;
     }
 }
