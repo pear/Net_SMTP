@@ -127,11 +127,11 @@ trivial.
 
 .. _Base64: https://www.php.net/manual/en/function.base64-encode.php
 
-PLAIN (DEPRECATED)
+PLAIN
 -----
 
-**DEPRECATED**
-This authentication method is no longer secure and should be avoided.
+This authentication method is no longer secure and should only be used
+local or via an TLS encrypted connection.
 
 The PLAIN authentication method sends the user's password in plain text.
 

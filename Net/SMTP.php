@@ -924,13 +924,9 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
-     * @deprecated 1.11.0
      */
     protected function authPlain($uid, $pwd, $authz = '')
     {
-        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method PLAIN' .
-            ' is no longer secure and should be avoided.', E_USER_DEPRECATED);
-
         if (PEAR::isError($error = $this->put('AUTH', 'PLAIN'))) {
             return $error;
         }
