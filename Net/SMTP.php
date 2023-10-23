@@ -163,6 +163,13 @@ class Net_SMTP
     protected $gssapi_cname = null;
 
     /**
+     * SCRAM SHA-Hash algorithm.
+     *
+     * @var string
+     */
+    protected $scram_sha_hash_algorithm = null;
+
+    /**
      * Instantiates a new Net_SMTP object, overriding any defaults
      * with parameters that are passed in.
      *
@@ -215,6 +222,11 @@ class Net_SMTP
         if (@include_once 'Auth/SASL.php') {
             $this->setAuthMethod('CRAM-MD5', array($this, 'authCramMD5'));
             $this->setAuthMethod('DIGEST-MD5', array($this, 'authDigestMD5'));
+            $this->setAuthMethod('SCRAM-SHA-1', array($this, 'authScramSHA1'));
+            $this->setAuthMethod('SCRAM-SHA-224', array($this, 'authScramSHA224'));
+            $this->setAuthMethod('SCRAM-SHA-256', array($this, 'authScramSHA256'));
+            $this->setAuthMethod('SCRAM-SHA-384', array($this, 'authScramSHA384'));
+            $this->setAuthMethod('SCRAM-SHA-512', array($this, 'authScramSHA512'));
         }
 
         /* These standard authentication methods are always available. */
@@ -819,9 +831,13 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authDigestMD5($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method DIGEST-MD5' .
+            ' is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'DIGEST-MD5'))) {
             return $error;
         }
@@ -834,8 +850,7 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_sasl = new Auth_SASL;
-        $digest    = $auth_sasl->factory('digest-md5');
+        $digest    = Auth_SASL::factory('digest-md5');
         $challenge = base64_decode($this->arguments[0]);
         $auth_str  = base64_encode(
             $digest->getResponse($uid, $pwd, $challenge, $this->host, "smtp", $authz)
@@ -871,9 +886,13 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authCRAMMD5($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method CRAM-MD5' .
+            ' is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'CRAM-MD5'))) {
             return $error;
         }
@@ -886,9 +905,8 @@ class Net_SMTP
             return $error;
         }
 
-        $auth_sasl = new Auth_SASL;
         $challenge = base64_decode($this->arguments[0]);
-        $cram      = $auth_sasl->factory('cram-md5');
+        $cram      = Auth_SASL::factory('cram-md5');
         $auth_str  = base64_encode($cram->getResponse($uid, $pwd, $challenge));
 
         if (PEAR::isError($error = $this->put($auth_str))) {
@@ -911,9 +929,13 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      * @since 1.1.0
+     * @deprecated 1.11.0
      */
     protected function authLogin($uid, $pwd, $authz = '')
     {
+        trigger_error(__CLASS__ . ' (' . $this->host . '): Authentication method LOGIN' .
+            ' is no longer secure and should be avoided.', E_USER_DEPRECATED);
+
         if (PEAR::isError($error = $this->put('AUTH', 'LOGIN'))) {
             return $error;
         }
@@ -1075,6 +1097,7 @@ class Net_SMTP
      * @param string $uid   The userid to authenticate as.
      * @param string $token The access token to authenticate with.
      * @param string $authz The optional authorization proxy identifier.
+     * @param object $conn  The current object
      *
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
@@ -1127,6 +1150,159 @@ class Net_SMTP
         }
 
         return true;
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA-1 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA1($uid, $pwd, $authz = '')
+    {
+        $this->scram_sha_hash_algorithm = 'SCRAM-SHA-1';
+        return $this->authScramSHA($uid, $pwd, $authz);
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA-224 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA224($uid, $pwd, $authz = '')
+    {
+        $this->scram_sha_hash_algorithm = 'SCRAM-SHA-224';
+        return $this->authScramSHA($uid, $pwd, $authz);
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA-256 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA256($uid, $pwd, $authz = '')
+    {
+        $this->scram_sha_hash_algorithm = 'SCRAM-SHA-256';
+        return $this->authScramSHA($uid, $pwd, $authz);
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA-384 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA384($uid, $pwd, $authz = '')
+    {
+        $this->scram_sha_hash_algorithm = 'SCRAM-SHA-384';
+        return $this->authScramSHA($uid, $pwd, $authz);
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA-512 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA512($uid, $pwd, $authz = '')
+    {
+        $this->scram_sha_hash_algorithm = 'SCRAM-SHA-512';
+        return $this->authScramSHA($uid, $pwd, $authz);
+    }
+
+    /**
+     * Authenticates the user using the SCRAM-SHA method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The password to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since  1.11.0
+     */
+    protected function authScramSHA($uid, $pwd, $authz = '')
+    {
+        if (PEAR::isError($error = $this->put('AUTH', $this->scram_sha_hash_algorithm))) {
+            return $error;
+        }
+        /* 334: Continue authentication request */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            /* 503: Error: already authenticated */
+            if ($this->code === 503) {
+                return true;
+            }
+            return $error;
+        }
+
+        $cram      = Auth_SASL::factory($this->scram_sha_hash_algorithm);
+        $auth_str  = base64_encode($cram->getResponse($uid, $pwd));
+
+        /* Step 1: Send first authentication request */
+        if (PEAR::isError($error = $this->put($auth_str))) {
+            return $error;
+        }
+
+        /* 334: Continue authentication request with password salt */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            return $error;
+        }
+
+        $challenge = base64_decode($this->arguments[0]);
+        $auth_str  = base64_encode($cram->getResponse($uid, $pwd, $challenge));
+
+        /* Step 2: Send salted authentication request */
+        if (PEAR::isError($error = $this->put($auth_str))) {
+            return $error;
+        }
+
+        /* 334: Continue authentication request with password salt */
+        if (PEAR::isError($error = $this->parseResponse(334))) {
+            return $error;
+        }
+
+        /* Verify server signature */
+        $verification = $cram->processOutcome(base64_decode($this->arguments[0]));
+        if ($verification == false) {
+            return PEAR::raiseError("SCRAM Server verification on step 3 not successful");
+        }
+
+        /* Step 3: Send a request to acknowledge verification */
+        if (PEAR::isError($error = $this->put("NOOP"))) {
+            return $error;
+        }
+
+        /* 235: Authentication successful */
+        if (PEAR::isError($error = $this->parseResponse(235))) {
+            return $error;
+        }
     }
 
     /**
