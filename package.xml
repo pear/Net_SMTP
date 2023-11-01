@@ -22,9 +22,9 @@
   <email>schengawegga@gmail.com</email>
   <active>yes</active>
  </lead>
- <date>2023-10-26</date>
+ <date>2023-11-01</date>
  <version>
-  <release>1.11.0</release>
+  <release>1.11.1</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -33,12 +33,7 @@
  </stability>
  <license uri="https://opensource.org/licenses/bsd-license.php">BSD-2-Clause</license>
  <notes>
-* Feature: Add SCRAM-SHA-1, SCRAM-SHA-224, SCRAM-SHA-256, SCRAM-SHA-384 and SCRAM-SHA-512 support (#76)
-* Task: Mark authentication methods CRAM-MD5, DIGEST-MD5 and LOGIN as DEPRECATED with deprecation warnings in the error-log (#76)
-* BugFix: SMTP: STARTTLS failed (code: 220, response: 2.0.0 Ready to start TLS) (#74)
-* BugFix: Issue with non-blocking streams on establishing STARTTLS encryption (#74)
-* BugFix: Implement TLS1.3 on STARTTLS encryption (#74)
-* BugFix: using implode() instead of join() (#74)
+* BugFix: Triggering deprecation warnings in error-log causes system failures because of changing the behavior in error reporting (#76)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
