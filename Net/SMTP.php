@@ -233,6 +233,7 @@ class Net_SMTP
         $this->setAuthMethod('LOGIN', array($this, 'authLogin'), false);
         $this->setAuthMethod('PLAIN', array($this, 'authPlain'), false);
         $this->setAuthMethod('XOAUTH2', array($this, 'authXOAuth2'), false);
+        $this->setAuthMethod('OAUTHBEARER', array($this, 'authOAuthBearer'), false);
     }
 
     /**
@@ -1112,17 +1113,51 @@ class Net_SMTP
     public function authXOAuth2($uid, $token, $authz, $conn)
     {
         $auth = base64_encode("user=$uid\1auth=$token\1\1");
+        return $this->_authOAuth('XOAUTH2', $auth, $authz, $conn);
+    }
 
-        // Maximum length of the base64-encoded token to be sent in the initial response is 497 bytes, according to
-        // RFC 4954 (https://datatracker.ietf.org/doc/html/rfc4954); for longer tokens an empty initial
+    /**
+     * Authenticates the user using the OAUTHBEARER method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $token The access token to authenticate with.
+     * @param string $authz The optional authorization proxy identifier.
+     * @param object $conn  The current object
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since 1.9.3
+     * @see https://www.rfc-editor.org/rfc/rfc7628.html
+     */
+    public function authOAuthBearer($uid, $token, $authz, $conn)
+    {
+        $auth = base64_encode("n,a=$uid\1auth=$token\1\1");
+        return $this->_authOAuth('OAUTHBEARER', $auth, $authz, $conn);
+    }
+
+    /**
+     * Authenticates the user using the OAUTHBEARER or XOAUTH2 method.
+     *
+     * @param string $method The method (OAUTHBEARER or XOAUTH2)
+     * @param string $auth   The authentication string (base64 coded)
+     * @param string $authz  The optional authorization proxy identifier.
+     * @param object $conn   The current object
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     */
+    protected function _authOAuth( $method, $auth, $authz, $conn)
+    {
+        // Maximum length of the base64-encoded token to be sent in the initial response is 504 - strlen($method) bytes,
+        // according to RFC 4954 (https://datatracker.ietf.org/doc/html/rfc4954); for longer tokens an empty initial
         // response MUST be sent and the token must be sent separately
-        // (497 bytes = 512 bytes /SMTP command length limit/ - 13 bytes /"AUTH XOAUTH2 "/ - 2 bytes /CRLF/)
-        if (strlen($auth) <= 497) {
-            if (PEAR::isError($error = $this->put('AUTH', 'XOAUTH2 ' . $auth))) {
+        // (504 bytes = /SMTP command length limit/ - 6 bytes /"AUTH "/ -strlen($method) - 1 byte /" "/ - 2 bytes /CRLF/)
+        if (strlen($auth) <= (504-strlen($method))) {
+            if (PEAR::isError($error = $this->put('AUTH', $method . ' ' . $auth))) {
                 return $error;
             }
         } else {
-            if (PEAR::isError($error = $this->put('AUTH', 'XOAUTH2'))) {
+            if (PEAR::isError($error = $this->put('AUTH', $method))) {
                 return $error;
             }
 
