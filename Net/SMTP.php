@@ -709,14 +709,17 @@ class Net_SMTP
 
             return true;
     }
-        
+
     /**
      * Attempt to do SMTP authentication.
      *
      * @param string $uid    The userid to authenticate as.
      * @param string $pwd    The password to authenticate with.
-     * @param string $method The requested authentication method.  If none is
+     * @param string $method The requested authentication method. If none is
      *                       specified, the best supported method will be used.
+     *                       If you use the special method `OAUTH`, library
+     *                       will choose between OAUTHBEARER or XOAUTH2
+     *                       according the server's capabilities.
      * @param bool   $tls    Flag indicating whether or not TLS should be attempted.
      * @param string $authz  An optional authorization identifier.  If specified, this
      *                       identifier will be used as the authorization proxy.
@@ -749,6 +752,19 @@ class Net_SMTP
             if (PEAR::isError($method = $this->getBestAuthMethod())) {
                 /* Return the PEAR_Error object from _getBestAuthMethod(). */
                 return $method;
+            }
+        } elseif ($method === 'OAUTH') {
+            // special case of OAUTH, use the supported method
+            $found = false;
+            $available_methods = explode(' ', $this->esmtp['AUTH']);
+            foreach (['OAUTHBEARER', 'XOAUTH2'] as $method) {
+                if (in_array($method, $available_methods)) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                return PEAR::raiseError("neither OAUTHBEARER nor XOAUTH2 is a supported authentication method");
             }
         } else {
             $method = strtoupper($method);
@@ -1102,7 +1118,8 @@ class Net_SMTP
      * Authenticates the user using the XOAUTH2 method.
      *
      * @param string $uid   The userid to authenticate as.
-     * @param string $token The access token to authenticate with.
+     * @param string $token The access token prefixed by it's type
+     *                      example: "Bearer $access_token".
      * @param string $authz The optional authorization proxy identifier.
      * @param object $conn  The current object
      *
@@ -1110,17 +1127,19 @@ class Net_SMTP
      *               kind of failure, or true on success.
      * @since 1.9.0
      */
+    //FIXME: to switch into protected method on next major release
     public function authXOAuth2($uid, $token, $authz, $conn)
     {
         $auth = base64_encode("user=$uid\1auth=$token\1\1");
-        return $this->_authOAuth('XOAUTH2', $auth, $authz, $conn);
+        return $this->authenticateOAuth('XOAUTH2', $auth, $authz, $conn);
     }
 
     /**
      * Authenticates the user using the OAUTHBEARER method.
      *
      * @param string $uid   The userid to authenticate as.
-     * @param string $token The access token to authenticate with.
+     * @param string $token The access token prefixed by it's type
+     *                      example: "Bearer $access_token".
      * @param string $authz The optional authorization proxy identifier.
      * @param object $conn  The current object
      *
@@ -1129,10 +1148,10 @@ class Net_SMTP
      * @since 1.9.3
      * @see https://www.rfc-editor.org/rfc/rfc7628.html
      */
-    public function authOAuthBearer($uid, $token, $authz, $conn)
+    protected function authOAuthBearer($uid, $token, $authz, $conn)
     {
         $auth = base64_encode("n,a=$uid\1auth=$token\1\1");
-        return $this->_authOAuth('OAUTHBEARER', $auth, $authz, $conn);
+        return $this->authenticateOAuth('OAUTHBEARER', $auth, $authz, $conn);
     }
 
     /**
@@ -1146,7 +1165,7 @@ class Net_SMTP
      * @return mixed Returns a PEAR_Error with an error message on any
      *               kind of failure, or true on success.
      */
-    protected function _authOAuth( $method, $auth, $authz, $conn)
+    protected function authenticateOAuth( $method, $auth, $authz, $conn)
     {
         // Maximum length of the base64-encoded token to be sent in the initial response is 504 - strlen($method) bytes,
         // according to RFC 4954 (https://datatracker.ietf.org/doc/html/rfc4954); for longer tokens an empty initial
