@@ -22,9 +22,9 @@
   <email>schengawegga@gmail.com</email>
   <active>yes</active>
  </lead>
- <date>2023-11-01</date>
+ <date>2024-04-06</date>
  <version>
-  <release>1.11.1</release>
+  <release>1.12.0</release>
   <api>1.4.0</api>
  </version>
  <stability>
@@ -33,7 +33,7 @@
  </stability>
  <license uri="https://opensource.org/licenses/bsd-license.php">BSD-2-Clause</license>
  <notes>
-* BugFix: Triggering deprecation warnings in error-log causes system failures because of changing the behavior in error reporting (#76)
+* Feature: add support of OAUTHBEARER (#79)
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
