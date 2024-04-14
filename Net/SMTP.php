@@ -213,7 +213,7 @@ class Net_SMTP
         $this->gssapi_cname     = $gssapi_cname;
 
         /* If PHP krb5 extension is loaded, we enable GSSAPI method. */
-        if (extension_loaded('krb5')) {
+        if (isset($gssapi_principal) && extension_loaded('krb5')) {
             $this->setAuthMethod('GSSAPI', array($this, 'authGSSAPI'));
         }
 
