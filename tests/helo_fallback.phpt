@@ -24,7 +24,16 @@ echo count($smtp->getServiceExtensions()), "\n";
 echo smtp_result($smtp->mailFrom('from@example.com')), "\n";
 $smtp->disconnect();
 
+echo "No reply to EHLO\n";
+$smtp = smtp_server_start(array(
+    array('EHLO localhost', array()),
+), false, 1);
+echo smtp_result($smtp->connect()), "\n";
+$smtp->disconnect();
+
 --EXPECT--
 true
 0
 Invalid response code received from server (550)
+No reply to EHLO
+Invalid response code received from server (-1)

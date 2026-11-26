@@ -582,7 +582,12 @@ class Net_SMTP
             return $error;
         }
 
-        if (PEAR::isError($this->parseResponse(250))) {
+        if (PEAR::isError($error = $this->parseResponse(250))) {
+            /* No reply is not a refusal, and the reply may still come. */
+            if ($this->code === -1) {
+                return $error;
+            }
+
             /* If the EHLO failed, try the simpler HELO command. */
             if (PEAR::isError($error = $this->put('HELO', $this->localhost))) {
                 return $error;
