@@ -470,6 +470,7 @@ class Net_SMTP
     public function connect($timeout = null, $persistent = false)
     {
         $this->greeting = null;
+        $this->esmtp    = array();
 
         $result = $this->socket->connect(
             $this->host, $this->port, $persistent, $timeout, $this->socket_options

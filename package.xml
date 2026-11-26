@@ -48,6 +48,7 @@
     <file name="basic.phpt" role="test" />
     <file name="config.php.dist" role="test" />
     <file name="quotedata.phpt" role="test" />
+    <file name="reconnect.phpt" role="test" />
     <file name="smtp_server.inc" role="test" />
     <file name="smtp_server.pem" role="test" />
     <file name="smtp_server.php" role="test" />
