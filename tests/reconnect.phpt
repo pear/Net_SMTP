@@ -49,6 +49,20 @@ $smtp->connect();
 echo smtp_result($smtp->mailFrom('from@example.com')), "\n";
 $smtp->disconnect();
 
+echo "Replies to pipelined commands left unread\n";
+$smtp = smtp_server_start(array(
+    array('EHLO localhost', "250-localhost\r\n250 PIPELINING"),
+    array('RSET', null),
+), true, 1);
+$smtp->connect();
+$smtp->rset();
+$next = smtp_server_start(array(
+    array('EHLO localhost', "250-localhost\r\n250 X-SECOND"),
+));
+$smtp->port = $next->port;
+echo smtp_result($smtp->connect()), "\n";
+$smtp->disconnect();
+
 --EXPECT--
 X-FIRST
 EHLO accepted
@@ -58,3 +72,5 @@ HELO was not accepted (502)
 0
 PIPELINING offered by the previous server only
 Invalid response code received from server (550)
+Replies to pipelined commands left unread
+true

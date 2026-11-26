@@ -497,6 +497,8 @@ class Net_SMTP
         $this->greeting = null;
         $this->esmtp    = array();
 
+        $this->pipelined_commands = 0;
+
         $result = $this->socket->connect(
             $this->host, $this->port, $persistent, $timeout, $this->socket_options
         );
