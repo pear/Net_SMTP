@@ -700,8 +700,9 @@ class Net_SMTP
                     );
                 }
 
-                /* Send EHLO again to recieve the AUTH string from the
-                 * SMTP server. */
+                /* RFC 3207, section 4.2: forget what the server advertised
+                 * before TLS and send EHLO again. */
+                $this->esmtp = array();
                 $this->negotiate();
             } else {
                 return false;
