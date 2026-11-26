@@ -34,6 +34,21 @@ echo smtp_result($smtp->connect()), "\n";
 echo count($smtp->getServiceExtensions()), "\n";
 $smtp->disconnect();
 
+echo "PIPELINING offered by the previous server only\n";
+$smtp = smtp_server_start(array(
+    array('EHLO localhost', "250-localhost\r\n250 PIPELINING"),
+), true);
+$smtp->connect();
+$smtp->disconnect();
+$next = smtp_server_start(array(
+    array('EHLO localhost', "250-localhost\r\n250 SIZE 1000"),
+    array('MAIL FROM:<from@example.com>', '550 Sender rejected'),
+));
+$smtp->port = $next->port;
+$smtp->connect();
+echo smtp_result($smtp->mailFrom('from@example.com')), "\n";
+$smtp->disconnect();
+
 --EXPECT--
 X-FIRST
 EHLO accepted
@@ -41,3 +56,5 @@ X-SECOND
 EHLO and HELO refused
 HELO was not accepted (502)
 0
+PIPELINING offered by the previous server only
+Invalid response code received from server (550)

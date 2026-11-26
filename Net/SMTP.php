@@ -358,7 +358,7 @@ class Net_SMTP
         $this->code      = -1;
         $this->arguments = array();
 
-        if ($later) {
+        if ($later && isset($this->esmtp['PIPELINING'])) {
             $this->pipelined_commands++;
             return true;
         }
@@ -574,10 +574,6 @@ class Net_SMTP
             $len       = strlen($verb);
             $arguments = substr($argument, $len + 1, strlen($argument) - $len - 1);
             $this->esmtp[$verb] = $arguments;
-        }
-
-        if (!isset($this->esmtp['PIPELINING'])) {
-            $this->pipelining = false;
         }
 
         return true;
