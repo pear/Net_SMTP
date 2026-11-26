@@ -47,6 +47,7 @@
     <file name="auth.phpt" role="test" />
     <file name="basic.phpt" role="test" />
     <file name="config.php.dist" role="test" />
+    <file name="ehlo.phpt" role="test" />
     <file name="helo_fallback.phpt" role="test" />
     <file name="incomplete_reply.phpt" role="test" />
     <file name="quotedata.phpt" role="test" />

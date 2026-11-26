@@ -139,6 +139,13 @@ class Net_SMTP
     protected $arguments = array();
 
     /**
+     * The lines of the last reply in $arguments, which holds those of all
+     * the replies to a pipelined command group.
+     * @var array
+     */
+    protected $reply = array();
+
+    /**
      * Stores the SMTP server's greeting string.
      * @var string
      */
@@ -367,6 +374,7 @@ class Net_SMTP
             /* Until the last line of this reply has been read, there
              * is no reply: not the previous one, not a part of one. */
             $this->code = -1;
+            $this->reply = array();
 
             while ($line = $this->readReplyLine()) {
                 $this->debug("Recv: $line");
@@ -379,7 +387,7 @@ class Net_SMTP
 
                 /* Read the code and store the rest in the arguments array. */
                 $code = substr($line, 0, 3);
-                $this->arguments[] = trim(substr($line, 4));
+                $this->arguments[] = $this->reply[] = trim(substr($line, 4));
 
                 /* Check the syntax of the response code. */
                 if (!is_numeric($code)) {
@@ -598,10 +606,14 @@ class Net_SMTP
                 return PEAR::raiseError('HELO was not accepted', $this->code);
             }
 
+            /* A HELO session has no service extensions. */
+            $this->esmtp = array();
+
             return true;
         }
 
-        foreach ($this->arguments as $argument) {
+        $this->esmtp = array();
+        foreach ($this->reply as $argument) {
             $verb      = strtok($argument, ' ');
             $len       = strlen($verb);
             $arguments = substr($argument, $len + 1, strlen($argument) - $len - 1);
@@ -1416,6 +1428,28 @@ class Net_SMTP
         }
 
         return true;
+    }
+
+    /**
+     * Send EHLO again and replace the list of service extensions with the
+     * new reply, falling back to HELO as connect() does.
+     *
+     * @param bool $reset Whether the server has reset the session to the
+     *                    greeting stage, as it does after XCLIENT. What it
+     *                    advertised before no longer holds then, even if
+     *                    it refuses the new greeting.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since 1.13.0
+     */
+    public function ehlo($reset = false)
+    {
+        if ($reset) {
+            $this->esmtp = array();
+        }
+
+        return $this->negotiate();
     }
 
     /**
