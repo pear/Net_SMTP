@@ -358,7 +358,7 @@ class Net_SMTP
         $this->code      = -1;
         $this->arguments = array();
 
-        if ($later) {
+        if ($later && isset($this->esmtp['PIPELINING'])) {
             $this->pipelined_commands++;
             return true;
         }
@@ -470,6 +470,7 @@ class Net_SMTP
     public function connect($timeout = null, $persistent = false)
     {
         $this->greeting = null;
+        $this->esmtp    = array();
 
         $result = $this->socket->connect(
             $this->host, $this->port, $persistent, $timeout, $this->socket_options
@@ -573,10 +574,6 @@ class Net_SMTP
             $len       = strlen($verb);
             $arguments = substr($argument, $len + 1, strlen($argument) - $len - 1);
             $this->esmtp[$verb] = $arguments;
-        }
-
-        if (!isset($this->esmtp['PIPELINING'])) {
-            $this->pipelining = false;
         }
 
         return true;
@@ -700,9 +697,12 @@ class Net_SMTP
                     );
                 }
 
-                /* Send EHLO again to recieve the AUTH string from the
-                 * SMTP server. */
-                $this->negotiate();
+                /* RFC 3207, section 4.2: forget what the server advertised
+                 * before TLS and send EHLO again. */
+                $this->esmtp = array();
+                if (PEAR::isError($result = $this->negotiate())) {
+                    return $result;
+                }
             } else {
                 return false;
             }
