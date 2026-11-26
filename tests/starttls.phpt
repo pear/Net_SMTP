@@ -19,7 +19,7 @@ $smtp = smtp_server_start(array_merge($before_tls, array(
     array('EHLO localhost', "250-localhost\r\n250 X-AFTER-TLS"),
 )));
 $smtp->connect();
-$smtp->starttls();
+echo smtp_result($smtp->starttls()), "\n";
 echo smtp_extensions($smtp, $names), "\n";
 $smtp->disconnect();
 
@@ -29,12 +29,14 @@ $smtp = smtp_server_start(array_merge($before_tls, array(
     array('HELO localhost', '502 Command not implemented'),
 )));
 $smtp->connect();
-$smtp->starttls();
+echo smtp_result($smtp->starttls()), "\n";
 echo count($smtp->getServiceExtensions()), "\n";
 $smtp->disconnect();
 
 --EXPECT--
 EHLO accepted
+true
 X-AFTER-TLS
 EHLO and HELO refused
+HELO was not accepted (502)
 0

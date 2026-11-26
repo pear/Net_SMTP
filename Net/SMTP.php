@@ -703,7 +703,9 @@ class Net_SMTP
                 /* RFC 3207, section 4.2: forget what the server advertised
                  * before TLS and send EHLO again. */
                 $this->esmtp = array();
-                $this->negotiate();
+                if (PEAR::isError($result = $this->negotiate())) {
+                    return $result;
+                }
             } else {
                 return false;
             }
