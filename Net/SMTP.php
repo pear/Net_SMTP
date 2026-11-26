@@ -1427,6 +1427,9 @@ class Net_SMTP
             return $error;
         }
 
+        /* A HELO session has no service extensions. */
+        $this->esmtp = array();
+
         return true;
     }
 
