@@ -364,7 +364,11 @@ class Net_SMTP
         }
 
         for ($i = 0; $i <= $this->pipelined_commands; $i++) {
-            while ($line = $this->socket->readLine()) {
+            /* Until the last line of this reply has been read, there
+             * is no reply: not the previous one, not a part of one. */
+            $this->code = -1;
+
+            while ($line = $this->readReplyLine()) {
                 $this->debug("Recv: $line");
 
                 /* If we receive an empty line, the connection was closed. */
@@ -378,15 +382,13 @@ class Net_SMTP
                 $this->arguments[] = trim(substr($line, 4));
 
                 /* Check the syntax of the response code. */
-                if (is_numeric($code)) {
-                    $this->code = (int)$code;
-                } else {
-                    $this->code = -1;
+                if (!is_numeric($code)) {
                     break;
                 }
 
                 /* If this is not a multiline response, we're done. */
                 if (substr($line, 3, 1) != '-') {
+                    $this->code = (int)$code;
                     break;
                 }
             }
@@ -402,6 +404,29 @@ class Net_SMTP
         }
 
         return PEAR::raiseError('Invalid response code received from server', $this->code);
+    }
+
+    /**
+     * Net_Socket::readLine() that tells a whole line from one cut off by
+     * a closed connection or a timeout.
+     *
+     * @return string|false The line without its line end, or false if the
+     *                      end of the line did not come.
+     */
+    protected function readReplyLine()
+    {
+        $line     = '';
+        $timeout  = $this->socket->timeout;
+        $deadline = time() + $timeout;
+
+        while (!$this->socket->eof() && (!$timeout || time() < $deadline)) {
+            $line .= $this->socket->gets($this->socket->lineLength);
+            if (substr($line, -1) === "\n") {
+                return rtrim($line, "\r\n");
+            }
+        }
+
+        return false;
     }
 
     /**

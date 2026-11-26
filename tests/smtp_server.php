@@ -4,7 +4,10 @@
  *
  * The script is a list of array(command, reply). The server expects that
  * command line next and answers with the reply (a multiline reply has its
- * lines joined by "\r\n"), or closes the connection if the reply is null.
+ * lines joined by "\r\n"). A reply given as an array is sent as it is,
+ * piece by piece 0.8 s apart, with no line end added. The server closes
+ * the connection instead of replying if the reply is null, and after
+ * replying, without reading a command, if the command is null.
  * After a positive reply to STARTTLS it switches to TLS. Any other command
  * is reported on stderr, which makes the test fail.
  */
@@ -35,17 +38,29 @@ fwrite($conn, "220 localhost ESMTP\r\n");
 foreach ($script as $step) {
     list($command, $reply) = $step;
 
-    $line = fgets($conn);
-    if ($line === false || rtrim($line, "\r\n") !== $command) {
-        fwrite(STDERR, sprintf("smtp_server: expected \"%s\", got %s\n", $command,
-            $line === false ? 'no command' : '"' . rtrim($line, "\r\n") . '"'));
-        break;
+    if ($command !== null) {
+        $line = fgets($conn);
+        if ($line === false || rtrim($line, "\r\n") !== $command) {
+            fwrite(STDERR, sprintf("smtp_server: expected \"%s\", got %s\n", $command,
+                $line === false ? 'no command' : '"' . rtrim($line, "\r\n") . '"'));
+            break;
+        }
     }
-    if ($reply === null) {
+
+    if (is_array($reply)) {
+        foreach ($reply as $i => $piece) {
+            if ($i > 0) {
+                usleep(800000);
+            }
+            @fwrite($conn, $piece);
+        }
+    } elseif ($reply !== null) {
+        fwrite($conn, $reply . "\r\n");
+    }
+    if ($command === null || $reply === null) {
         break;
     }
 
-    fwrite($conn, $reply . "\r\n");
     if ($command === 'STARTTLS' && $reply[0] === '2') {
         stream_socket_enable_crypto($conn, true, $tls);
     }

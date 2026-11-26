@@ -3,7 +3,7 @@
  * Start tests/smtp_server.php with the given script and return a Net_SMTP
  * object for it.
  */
-function smtp_server_start($script, $pipelining = false)
+function smtp_server_start($script, $pipelining = false, $timeout = 10, $class = 'Net_SMTP')
 {
     $GLOBALS['smtp_servers'][] = proc_open(
         escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(dirname(__FILE__) . '/smtp_server.php'),
@@ -12,7 +12,7 @@ function smtp_server_start($script, $pipelining = false)
     fclose($pipes[0]);
     $port = (int) fgets($pipes[1]);
 
-    return new Net_SMTP('127.0.0.1', $port, 'localhost', $pipelining, 10,
+    return new $class('127.0.0.1', $port, 'localhost', $pipelining, $timeout,
         array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false)));
 }
 
