@@ -139,6 +139,13 @@ class Net_SMTP
     protected $arguments = array();
 
     /**
+     * The lines of the last reply in $arguments, which holds those of all
+     * the replies to a pipelined command group.
+     * @var array
+     */
+    protected $reply = array();
+
+    /**
      * Stores the SMTP server's greeting string.
      * @var string
      */
@@ -358,13 +365,18 @@ class Net_SMTP
         $this->code      = -1;
         $this->arguments = array();
 
-        if ($later) {
+        if ($later && isset($this->esmtp['PIPELINING'])) {
             $this->pipelined_commands++;
             return true;
         }
 
         for ($i = 0; $i <= $this->pipelined_commands; $i++) {
-            while ($line = $this->socket->readLine()) {
+            /* Until the last line of this reply has been read, there
+             * is no reply: not the previous one, not a part of one. */
+            $this->code = -1;
+            $this->reply = array();
+
+            while ($line = $this->readReplyLine()) {
                 $this->debug("Recv: $line");
 
                 /* If we receive an empty line, the connection was closed. */
@@ -375,18 +387,16 @@ class Net_SMTP
 
                 /* Read the code and store the rest in the arguments array. */
                 $code = substr($line, 0, 3);
-                $this->arguments[] = trim(substr($line, 4));
+                $this->arguments[] = $this->reply[] = trim(substr($line, 4));
 
                 /* Check the syntax of the response code. */
-                if (is_numeric($code)) {
-                    $this->code = (int)$code;
-                } else {
-                    $this->code = -1;
+                if (!is_numeric($code)) {
                     break;
                 }
 
                 /* If this is not a multiline response, we're done. */
                 if (substr($line, 3, 1) != '-') {
+                    $this->code = (int)$code;
                     break;
                 }
             }
@@ -402,6 +412,29 @@ class Net_SMTP
         }
 
         return PEAR::raiseError('Invalid response code received from server', $this->code);
+    }
+
+    /**
+     * Net_Socket::readLine() that tells a whole line from one cut off by
+     * a closed connection or a timeout.
+     *
+     * @return string|false The line without its line end, or false if the
+     *                      end of the line did not come.
+     */
+    protected function readReplyLine()
+    {
+        $line     = '';
+        $timeout  = $this->socket->timeout;
+        $deadline = time() + $timeout;
+
+        while (!$this->socket->eof() && (!$timeout || time() < $deadline)) {
+            $line .= $this->socket->gets($this->socket->lineLength);
+            if (substr($line, -1) === "\n") {
+                return rtrim($line, "\r\n");
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -470,6 +503,9 @@ class Net_SMTP
     public function connect($timeout = null, $persistent = false)
     {
         $this->greeting = null;
+        $this->esmtp    = array();
+
+        $this->pipelined_commands = 0;
 
         $result = $this->socket->connect(
             $this->host, $this->port, $persistent, $timeout, $this->socket_options
@@ -556,7 +592,12 @@ class Net_SMTP
             return $error;
         }
 
-        if (PEAR::isError($this->parseResponse(250))) {
+        if (PEAR::isError($error = $this->parseResponse(250))) {
+            /* No reply is not a refusal, and the reply may still come. */
+            if ($this->code === -1) {
+                return $error;
+            }
+
             /* If the EHLO failed, try the simpler HELO command. */
             if (PEAR::isError($error = $this->put('HELO', $this->localhost))) {
                 return $error;
@@ -565,18 +606,18 @@ class Net_SMTP
                 return PEAR::raiseError('HELO was not accepted', $this->code);
             }
 
+            /* A HELO session has no service extensions. */
+            $this->esmtp = array();
+
             return true;
         }
 
-        foreach ($this->arguments as $argument) {
+        $this->esmtp = array();
+        foreach ($this->reply as $argument) {
             $verb      = strtok($argument, ' ');
             $len       = strlen($verb);
             $arguments = substr($argument, $len + 1, strlen($argument) - $len - 1);
             $this->esmtp[$verb] = $arguments;
-        }
-
-        if (!isset($this->esmtp['PIPELINING'])) {
-            $this->pipelining = false;
         }
 
         return true;
@@ -700,9 +741,12 @@ class Net_SMTP
                     );
                 }
 
-                /* Send EHLO again to recieve the AUTH string from the
-                 * SMTP server. */
-                $this->negotiate();
+                /* RFC 3207, section 4.2: forget what the server advertised
+                 * before TLS and send EHLO again. */
+                $this->esmtp = array();
+                if (PEAR::isError($result = $this->negotiate())) {
+                    return $result;
+                }
             } else {
                 return false;
             }
@@ -1383,7 +1427,32 @@ class Net_SMTP
             return $error;
         }
 
+        /* A HELO session has no service extensions. */
+        $this->esmtp = array();
+
         return true;
+    }
+
+    /**
+     * Send EHLO again and replace the list of service extensions with the
+     * new reply, falling back to HELO as connect() does.
+     *
+     * @param bool $reset Whether the server has reset the session to the
+     *                    greeting stage, as it does after XCLIENT. What it
+     *                    advertised before no longer holds then, even if
+     *                    it refuses the new greeting.
+     *
+     * @return mixed Returns a PEAR_Error with an error message on any
+     *               kind of failure, or true on success.
+     * @since 1.13.0
+     */
+    public function ehlo($reset = false)
+    {
+        if ($reset) {
+            $this->esmtp = array();
+        }
+
+        return $this->negotiate();
     }
 
     /**
